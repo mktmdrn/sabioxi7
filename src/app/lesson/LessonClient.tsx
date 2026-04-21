@@ -129,7 +129,7 @@ export default function LessonClient({ lesson, userId }: { lesson: Lesson; userI
         <div className="flex-1 h-3 md:h-4 bg-slate-200 rounded-full overflow-hidden">
           <div
             className="h-full bg-green-500 transition-all duration-500 ease-out rounded-full"
-            style={{ width: \`\${progressPercent}%\` }}
+            style={{ width: `${progressPercent}%` }}
           />
         </div>
       </header>
@@ -180,18 +180,18 @@ export default function LessonClient({ lesson, userId }: { lesson: Lesson; userI
             <button
               onClick={handleCheck}
               disabled={!selectedOption}
-              className={\`w-full py-3 md:py-4 text-lg md:text-xl font-bold rounded-2xl border-b-4 transition-all \${
+              className={`w-full py-3 md:py-4 text-lg md:text-xl font-bold rounded-2xl border-b-4 transition-all ${
                 selectedOption
                   ? "bg-green-500 text-white border-green-600 hover:bg-green-400 active:border-b-0 active:translate-y-1 cursor-pointer"
                   : "bg-slate-200 text-slate-400 border-slate-300 cursor-not-allowed"
-              }\`}
+              }`}
             >
               Comprobar
             </button>
           ) : (
-            <div className={\`absolute inset-0 p-4 md:p-6 flex items-center justify-between \${status === "correct" ? "bg-green-100" : "bg-red-100"}\`}>
+            <div className={`absolute inset-0 p-4 md:p-6 flex items-center justify-between ${status === "correct" ? "bg-green-100" : "bg-red-100"}`}>
               <div className="max-w-4xl mx-auto w-full flex items-center justify-between gap-4 md:gap-6">
-                <div className={\`flex items-center gap-3 md:gap-4 \${status === "correct" ? "text-green-600" : "text-red-600"} font-extrabold text-xl md:text-2xl\`}>
+                <div className={`flex items-center gap-3 md:gap-4 ${status === "correct" ? "text-green-600" : "text-red-600"} font-extrabold text-xl md:text-2xl`}>
                   {status === "correct" ? (
                     <>
                       <div className="w-8 h-8 md:w-10 md:h-10 bg-white rounded-full flex items-center justify-center">
@@ -211,9 +211,9 @@ export default function LessonClient({ lesson, userId }: { lesson: Lesson; userI
                 </div>
                 <button
                   onClick={handleContinue}
-                  className={\`py-3 md:py-4 px-6 md:px-10 text-lg md:text-xl font-bold rounded-2xl border-b-4 text-white active:border-b-0 active:translate-y-1 transition-all \${
+                  className={`py-3 md:py-4 px-6 md:px-10 text-lg md:text-xl font-bold rounded-2xl border-b-4 text-white active:border-b-0 active:translate-y-1 transition-all ${
                     status === "correct" ? "bg-green-500 border-green-600 hover:bg-green-400" : "bg-red-500 border-red-600 hover:bg-red-400"
-                  }\`}
+                  }`}
                 >
                   Continuar
                 </button>

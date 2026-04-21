@@ -1,24 +1,23 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { createClient } from "@supabase/supabase-js";
 import { buyBooster, finishRace } from "@/actions/arena";
-import { Rocket, Star, ArrowLeft, ArrowRight, Trophy } from "lucide-react";
+import { Rocket, Star, ArrowLeft, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 const RaceScene = dynamic(() => import("@/components/RaceScene"), { ssr: false });
 
 const FINISH_LINE = 50;
-const RACE_TIMEOUT = 30; // seconds
+const RACE_TIMEOUT = 30;
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-type Phase = "lobby" | "countdown" | "racing" | "finished";
+type Phase = "connecting" | "lobby" | "countdown" | "racing" | "finished";
 
 export default function RaceGame({
   challengeId,
@@ -43,8 +42,7 @@ export default function RaceGame({
   opponentId: string;
   isChallenger: boolean;
 }) {
-  const router = useRouter();
-  const [phase, setPhase] = useState<Phase>("lobby");
+  const [phase, setPhase] = useState<Phase>("connecting");
   const [countdown, setCountdown] = useState(3);
   const [myPos, setMyPos] = useState(0);
   const [opPos, setOpPos] = useState(0);
@@ -61,6 +59,7 @@ export default function RaceGame({
   const [timeLeft, setTimeLeft] = useState(RACE_TIMEOUT);
   const [buyingBooster, setBuyingBooster] = useState(false);
   const [stars, setStars] = useState(userPoints);
+  const [channelReady, setChannelReady] = useState(false);
 
   const channelRef = useRef<any>(null);
   const myPosRef = useRef(0);
@@ -68,7 +67,9 @@ export default function RaceGame({
   const speedDecayRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const boostTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const raceTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const readyPingRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const finishedRef = useRef(false);
+  const meReadyRef = useRef(false);
 
   const stepSize = 0.5 + userLevel / 500;
 
@@ -88,15 +89,19 @@ export default function RaceGame({
         setOpSpeed(payload.speed);
         setOpBoosting(payload.boosting || false);
       })
-      .on("broadcast", { event: "finish" }, ({ payload }: any) => {
-        // Opponent finished
+      .on("broadcast", { event: "finish" }, () => {
         if (!finishedRef.current) {
           finishedRef.current = true;
           setWinner("opponent");
           setPhase("finished");
         }
       })
-      .subscribe();
+      .subscribe((status: string) => {
+        if (status === "SUBSCRIBED") {
+          setChannelReady(true);
+          setPhase("lobby");
+        }
+      });
 
     channelRef.current = channel;
 
@@ -105,41 +110,57 @@ export default function RaceGame({
       if (speedDecayRef.current) clearInterval(speedDecayRef.current);
       if (boostTimerRef.current) clearTimeout(boostTimerRef.current);
       if (raceTimerRef.current) clearInterval(raceTimerRef.current);
+      if (readyPingRef.current) clearInterval(readyPingRef.current);
     };
   }, [challengeId]);
 
-  // Send ready
+  // Send ready — keep pinging until opponent acknowledges
   const handleReady = useCallback(() => {
     setMeReady(true);
+    meReadyRef.current = true;
+
+    // Send immediately
     channelRef.current?.send({ type: "broadcast", event: "ready", payload: {} });
+
+    // Keep re-sending every second so even if opponent joins later, they get it
+    readyPingRef.current = setInterval(() => {
+      if (meReadyRef.current) {
+        channelRef.current?.send({ type: "broadcast", event: "ready", payload: {} });
+      }
+    }, 1000);
   }, []);
 
   // Start countdown when both ready
   useEffect(() => {
     if (meReady && opReady && phase === "lobby") {
+      // Stop pinging
+      if (readyPingRef.current) {
+        clearInterval(readyPingRef.current);
+        readyPingRef.current = null;
+      }
+
       setPhase("countdown");
       setCountdown(3);
+      let c = 3;
       const interval = setInterval(() => {
-        setCountdown((prev) => {
-          if (prev <= 1) {
-            clearInterval(interval);
-            setPhase("racing");
-            return 0;
-          }
-          return prev - 1;
-        });
+        c--;
+        setCountdown(c);
+        if (c <= 0) {
+          clearInterval(interval);
+          setPhase("racing");
+        }
       }, 1000);
     }
   }, [meReady, opReady, phase]);
 
-  // Race timer
+  // Race timer + broadcasting
   useEffect(() => {
     if (phase !== "racing") return;
     setTimeLeft(RACE_TIMEOUT);
+
     raceTimerRef.current = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
-          // Time's up - compare positions
           if (!finishedRef.current) {
             finishedRef.current = true;
             const myFinal = myPosRef.current;
@@ -155,17 +176,15 @@ export default function RaceGame({
       });
     }, 1000);
 
-    // Speed decay
     speedDecayRef.current = setInterval(() => {
       setMySpeed((prev) => Math.max(0, prev * 0.85));
     }, 100);
 
-    // Broadcast position
     const broadcastInterval = setInterval(() => {
       channelRef.current?.send({
         type: "broadcast",
         event: "position",
-        payload: { pos: myPosRef.current, speed: mySpeed, boosting: myBoosting },
+        payload: { pos: myPosRef.current, speed: 1, boosting: myBoosting },
       });
     }, 50);
 
@@ -183,17 +202,14 @@ export default function RaceGame({
     const handleKeyDown = (e: KeyboardEvent) => {
       if (finishedRef.current) return;
       if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") {
-        // Space for booster
         if (e.key === " " && hasBooster && !boosterUsed) {
           e.preventDefault();
           activateBooster();
-          return;
         }
         return;
       }
       e.preventDefault();
 
-      // Must alternate keys
       if (e.key === lastKey) return;
       setLastKey(e.key);
 
@@ -204,7 +220,6 @@ export default function RaceGame({
       setMyPos(newPos);
       setMySpeed(1);
 
-      // Check finish
       if (newPos >= FINISH_LINE && !finishedRef.current) {
         finishedRef.current = true;
         setWinner("me");
@@ -223,8 +238,7 @@ export default function RaceGame({
     if (winner === "me") {
       finishRace(challengeId, userId, opponentId);
     }
-    // If opponent won, they call finishRace from their side
-  }, [phase, winner]);
+  }, [phase, winner, challengeId, userId, opponentId]);
 
   const activateBooster = () => {
     if (boosterUsed || !hasBooster) return;
@@ -246,7 +260,6 @@ export default function RaceGame({
     setBuyingBooster(false);
   };
 
-  // Mobile touch controls
   const handleTouch = (key: string) => {
     if (phase !== "racing" || finishedRef.current) return;
     if (key === lastKey) return;
@@ -294,7 +307,6 @@ export default function RaceGame({
             )}
           </div>
         </div>
-        {/* Progress bars */}
         {phase === "racing" && (
           <div className="max-w-4xl mx-auto mt-2 space-y-1">
             <div className="flex items-center gap-2">
@@ -326,17 +338,26 @@ export default function RaceGame({
           player2Boosting={isChallenger ? opBoosting : myBoosting}
         />
 
+        {/* Connecting overlay */}
+        {phase === "connecting" && (
+          <div className="absolute inset-0 bg-black/70 flex items-center justify-center z-20">
+            <div className="text-center space-y-4">
+              <div className="text-5xl animate-spin">⏳</div>
+              <p className="text-white text-xl font-bold">Conectando a la sala...</p>
+            </div>
+          </div>
+        )}
+
         {/* Lobby overlay */}
         {phase === "lobby" && (
           <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-20">
-            <div className="text-center space-y-6 max-w-sm">
+            <div className="text-center space-y-6 max-w-sm px-4">
               <div className="text-6xl">⚔️</div>
               <h1 className="text-3xl font-extrabold text-white">Sala de Espera</h1>
               <p className="text-slate-300">
                 vs <span className="font-bold">{opponentName}</span> (Lv.{opponentLevel})
               </p>
 
-              {/* Booster purchase */}
               {!hasBooster && (
                 <button
                   onClick={handleBuyBooster}
@@ -357,19 +378,23 @@ export default function RaceGame({
                 </div>
               )}
 
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {!meReady ? (
                   <button
                     onClick={handleReady}
-                    className="w-full bg-green-500 text-white border-b-4 border-green-600 active:border-b-0 active:translate-y-[4px] py-4 rounded-2xl font-extrabold text-xl hover:bg-green-400 transition-all"
+                    disabled={!channelReady}
+                    className="w-full bg-green-500 text-white border-b-4 border-green-600 active:border-b-0 active:translate-y-[4px] py-4 rounded-2xl font-extrabold text-xl hover:bg-green-400 transition-all disabled:opacity-50"
                   >
                     ✅ LISTO
                   </button>
                 ) : (
                   <div className="text-green-400 font-bold text-lg">✅ Estás listo</div>
                 )}
+                {opReady && !meReady && (
+                  <p className="text-green-400 text-sm font-bold">✅ {opponentName} está listo</p>
+                )}
                 {!opReady && meReady && (
-                  <p className="text-slate-500 text-sm animate-pulse">Esperando a {opponentName}...</p>
+                  <p className="text-slate-500 text-sm animate-pulse">⏳ Esperando a {opponentName}...</p>
                 )}
               </div>
 
@@ -384,7 +409,7 @@ export default function RaceGame({
         {phase === "countdown" && (
           <div className="absolute inset-0 bg-black/40 flex items-center justify-center z-20">
             <div className="text-9xl font-extrabold text-white animate-bounce drop-shadow-2xl">
-              {countdown}
+              {countdown > 0 ? countdown : "GO!"}
             </div>
           </div>
         )}
@@ -421,9 +446,7 @@ export default function RaceGame({
           <button
             onTouchStart={() => handleTouch("ArrowLeft")}
             className={`flex-1 py-6 rounded-2xl font-extrabold text-2xl transition-all ${
-              lastKey === "ArrowLeft"
-                ? "bg-blue-600 text-white scale-95"
-                : "bg-slate-800 text-slate-300 border-2 border-slate-700"
+              lastKey === "ArrowLeft" ? "bg-blue-600 text-white scale-95" : "bg-slate-800 text-slate-300 border-2 border-slate-700"
             }`}
           >
             ← IZQ
@@ -431,9 +454,7 @@ export default function RaceGame({
           <button
             onTouchStart={() => handleTouch("ArrowRight")}
             className={`flex-1 py-6 rounded-2xl font-extrabold text-2xl transition-all ${
-              lastKey === "ArrowRight"
-                ? "bg-blue-600 text-white scale-95"
-                : "bg-slate-800 text-slate-300 border-2 border-slate-700"
+              lastKey === "ArrowRight" ? "bg-blue-600 text-white scale-95" : "bg-slate-800 text-slate-300 border-2 border-slate-700"
             }`}
           >
             DER →

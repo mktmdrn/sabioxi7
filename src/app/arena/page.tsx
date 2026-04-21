@@ -2,7 +2,7 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { getAllActivePlayers, getUserXp } from "@/actions/db";
 import { calculateLevel, getRankInfo } from "@/lib/levels";
-import { getChallengesForUser, createChallenge, acceptChallenge, declineChallenge } from "@/actions/arena";
+import { getChallengesForUser, createChallenge, acceptChallenge, declineChallenge, cancelChallenge } from "@/actions/arena";
 import Link from "next/link";
 import { Swords, ArrowLeft, Star, Shield, Clock, Check, X, Play, Trophy } from "lucide-react";
 
@@ -224,8 +224,35 @@ export default async function ArenaPage() {
 
         {/* My pending sent */}
         {myPending.length > 0 && (
-          <div className="text-center text-slate-500 text-sm">
-            Tienes {myPending.length} reto(s) pendiente(s) de ser aceptado(s).
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6">
+            <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+              <Clock className="w-5 h-5 text-slate-400" />
+              Retos Enviados ({myPending.length})
+            </h2>
+            <div className="space-y-3">
+              {myPending.map((c: any) => {
+                const opponent = c.challenged as any;
+                return (
+                  <div key={c.id} className="flex items-center justify-between bg-slate-800/50 rounded-2xl p-4 border border-slate-700/50">
+                    <div className="flex items-center gap-3">
+                      <span className="text-xl">⏳</span>
+                      <div>
+                        <p className="font-bold text-white">vs {opponent?.name}</p>
+                        <p className="text-xs text-slate-400">Esperando que acepte...</p>
+                      </div>
+                    </div>
+                    <form action={async () => {
+                      "use server";
+                      await cancelChallenge(c.id, userId);
+                    }}>
+                      <button className="bg-slate-800 text-slate-300 px-4 py-2 rounded-xl font-bold text-sm hover:bg-red-500/20 hover:text-red-400 transition-colors flex items-center gap-1">
+                        <X className="w-4 h-4" /> Cancelar
+                      </button>
+                    </form>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
       </main>

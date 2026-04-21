@@ -47,6 +47,27 @@ export async function declineChallenge(challengeId: string) {
   revalidatePath("/arena");
 }
 
+export async function cancelChallenge(challengeId: string, userId: string) {
+  // First verify the user is the challenger
+  const { data: challenge, error: fetchErr } = await supabase
+    .from("challenges")
+    .select("challenger_id")
+    .eq("id", challengeId)
+    .single();
+
+  if (fetchErr || !challenge || challenge.challenger_id !== userId) {
+    throw new Error("Unauthorized to cancel this challenge");
+  }
+
+  const { error } = await supabase
+    .from("challenges")
+    .delete()
+    .eq("id", challengeId);
+
+  if (error) throw new Error("Could not cancel challenge");
+  revalidatePath("/arena");
+}
+
 export async function submitScore(challengeId: string, userId: string, score: number) {
   // Get the challenge to know who's who
   const { data: challenge, error: fetchErr } = await supabase

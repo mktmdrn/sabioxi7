@@ -142,3 +142,31 @@ export async function addPointToUser(userId: string): Promise<void> {
     
   if (error) console.error("Error updating points:", error);
 }
+
+export type AvatarConfig = {
+  color: string;
+  hat: string;
+  accessory: string;
+};
+
+const DEFAULT_AVATAR: AvatarConfig = { color: "blue", hat: "none", accessory: "none" };
+
+export async function getAvatarConfig(userId: string): Promise<AvatarConfig> {
+  const { data, error } = await supabase
+    .from("users")
+    .select("avatar_config")
+    .eq("id", userId)
+    .single();
+
+  if (error || !data || !data.avatar_config) return DEFAULT_AVATAR;
+  return data.avatar_config as AvatarConfig;
+}
+
+export async function saveAvatarConfig(userId: string, config: AvatarConfig): Promise<void> {
+  const { error } = await supabase
+    .from("users")
+    .update({ avatar_config: config })
+    .eq("id", userId);
+
+  if (error) console.error("Error saving avatar config:", error);
+}

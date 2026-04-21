@@ -8,6 +8,7 @@ import Link from "next/link";
 
 export default function GeneratorPage() {
   const router = useRouter();
+  const [title, setTitle] = useState("");
   const [input, setInput] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -48,8 +49,9 @@ export default function GeneratorPage() {
 
     setIsSubmitting(true);
     try {
-      await addLesson(questions);
+      await addLesson(title || "Lección sin título", questions);
       setSuccess(true);
+      setTitle("");
       setInput("");
       setTimeout(() => {
         router.push("/dashboard");
@@ -97,6 +99,17 @@ Falsa 3`}
               <AlertTriangle className="w-4 h-4" />
               Mínimo 6 preguntas obligatorias por lección.
             </p>
+          </div>
+
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-slate-400 mb-2">Título de la Lección</label>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Ej: Geografía - Capitales"
+              className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all font-medium"
+            />
           </div>
 
           <textarea

@@ -16,17 +16,18 @@ export type Question = {
 
 export type Lesson = {
   id: string;
+  title: string;
   createdAt: number;
   questions: Question[];
 };
 
-export async function addLesson(questions: Question[]): Promise<string> {
+export async function addLesson(title: string, questions: Question[]): Promise<string> {
   const lessonId = Date.now().toString();
   const createdAt = Date.now();
 
   const { error: lessonError } = await supabase
     .from("lessons")
-    .insert({ id: lessonId, created_at: createdAt });
+    .insert({ id: lessonId, title, created_at: createdAt });
 
   if (lessonError) throw new Error("Failed to create lesson: " + lessonError.message);
 
@@ -49,7 +50,7 @@ export async function addLesson(questions: Question[]): Promise<string> {
 export async function getLessons(): Promise<Lesson[]> {
   const { data: lessonsData, error: lError } = await supabase
     .from("lessons")
-    .select("id, created_at")
+    .select("id, title, created_at")
     .order("created_at", { ascending: true });
 
   if (lError || !lessonsData) return [];
@@ -69,6 +70,7 @@ export async function getLessons(): Promise<Lesson[]> {
 
     return {
       id: l.id,
+      title: l.title,
       createdAt: l.created_at,
       questions: qList,
     };
@@ -80,7 +82,7 @@ export async function getLessons(): Promise<Lesson[]> {
 export async function getLessonById(id: string): Promise<Lesson | null> {
   const { data: lData, error: lError } = await supabase
     .from("lessons")
-    .select("id, created_at")
+    .select("id, title, created_at")
     .eq("id", id)
     .single();
 
@@ -95,6 +97,7 @@ export async function getLessonById(id: string): Promise<Lesson | null> {
 
   return {
     id: lData.id,
+    title: lData.title,
     createdAt: lData.created_at,
     questions: qData.map((q) => ({
       question: q.question,

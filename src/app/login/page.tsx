@@ -3,6 +3,7 @@
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { LogIn, Mail, Lock, AlertCircle } from "lucide-react";
+import Link from "next/link";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -109,11 +110,6 @@ export default function LoginPage() {
             </p>
           </form>
 
-          <div className="mt-8 pt-8 border-t border-white/5 text-center relative z-10">
-            <p className="text-slate-500 text-sm">
-              ¿No tienes una cuenta? <span className="text-blue-400 font-medium cursor-pointer hover:underline">Regístrate</span>
-            </p>
-          </div>
         </div>
         
         {/* Helper info for basic login */}

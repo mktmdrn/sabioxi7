@@ -45,12 +45,12 @@ export default async function AdminDashboardPage() {
                   <td className="px-6 py-4 font-medium text-white">{u.name}</td>
                   <td className="px-6 py-4">{u.email}</td>
                   <td className="px-6 py-4">
-                    <span className={\`px-2.5 py-1 rounded-full text-xs font-bold \${u.role === "admin" ? "bg-amber-500/20 text-amber-500" : "bg-slate-800 text-slate-400"}\`}>
+                    <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${u.role === "admin" ? "bg-amber-500/20 text-amber-500" : "bg-slate-800 text-slate-400"}`}>
                       {u.role}
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    <span className={\`px-2.5 py-1 rounded-full text-xs font-bold flex items-center gap-1 w-max \${u.status === "active" ? "bg-green-500/20 text-green-500" : "bg-red-500/20 text-red-500"}\`}>
+                    <span className={`px-2.5 py-1 rounded-full text-xs font-bold flex items-center gap-1 w-max ${u.status === "active" ? "bg-green-500/20 text-green-500" : "bg-red-500/20 text-red-500"}`}>
                       {u.status === "active" ? <CheckCircle className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
                       {u.status === "active" ? "Activo" : "Pendiente"}
                     </span>
@@ -62,7 +62,7 @@ export default async function AdminDashboardPage() {
                         if (u.status === "active") await deactivateUser(u.id);
                         else await activateUser(u.id);
                       }}>
-                        <button className={\`px-4 py-2 rounded-lg text-sm font-bold transition-colors \${u.status === "active" ? "bg-slate-800 hover:bg-slate-700 text-slate-300" : "bg-blue-600 hover:bg-blue-500 text-white"}\`}>
+                        <button className={`px-4 py-2 rounded-lg text-sm font-bold transition-colors ${u.status === "active" ? "bg-slate-800 hover:bg-slate-700 text-slate-300" : "bg-blue-600 hover:bg-blue-500 text-white"}`}>
                           {u.status === "active" ? "Desactivar" : "Activar"}
                         </button>
                       </form>

@@ -1,6 +1,7 @@
 import { auth, signOut } from "@/auth";
 import { redirect } from "next/navigation";
-import { LayoutDashboard, User, Mail, Shield, LogOut, ExternalLink } from "lucide-react";
+import Link from "next/link";
+import { LayoutDashboard, User, Mail, Shield, LogOut, ExternalLink, Play } from "lucide-react";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -43,7 +44,11 @@ export default async function DashboardPage() {
                 <h2 className="text-3xl font-bold text-white mb-2">¡Hola, {session.user?.name}! 👋</h2>
                 <p className="text-blue-100 text-lg opacity-90">Has iniciado sesión correctamente en el sistema.</p>
                 <div className="mt-6 flex gap-4">
-                  <button className="bg-white text-blue-600 px-6 py-2.5 rounded-xl font-semibold text-sm hover:bg-blue-50 transition-colors flex items-center gap-2">
+                  <Link href="/lesson" className="bg-green-500 text-white border-b-4 border-green-600 active:border-b-0 active:translate-y-[4px] px-8 py-3 rounded-2xl font-bold text-lg hover:bg-green-400 transition-all flex items-center gap-2">
+                    <Play className="w-5 h-5 fill-current" />
+                    Empezar Lección
+                  </Link>
+                  <button className="bg-white/10 text-white border border-white/20 px-6 py-3 rounded-2xl font-semibold hover:bg-white/20 transition-colors flex items-center gap-2">
                     Ver Perfil <ExternalLink className="w-4 h-4" />
                   </button>
                 </div>

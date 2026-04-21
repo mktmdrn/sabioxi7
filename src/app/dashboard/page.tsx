@@ -7,6 +7,7 @@ import { getUserPoints, getLessons } from "@/actions/db";
 export default async function DashboardPage() {
   const session = await auth();
   const userId = session?.user?.id;
+  const role = (session?.user as any)?.role;
   const points = userId ? await getUserPoints(userId) : 0;
   const lessons = await getLessons();
 
@@ -53,11 +54,19 @@ export default async function DashboardPage() {
               <div className="relative z-10">
                 <h2 className="text-3xl font-bold text-white mb-2">¡Hola, {session.user?.name}! 👋</h2>
                 <p className="text-blue-100 text-lg opacity-90">Has iniciado sesión correctamente en el sistema.</p>
-                <div className="mt-6 flex gap-4">
-                  <Link href="/generator" className="bg-indigo-600 text-white border-b-4 border-indigo-700 active:border-b-0 active:translate-y-[4px] px-6 py-3 rounded-2xl font-bold text-lg hover:bg-indigo-500 transition-all flex items-center gap-2">
-                    <PlusCircle className="w-5 h-5" />
-                    Generador
-                  </Link>
+                <div className="mt-6 flex flex-wrap gap-4">
+                  {role === "admin" && (
+                    <>
+                      <Link href="/generator" className="bg-indigo-600 text-white border-b-4 border-indigo-700 active:border-b-0 active:translate-y-[4px] px-6 py-3 rounded-2xl font-bold text-lg hover:bg-indigo-500 transition-all flex items-center gap-2">
+                        <PlusCircle className="w-5 h-5" />
+                        Generador
+                      </Link>
+                      <Link href="/dashboard/admin" className="bg-amber-600 text-white border-b-4 border-amber-700 active:border-b-0 active:translate-y-[4px] px-6 py-3 rounded-2xl font-bold text-lg hover:bg-amber-500 transition-all flex items-center gap-2">
+                        <Shield className="w-5 h-5" />
+                        Panel Admin
+                      </Link>
+                    </>
+                  )}
                   <button className="bg-white/10 text-white border border-white/20 px-6 py-3 rounded-2xl font-semibold hover:bg-white/20 transition-colors flex items-center gap-2">
                     Ver Perfil <ExternalLink className="w-4 h-4" />
                   </button>

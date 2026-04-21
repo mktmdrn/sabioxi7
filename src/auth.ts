@@ -1,5 +1,16 @@
-import NextAuth from "next-auth";
+import NextAuth, { CredentialsSignin } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import bcrypt from "bcryptjs";
+import { createClient } from "@supabase/supabase-js";
+
+class PendingAccountError extends CredentialsSignin {
+  code = "pending_account";
+}
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -10,21 +21,27 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        // En una app real, esto consultaría una base de datos.
-        // Aquí usamos usuarios hardcoded para el ejemplo básico.
-        const users = [
-          { id: "1", name: "Admin", email: "admin@example.com", password: "admin123", role: "admin" },
-          { id: "2", name: "Usuario", email: "user@example.com", password: "user123", role: "user" },
-        ];
+        const email = credentials?.email as string;
+        const password = credentials?.password as string;
 
-        const user = users.find(
-          (u) => u.email === credentials?.email && u.password === credentials?.password
-        );
+        if (!email || !password) return null;
 
-        if (user) {
-          return { id: user.id, name: user.name, email: user.email, role: user.role };
+        const { data: user, error } = await supabase
+          .from("users")
+          .select("*")
+          .eq("email", email)
+          .single();
+
+        if (error || !user) return null;
+
+        const isValid = await bcrypt.compare(password, user.password_hash);
+        if (!isValid) return null;
+
+        if (user.status !== "active") {
+          throw new PendingAccountError("Tu cuenta está pendiente de activación por un administrador.");
         }
-        return null;
+
+        return { id: user.id, name: user.name, email: user.email, role: user.role };
       },
     }),
   ],

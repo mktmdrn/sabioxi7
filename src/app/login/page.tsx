@@ -100,6 +100,13 @@ export default function LoginPage() {
                 "Iniciar Sesión"
               )}
             </button>
+
+            <p className="text-center text-sm text-slate-400 pt-4 border-t border-slate-800">
+              ¿No tienes cuenta?{" "}
+              <Link href="/register" className="text-blue-400 hover:text-blue-300 font-medium">
+                Regístrate aquí
+              </Link>
+            </p>
           </form>
 
           <div className="mt-8 pt-8 border-t border-white/5 text-center relative z-10">

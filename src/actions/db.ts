@@ -47,6 +47,20 @@ export async function addLesson(title: string, questions: Question[]): Promise<s
   return lessonId;
 }
 
+export async function recordTestLog(userId: string, lessonId: string, score: number, passed: boolean) {
+  const { error } = await supabase
+    .from("test_logs")
+    .insert({
+      user_id: userId,
+      lesson_id: lessonId,
+      score,
+      passed,
+      created_at: Date.now()
+    });
+
+  if (error) console.error("Could not record test log:", error);
+}
+
 export async function getLessons(): Promise<Lesson[]> {
   const { data: lessonsData, error: lError } = await supabase
     .from("lessons")

@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import { X, Check, XCircle, ArrowRight, RefreshCcw } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Lesson, Question, addPointToUser } from "@/actions/db";
+import { Lesson, Question, addPointToUser, recordTestLog } from "@/actions/db";
+import confetti from "canvas-confetti";
 
 export default function LessonClient({ lesson, userId }: { lesson: Lesson; userId: string }) {
   const router = useRouter();
@@ -39,11 +40,37 @@ export default function LessonClient({ lesson, userId }: { lesson: Lesson; userI
     return <div className="p-10 text-center">Cargando...</div>;
   }
 
+  const playDing = () => {
+    try {
+      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioContext) return;
+      const audioCtx = new AudioContext();
+      const oscillator = audioCtx.createOscillator();
+      const gainNode = audioCtx.createGain();
+      
+      oscillator.type = "sine";
+      oscillator.frequency.setValueAtTime(800, audioCtx.currentTime);
+      oscillator.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.1);
+      
+      gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      
+      oscillator.start();
+      oscillator.stop(audioCtx.currentTime + 0.5);
+    } catch (e) {
+      console.log("Audio not supported", e);
+    }
+  };
+
   const handleCheck = () => {
     if (!selectedOption) return;
     if (selectedOption === currentQ.correctAnswer) {
       setStatus("correct");
       setScore((prev) => prev + 1);
+      playDing();
     } else {
       setStatus("incorrect");
     }
@@ -54,13 +81,26 @@ export default function LessonClient({ lesson, userId }: { lesson: Lesson; userI
       setCurrentIndex((prev) => prev + 1);
     } else {
       // Finish lesson
+      const newScore = score + (status === "correct" ? 1 : 0);
+      const percentage = newScore / totalQuestions;
+      const isApproved = percentage >= 0.9;
+      
       setStatus("finished");
-      const percentage = (score + (status === "correct" ? 1 : 0)) / totalQuestions;
-      if (percentage >= 0.9) {
-        setIsSaving(true);
+      setIsSaving(true);
+      
+      if (isApproved) {
+        confetti({
+          particleCount: 150,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ["#22c55e", "#3b82f6", "#eab308"]
+        });
         await addPointToUser(userId);
-        setIsSaving(false);
       }
+      
+      // Save to logs
+      await recordTestLog(userId, lesson.id, newScore, isApproved);
+      setIsSaving(false);
     }
   };
 
@@ -174,8 +214,8 @@ export default function LessonClient({ lesson, userId }: { lesson: Lesson; userI
       </main>
 
       {/* Bottom Action Bar */}
-      <footer className="border-t-2 border-slate-200 bg-white p-4 md:p-6 relative">
-        <div className="max-w-4xl mx-auto flex items-center justify-between gap-4">
+      <footer className="border-t-2 border-slate-200 bg-white relative min-h-[100px] md:min-h-[120px] flex items-center">
+        <div className="max-w-4xl mx-auto w-full px-4 md:px-6">
           {status === "idle" ? (
             <button
               onClick={handleCheck}

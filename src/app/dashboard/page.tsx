@@ -1,8 +1,9 @@
 import { auth, signOut } from "@/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { LayoutDashboard, User, Mail, Shield, LogOut, ExternalLink, Play, Star, PlusCircle } from "lucide-react";
-import { getUserPoints, getLessons } from "@/actions/db";
+import { LayoutDashboard, User, Mail, Shield, LogOut, ExternalLink, Play, Star, PlusCircle, Sparkles } from "lucide-react";
+import { getUserPoints, getLessons, getAvatarConfig } from "@/actions/db";
+import MiniAvatar from "@/components/MiniAvatar";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -10,6 +11,7 @@ export default async function DashboardPage() {
   const role = (session?.user as any)?.role;
   const points = userId ? await getUserPoints(userId) : 0;
   const lessons = await getLessons();
+  const avatarConfig = userId ? await getAvatarConfig(userId) : { color: "blue", hat: "none", accessory: "none" };
 
   if (!session) {
     redirect("/login");
@@ -116,6 +118,18 @@ export default async function DashboardPage() {
 
           {/* User Profile Card */}
           <div className="space-y-6">
+            {/* Mini Avatar */}
+            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-4 shadow-lg">
+              <MiniAvatar config={avatarConfig} />
+              <Link
+                href="/avatar"
+                className="mt-4 w-full bg-indigo-600 text-white border-b-4 border-indigo-700 active:border-b-0 active:translate-y-[4px] px-6 py-3 rounded-2xl font-bold text-center hover:bg-indigo-500 transition-all flex items-center justify-center gap-2"
+              >
+                <Sparkles className="w-4 h-4" />
+                Personalizar Avatar
+              </Link>
+            </div>
+
             <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-lg">
               <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
                 <User className="w-5 h-5 text-blue-500" />

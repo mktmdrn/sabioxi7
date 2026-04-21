@@ -1,11 +1,10 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { getChallengeById } from "@/actions/arena";
-import { getUserXp } from "@/actions/db";
-import { calculateLevel, getRankInfo } from "@/lib/levels";
-import TapGame from "./TapGame";
+import { getUserXp, getUserPoints, getAvatarConfig } from "@/actions/db";
+import { calculateLevel } from "@/lib/levels";
+import RaceGame from "./RaceGame";
 import Link from "next/link";
-import { Trophy, Swords, ArrowLeft } from "lucide-react";
 
 export default async function ChallengePage({ params }: { params: { id: string } }) {
   const session = await auth();
@@ -35,19 +34,17 @@ export default async function ChallengePage({ params }: { params: { id: string }
   if (!isParticipant) redirect("/arena");
 
   const opponent = isChallenger ? challenged : challenger;
-  const myScore = isChallenger ? challenge.challenger_score : challenge.challenged_score;
-  const hasPlayed = myScore !== null;
-
   const myXp = await getUserXp(userId);
   const myLevel = calculateLevel(myXp);
+  const myPoints = await getUserPoints(userId);
+  const myAvatarConfig = await getAvatarConfig(userId);
   const opponentLevel = calculateLevel(opponent?.xp || 0);
+  const opponentConfig = opponent?.avatar_config || { color: "blue", hat: "none", accessory: "none" };
 
   // If completed, show results
   if (challenge.status === "completed") {
     const won = challenge.winner_id === userId;
     const draw = challenge.winner_id === null;
-    const myFinalScore = isChallenger ? challenge.challenger_score : challenge.challenged_score;
-    const opScore = isChallenger ? challenge.challenged_score : challenge.challenger_score;
 
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
@@ -56,26 +53,9 @@ export default async function ChallengePage({ params }: { params: { id: string }
           <h1 className="text-4xl font-extrabold text-white">
             {won ? "¡Victoria!" : draw ? "¡Empate!" : "Derrota..."}
           </h1>
-
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-4">
-            <div className="flex justify-between items-center">
-              <div className="text-center flex-1">
-                <p className="text-slate-400 text-sm">Tú</p>
-                <p className="text-3xl font-extrabold text-white">{myFinalScore}</p>
-              </div>
-              <div className="text-slate-600 text-2xl font-bold px-4">vs</div>
-              <div className="text-center flex-1">
-                <p className="text-slate-400 text-sm">{opponent?.name}</p>
-                <p className="text-3xl font-extrabold text-white">{opScore}</p>
-              </div>
-            </div>
-            <div className="border-t border-slate-800 pt-4">
-              <p className={`font-bold ${won ? "text-green-400" : draw ? "text-slate-300" : "text-red-400"}`}>
-                {won ? "+20 XP ganados" : draw ? "+10 XP por empate" : "+5 XP por participar"}
-              </p>
-            </div>
-          </div>
-
+          <p className={`font-bold text-lg ${won ? "text-green-400" : draw ? "text-slate-300" : "text-red-400"}`}>
+            vs {opponent?.name} · {won ? "+20 XP" : draw ? "+10 XP" : "+5 XP"}
+          </p>
           <div className="flex gap-3">
             <Link href="/arena" className="flex-1 bg-slate-800 text-white py-4 rounded-2xl font-bold hover:bg-slate-700 transition-colors text-center">
               Volver a la Arena
@@ -89,37 +69,21 @@ export default async function ChallengePage({ params }: { params: { id: string }
     );
   }
 
-  // If accepted and haven't played yet, show the game
-  if (challenge.status === "accepted" && !hasPlayed) {
+  // If accepted, show the race game
+  if (challenge.status === "accepted") {
     return (
-      <TapGame
+      <RaceGame
         challengeId={id}
         userId={userId}
         userLevel={myLevel}
+        userPoints={myPoints}
+        myConfig={myAvatarConfig}
+        opponentConfig={opponentConfig}
         opponentName={opponent?.name || "Oponente"}
         opponentLevel={opponentLevel}
+        opponentId={opponent?.id || ""}
+        isChallenger={isChallenger}
       />
-    );
-  }
-
-  // If already played, show waiting screen
-  if (challenge.status === "accepted" && hasPlayed) {
-    return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
-        <div className="max-w-md w-full text-center space-y-8">
-          <div className="text-6xl animate-bounce">⏳</div>
-          <h1 className="text-3xl font-extrabold text-white">Esperando al oponente</h1>
-          <p className="text-slate-400">
-            Tu puntuación: <span className="text-amber-400 font-bold">{myScore} pts</span>
-          </p>
-          <p className="text-slate-500 text-sm">
-            {opponent?.name} aún no ha jugado su turno. Vuelve a comprobar más tarde.
-          </p>
-          <Link href="/arena" className="block w-full bg-slate-800 text-white py-4 rounded-2xl font-bold hover:bg-slate-700 transition-colors">
-            Volver a la Arena
-          </Link>
-        </div>
-      </div>
     );
   }
 

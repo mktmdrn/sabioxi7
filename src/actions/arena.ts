@@ -131,3 +131,34 @@ export async function getChallengeById(challengeId: string) {
   if (error || !data) return null;
   return data;
 }
+
+export async function buyBooster(userId: string): Promise<boolean> {
+  // Check if user has enough stars (3 required)
+  const { data: user, error: fetchErr } = await supabase
+    .from("users")
+    .select("points")
+    .eq("id", userId)
+    .single();
+
+  if (fetchErr || !user || (user.points || 0) < 3) return false;
+
+  const { error } = await supabase
+    .from("users")
+    .update({ points: (user.points || 0) - 3 })
+    .eq("id", userId);
+
+  if (error) return false;
+  revalidatePath("/arena");
+  return true;
+}
+
+export async function finishRace(challengeId: string, winnerId: string, loserId: string) {
+  await supabase
+    .from("challenges")
+    .update({ status: "completed", winner_id: winnerId })
+    .eq("id", challengeId);
+
+  await addXpToUser(winnerId, 20);
+  await addXpToUser(loserId, 5);
+  revalidatePath("/arena");
+}

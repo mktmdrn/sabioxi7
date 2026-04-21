@@ -170,3 +170,39 @@ export async function saveAvatarConfig(userId: string, config: AvatarConfig): Pr
 
   if (error) console.error("Error saving avatar config:", error);
 }
+
+// ===== XP & LEVEL SYSTEM =====
+
+export async function getUserXp(userId: string): Promise<number> {
+  const { data, error } = await supabase
+    .from("users")
+    .select("xp")
+    .eq("id", userId)
+    .single();
+
+  if (error || !data) return 0;
+  return data.xp || 0;
+}
+
+export async function addXpToUser(userId: string, amount: number): Promise<void> {
+  const currentXp = await getUserXp(userId);
+  const newXp = currentXp + amount;
+
+  const { error } = await supabase
+    .from("users")
+    .update({ xp: newXp })
+    .eq("id", userId);
+
+  if (error) console.error("Error updating XP:", error);
+}
+
+export async function getAllActivePlayers() {
+  const { data, error } = await supabase
+    .from("users")
+    .select("id, name, xp, avatar_config, points")
+    .eq("status", "active")
+    .order("xp", { ascending: false });
+
+  if (error || !data) return [];
+  return data;
+}

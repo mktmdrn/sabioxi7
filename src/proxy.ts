@@ -7,7 +7,7 @@ export async function proxy(req: NextRequest) {
   const isLoggedIn = !!session;
   const { nextUrl } = req;
 
-  const isProtectedRoute = nextUrl.pathname.startsWith("/dashboard") || nextUrl.pathname.startsWith("/avatar") || nextUrl.pathname.startsWith("/lesson") || nextUrl.pathname.startsWith("/generator");
+  const isProtectedRoute = nextUrl.pathname.startsWith("/dashboard") || nextUrl.pathname.startsWith("/avatar") || nextUrl.pathname.startsWith("/lesson") || nextUrl.pathname.startsWith("/generator") || nextUrl.pathname.startsWith("/arena");
   const isAuthRoute = nextUrl.pathname.startsWith("/login");
 
   if (isProtectedRoute && !isLoggedIn) {

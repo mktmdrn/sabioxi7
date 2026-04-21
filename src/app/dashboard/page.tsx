@@ -1,8 +1,10 @@
 import { auth, signOut } from "@/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { LayoutDashboard, User, Mail, Shield, LogOut, ExternalLink, Play, Star, PlusCircle, Sparkles } from "lucide-react";
-import { getUserPoints, getLessons, getAvatarConfig } from "@/actions/db";
+import { LayoutDashboard, User, Mail, Shield, LogOut, ExternalLink, Play, Star, PlusCircle, Sparkles, Swords } from "lucide-react";
+import { getUserPoints, getLessons, getAvatarConfig, getUserXp } from "@/actions/db";
+import { calculateLevel, getRankInfo } from "@/lib/levels";
+import { getChallengesForUser } from "@/actions/arena";
 import MiniAvatar from "@/components/MiniAvatar";
 
 export default async function DashboardPage() {
@@ -12,6 +14,11 @@ export default async function DashboardPage() {
   const points = userId ? await getUserPoints(userId) : 0;
   const lessons = await getLessons();
   const avatarConfig = userId ? await getAvatarConfig(userId) : { color: "blue", hat: "none", accessory: "none" };
+  const xp = userId ? await getUserXp(userId) : 0;
+  const level = calculateLevel(xp);
+  const rank = getRankInfo(level);
+  const challenges = userId ? await getChallengesForUser(userId) : [];
+  const pendingChallenges = challenges.filter((c: any) => c.status === "pending" && (c.challenged as any)?.id === userId);
 
   if (!session) {
     redirect("/login");
@@ -29,7 +36,11 @@ export default async function DashboardPage() {
               </div>
               <span className="text-xl font-bold text-white tracking-tight">SABIO<span className="text-blue-500">XI</span></span>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1.5 bg-indigo-500/10 px-3 py-1.5 rounded-full border border-indigo-500/20">
+                <span className="text-sm">{rank.emoji}</span>
+                <span className="text-indigo-400 font-bold text-sm">Lv.{level}</span>
+              </div>
               <div className="flex items-center gap-2 bg-amber-500/10 px-3 py-1.5 rounded-full border border-amber-500/20">
                 <Star className="w-5 h-5 text-amber-500 fill-amber-500" />
                 <span className="text-amber-500 font-bold">{points}</span>
@@ -69,6 +80,15 @@ export default async function DashboardPage() {
                       </Link>
                     </>
                   )}
+                  <Link href="/arena" className="bg-red-500 text-white border-b-4 border-red-600 active:border-b-0 active:translate-y-[4px] px-6 py-3 rounded-2xl font-bold text-lg hover:bg-red-400 transition-all flex items-center gap-2 relative">
+                    <Swords className="w-5 h-5" />
+                    Arena PvP
+                    {pendingChallenges.length > 0 && (
+                      <span className="absolute -top-2 -right-2 w-6 h-6 bg-amber-500 text-white text-xs font-bold rounded-full flex items-center justify-center animate-pulse">
+                        {pendingChallenges.length}
+                      </span>
+                    )}
+                  </Link>
                   <button className="bg-white/10 text-white border border-white/20 px-6 py-3 rounded-2xl font-semibold hover:bg-white/20 transition-colors flex items-center gap-2">
                     Ver Perfil <ExternalLink className="w-4 h-4" />
                   </button>

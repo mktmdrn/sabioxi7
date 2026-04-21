@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { X, Check, XCircle, ArrowRight, RefreshCcw } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Lesson, Question, addPointToUser, recordTestLog } from "@/actions/db";
+import { Lesson, Question, addPointToUser, recordTestLog, addXpToUser } from "@/actions/db";
 import confetti from "canvas-confetti";
 
 export default function LessonClient({ lesson, userId }: { lesson: Lesson; userId: string }) {
@@ -96,6 +96,9 @@ export default function LessonClient({ lesson, userId }: { lesson: Lesson; userI
           colors: ["#22c55e", "#3b82f6", "#eab308"]
         });
         await addPointToUser(userId);
+        // Award XP: 15 for perfect, 10 for approved
+        const isPerfect = percentage >= 1;
+        await addXpToUser(userId, isPerfect ? 15 : 10);
       }
       
       // Save to logs

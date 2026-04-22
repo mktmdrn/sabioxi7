@@ -432,32 +432,33 @@ export default function RaceGame({
       </main>
 
       {/* Controls Footer */}
-      {phase === "racing" && (
-        <footer className="bg-slate-900 border-t border-slate-800 p-3 flex flex-col gap-2">
-          <div className="flex gap-3">
+      <footer className="bg-slate-900 border-t border-slate-800 p-3 h-[110px] sm:h-[80px] flex flex-col justify-center z-40 relative">
+        {phase === "racing" ? (
+          <div className="flex gap-3 max-w-4xl mx-auto w-full">
             <button
-              onTouchStart={() => handleTouch("ArrowLeft")}
-              onMouseDown={() => handleTouch("ArrowLeft")}
-              className={`flex-1 py-5 rounded-2xl font-extrabold text-xl transition-all shadow-lg ${
-                lastKey === "ArrowLeft" ? "bg-blue-600 text-white scale-95" : "bg-slate-800 text-slate-400 border border-slate-700"
+              onTouchStart={(e) => { e.preventDefault(); handleTouch("ArrowLeft"); }}
+              onMouseDown={(e) => { e.preventDefault(); handleTouch("ArrowLeft"); }}
+              className={`flex-1 py-5 rounded-2xl font-extrabold text-2xl transition-all shadow-lg active:scale-95 touch-none ${
+                lastKey === "ArrowLeft" ? "bg-blue-600 text-white" : "bg-slate-800 text-slate-400 border border-slate-700"
               }`}
             >
               ←
             </button>
             <button
-              onTouchStart={() => handleTouch("ArrowRight")}
-              onMouseDown={() => handleTouch("ArrowRight")}
-              className={`flex-1 py-5 rounded-2xl font-extrabold text-xl transition-all shadow-lg ${
-                lastKey === "ArrowRight" ? "bg-blue-600 text-white scale-95" : "bg-slate-800 text-slate-400 border border-slate-700"
+              onTouchStart={(e) => { e.preventDefault(); handleTouch("ArrowRight"); }}
+              onMouseDown={(e) => { e.preventDefault(); handleTouch("ArrowRight"); }}
+              className={`flex-1 py-5 rounded-2xl font-extrabold text-2xl transition-all shadow-lg active:scale-95 touch-none ${
+                lastKey === "ArrowRight" ? "bg-blue-600 text-white" : "bg-slate-800 text-slate-400 border border-slate-700"
               }`}
             >
               →
             </button>
           </div>
-          <p className="text-[10px] text-center text-slate-500 font-bold uppercase tracking-widest">
-            Alterna Izquierda y Derecha para correr
+        ) : (
+          <p className="text-[10px] text-center text-slate-600 font-bold uppercase tracking-widest">
+            {phase === "lobby" ? "Prepárate para la carrera..." : "Esperando..."}
           </p>
-        </footer>
-      )}
+        )}
+      </footer>
   );
 }

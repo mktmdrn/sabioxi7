@@ -127,7 +127,7 @@ function Track() {
 }
 
 function CameraRig({ p1Pos, p2Pos }: { p1Pos: number; p2Pos: number }) {
-  const smoothedTargetX = useRef(0);
+  const smoothedTargetX = useRef(Math.max(p1Pos, p2Pos, 3));
 
   useFrame((state) => {
     const maxPos = Math.max(p1Pos, p2Pos);
@@ -169,7 +169,7 @@ export default function RaceScene({
   return (
     <div className="absolute inset-0">
       <Canvas
-        camera={{ position: [3, 1.5, 5.5], fov: 50 }}
+        camera={{ position: [0.5, 2.5, 6.5], fov: 50 }}
         gl={{ antialias: true }}
         style={{ background: "linear-gradient(180deg, #0ea5e9 0%, #7dd3fc 40%, #bae6fd 100%)" }}
       >

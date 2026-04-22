@@ -145,16 +145,17 @@ export default function CampaignPath({
                       <div className="absolute -right-20 top-0 text-duo-purple opacity-20"><Ghost className="w-10 h-10" /></div>
                     )}
 
-                    <button
-                      onClick={() => handleNodeClick(node, unlocked)}
+                    <Link 
+                      href={unlocked ? (node.type === "exam" ? `/exam/${node.id}` : `/lesson/${node.id}`) : "#"}
+                      title={unlocked ? `${node.type === "exam" ? "Examen" : "Lección"}: ${node.title}` : "Bloqueado"}
                       className={`
                         relative w-20 h-20 sm:w-24 sm:h-24 rounded-full flex items-center justify-center
-                        border-b-[10px] transition-all active:border-b-0 active:translate-y-2
+                        border-b-[10px] transition-all active:border-b-0 active:translate-y-2 z-50
                         ${completed 
                           ? "bg-duo-green border-duo-green-dark text-white cursor-pointer" 
                           : unlocked 
                             ? node.type === "exam"
-                              ? "bg-duo-yellow border-[#c89b00] text-slate-900 scale-125 z-10 shadow-lg animate-pulse cursor-pointer"
+                              ? "bg-duo-yellow border-[#c89b00] text-slate-900 scale-125 z-[60] shadow-lg animate-pulse cursor-pointer"
                               : "bg-duo-blue border-duo-blue-dark text-white cursor-pointer"
                             : "bg-duo-gray border-duo-gray-dark text-duo-gray-dark grayscale cursor-not-allowed"}
                       `}
@@ -168,10 +169,10 @@ export default function CampaignPath({
                       )}
 
                       {/* Tooltip on hover */}
-                      <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-white border-2 border-duo-gray px-3 py-1 rounded-xl text-[10px] font-black uppercase whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                      <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-white border-2 border-duo-gray px-3 py-1 rounded-xl text-[10px] font-black uppercase whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-[70]">
                          {node.type === "exam" ? "EXAMEN FINAL" : `Nivel ${nodeIdx + 1}`}
                       </div>
-                    </button>
+                    </Link>
 
                     {/* Connector line */}
                     {nodeIdx < unit.nodes.length - 1 && (

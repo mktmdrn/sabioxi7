@@ -77,8 +77,8 @@ export default async function AdminDashboardPage() {
             href="#users-table"
           />
           <ToolCard 
-            title="Crear Cursos" 
-            desc="Generador de lecciones y exámenes con validación." 
+            title="Gestionar Cursos" 
+            desc="Crea, edita o elimina lecciones y asignaturas." 
             icon={<BookOpen className="w-6 h-6 text-duo-green" />}
             href="/generator"
           />

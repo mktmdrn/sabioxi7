@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { createClient } from "@supabase/supabase-js";
 import { useRouter, usePathname } from "next/navigation";
-import { Bell, Swords, LogOut, LayoutDashboard, Check, X, Star, Plus } from "lucide-react";
+import { Bell, Swords, LogOut, LayoutDashboard, Check, X, Star, Plus, ChevronDown, Shield, Zap, Activity } from "lucide-react";
 import Link from "next/link";
 import { acceptChallenge, declineChallenge, getChallengesForUser } from "@/actions/arena";
 import { getUserXp, getUserPoints, addStarsToUserByEmail } from "@/actions/db";
@@ -26,6 +26,7 @@ export function GlobalNav() {
   
   // Admin Star Management State
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
+  const [adminDropdownOpen, setAdminDropdownOpen] = useState(false);
   const [adminTargetEmail, setAdminTargetEmail] = useState("");
   const [adminStarAmount, setAdminStarAmount] = useState(10);
   const [adminStatus, setAdminStatus] = useState({ type: "", message: "" });
@@ -139,15 +140,58 @@ export function GlobalNav() {
             <Swords className="w-4 h-4 inline mr-1.5" /> Arena
           </Link>
           {role === "admin" && (
-            <>
-              <Link href="/dashboard/admin" className={`text-xs font-black uppercase tracking-widest transition-all px-3 py-2 rounded-xl ${pathname === "/dashboard/admin" ? "text-amber-500 bg-amber-500/5" : "text-duo-gray-dark hover:text-amber-500 hover:bg-amber-500/5"}`}>
+            <div 
+              className="relative group"
+              onMouseEnter={() => setAdminDropdownOpen(true)}
+              onMouseLeave={() => setAdminDropdownOpen(false)}
+            >
+              <button 
+                className={`text-xs font-black uppercase tracking-widest transition-all px-3 py-2 rounded-xl flex items-center gap-1.5 ${pathname.startsWith("/dashboard/admin") || pathname.startsWith("/generator") ? "text-amber-500 bg-amber-500/5" : "text-duo-gray-dark hover:text-amber-500 hover:bg-amber-500/5"}`}
+              >
+                <Shield className="w-4 h-4" />
                 Admin
-              </Link>
-              <Link href="/arena/practice" className={`text-xs font-black uppercase tracking-widest transition-all px-3 py-2 rounded-xl ${pathname === "/arena/practice" ? "text-indigo-400 bg-indigo-400/5" : "text-duo-gray-dark hover:text-indigo-400 hover:bg-indigo-400/5"}`}>
-                Practice
-              </Link>
-            </>
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${adminDropdownOpen ? "rotate-180" : ""}`} />
+              </button>
+
+              {adminDropdownOpen && (
+                <div className="absolute top-full left-0 mt-1 w-56 bg-white border-2 border-duo-gray rounded-2xl shadow-xl py-3 z-[100] animate-in fade-in slide-in-from-top-2 duration-200 border-b-8">
+                  <Link 
+                    href="/dashboard/admin" 
+                    className="flex items-center gap-3 px-4 py-2.5 hover:bg-amber-50 text-duo-gray-dark hover:text-amber-600 transition-colors"
+                  >
+                    <LayoutDashboard className="w-4 h-4" />
+                    <span className="text-[11px] font-black uppercase tracking-wider">Panel Principal</span>
+                  </Link>
+                  <Link 
+                    href="/dashboard/admin/stars" 
+                    className="flex items-center gap-3 px-4 py-2.5 hover:bg-amber-50 text-duo-gray-dark hover:text-amber-600 transition-colors"
+                  >
+                    <Star className="w-4 h-4" />
+                    <span className="text-[11px] font-black uppercase tracking-wider">Gestión Estrellas</span>
+                  </Link>
+                  <Link 
+                    href="/dashboard/admin/activity" 
+                    className="flex items-center gap-3 px-4 py-2.5 hover:bg-amber-50 text-duo-gray-dark hover:text-amber-600 transition-colors"
+                  >
+                    <Activity className="w-4 h-4" />
+                    <span className="text-[11px] font-black uppercase tracking-wider">Actividad Global</span>
+                  </Link>
+                  <div className="h-0.5 bg-duo-gray/30 mx-4 my-2" />
+                  <Link 
+                    href="/generator/advanced" 
+                    className="flex items-center gap-3 px-4 py-2.5 hover:bg-amber-50 text-duo-gray-dark hover:text-amber-600 transition-colors"
+                  >
+                    <Zap className="w-4 h-4" />
+                    <span className="text-[11px] font-black uppercase tracking-wider text-duo-blue">Generador Avanzado</span>
+                  </Link>
+                </div>
+              )}
+            </div>
           )}
+
+          <Link href="/arena/practice" className={`text-xs font-black uppercase tracking-widest transition-all px-3 py-2 rounded-xl ${pathname === "/arena/practice" ? "text-indigo-400 bg-indigo-400/5" : "text-duo-gray-dark hover:text-indigo-400 hover:bg-indigo-400/5"}`}>
+            Practice
+          </Link>
         </div>
       </div>
 

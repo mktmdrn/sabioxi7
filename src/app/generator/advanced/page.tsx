@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { addLesson, Question } from "@/actions/db";
+import { syncLessonWithQuestions, deleteLessonsByCourse, Question } from "@/actions/db";
 import { LayoutDashboard, CheckCircle, AlertTriangle, Play, FileText, ChevronLeft } from "lucide-react";
 import Link from "next/link";
 
@@ -14,6 +14,19 @@ export default function AdvancedGeneratorPage() {
   const [input, setInput] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [results, setResults] = useState<{success: number, errors: string[]} | null>(null);
+
+  const handleDeleteCourse = async () => {
+    if (!confirm("¿Seguro que quieres borrar todas las lecciones de UOC - ADE?")) return;
+    setIsSubmitting(true);
+    try {
+      const res = await deleteLessonsByCourse("UOC - ADE");
+      alert(`Se han borrado ${res.count} lecciones.`);
+    } catch (err) {
+      alert("Error al borrar el curso.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -53,7 +66,7 @@ export default function AdvancedGeneratorPage() {
       return;
     }
 
-    // Process each block as a NEW lesson (standard behavior for this format)
+    // Process each block with sync (merge) behavior
     for (const block of blocks) {
       const [course, subject, title, qText, correct, w1, w2, w3] = block;
       const fullTitle = `[${course}] [${subject}] ${title}`;
@@ -64,7 +77,7 @@ export default function AdvancedGeneratorPage() {
       }];
 
       try {
-        await addLesson(fullTitle, questions);
+        await syncLessonWithQuestions(fullTitle, questions);
         successCount++;
       } catch (err) {
         errors.push(`Error al guardar "${title}": ${(err as Error).message}`);
@@ -167,6 +180,22 @@ export default function AdvancedGeneratorPage() {
               <p className="text-xs font-bold text-duo-blue/70 leading-relaxed">
                 Este generador crea una lección por cada bloque. Si necesitas añadir varias preguntas a la misma lección, usa el generador estándar.
               </p>
+            </div>
+
+            <div className="bg-duo-red/5 border-2 border-duo-red/20 rounded-[2rem] p-6">
+              <h3 className="font-black uppercase italic text-sm mb-4 text-duo-red flex items-center gap-2">
+                ⚠️ ZONA PELIGROSA
+              </h3>
+              <p className="text-xs font-bold text-duo-red/70 leading-relaxed mb-4">
+                Borra todas las lecciones del curso "UOC - ADE" para empezar de cero.
+              </p>
+              <button
+                onClick={handleDeleteCourse}
+                disabled={isSubmitting}
+                className="w-full bg-white border-2 border-duo-red border-b-4 active:border-b-0 active:translate-y-1 py-3 rounded-xl text-duo-red font-black uppercase text-[10px] tracking-widest hover:bg-duo-red hover:text-white transition-all disabled:opacity-50"
+              >
+                BORRAR CURSO UOC - ADE
+              </button>
             </div>
           </div>
         </main>

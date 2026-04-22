@@ -317,3 +317,91 @@ export async function getTopFailedLessons(userId: string, limit: number = 3) {
     .sort((a, b) => b.count - a.count)
     .slice(0, limit);
 }
+export async function deleteLessonsByCourse(courseName: string): Promise<{ success: boolean; count: number }> {
+  const pattern = `[${courseName}]%`;
+  
+  const { data: lessons, error: findError } = await supabase
+    .from("lessons")
+    .select("id")
+    .like("title", pattern);
+
+  if (findError) throw findError;
+  if (!lessons || lessons.length === 0) return { success: true, count: 0 };
+
+  const ids = lessons.map(l => l.id);
+
+  // Delete questions
+  const { error: qError } = await supabase
+    .from("questions")
+    .delete()
+    .in("lesson_id", ids);
+
+  if (qError) throw qError;
+
+  // Delete lessons
+  const { error: lError } = await supabase
+    .from("lessons")
+    .delete()
+    .in("id", ids);
+
+  if (lError) throw lError;
+
+  return { success: true, count: ids.length };
+}
+
+export async function syncLessonWithQuestions(title: string, newQuestions: Question[]): Promise<string> {
+  const { data: existingLesson, error: findError } = await supabase
+    .from("lessons")
+    .select("id")
+    .eq("title", title)
+    .maybeSingle();
+
+  if (existingLesson) {
+    const lessonId = existingLesson.id;
+    
+    // Check for existing questions to avoid duplicates (exact question text)
+    const { data: existingQs } = await supabase
+      .from("questions")
+      .select("question")
+      .eq("lesson_id", lessonId);
+    
+    const existingTexts = new Set(existingQs?.map(q => q.question) || []);
+    const filteredNew = newQuestions.filter(q => !existingTexts.has(q.question));
+
+    if (filteredNew.length === 0) return lessonId;
+
+    const questionInserts = filteredNew.map((q) => ({
+      lesson_id: lessonId,
+      question: q.question,
+      correct_answer: q.correctAnswer,
+      wrong_answers: q.wrongAnswers,
+    }));
+
+    const { error: qError } = await supabase
+      .from("questions")
+      .insert(questionInserts);
+
+    if (qError) throw new Error("Failed to append questions: " + qError.message);
+    return lessonId;
+  } else {
+    return addLesson(title, newQuestions);
+  }
+}
+
+export async function deleteLesson(id: string): Promise<void> {
+  // Delete questions first
+  const { error: qError } = await supabase
+    .from("questions")
+    .delete()
+    .eq("lesson_id", id);
+
+  if (qError) throw new Error("Failed to delete questions: " + qError.message);
+
+  // Delete lesson
+  const { error: lError } = await supabase
+    .from("lessons")
+    .delete()
+    .eq("id", id);
+
+  if (lError) throw new Error("Failed to delete lesson: " + lError.message);
+}

@@ -94,8 +94,6 @@ function CharacterBody({ config }: { config: AvatarConfig }) {
 
   return (
     <group ref={groupRef}>
-  return (
-    <group ref={groupRef}>
       {/* ===== LEGS (Connected to Hips) ===== */}
       <group position={[-0.18, -1.05, 0]}>
         <mesh>

@@ -600,25 +600,37 @@ export async function getAdventureDetail(id: string): Promise<Adventure & { mile
 
 export async function upsertAdventure(adventure: Partial<Adventure>): Promise<Adventure> {
   try {
-    // Strip non-DB fields like 'milestones' which might be present in the state
     const { id, name, description, is_published } = adventure;
-    const dbData: any = { name, description, is_published };
-    if (id && id.length > 10) dbData.id = id; // Only include if it looks like a UUID
+    const dbData: any = { 
+      name: name || "Nueva Aventura", 
+      description: description || "", 
+      is_published: !!is_published 
+    };
 
-    const { data, error } = await supabase
-      .from("adventures")
-      .upsert(dbData)
-      .select()
-      .single();
+    let query;
+    if (id && id.length > 10) {
+      // UPDATE
+      query = supabase.from("adventures").update(dbData).eq("id", id).select();
+    } else {
+      // INSERT
+      query = supabase.from("adventures").insert(dbData).select();
+    }
+
+    const { data, error } = await query;
 
     if (error) {
-      console.error("Error in upsertAdventure:", error);
-      throw error;
+      console.error("Supabase Error in upsertAdventure:", error);
+      throw new Error(error.message);
     }
-    return data;
+
+    if (!data || data.length === 0) {
+      throw new Error("No data returned after saving adventure");
+    }
+
+    return data[0];
   } catch (err: any) {
-    console.error("Crash in upsertAdventure:", err);
-    throw new Error(err.message || "Error al guardar aventura");
+    console.error("Critical Failure in upsertAdventure:", err);
+    throw new Error(err.message || "Error desconocido al guardar");
   }
 }
 

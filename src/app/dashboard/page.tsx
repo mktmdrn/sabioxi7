@@ -76,7 +76,7 @@ export default async function DashboardPage() {
               <Catalog 
                 lessons={exams} 
                 title="Exámenes de Certificación Oficial" 
-                icon={Timer} 
+                iconType="timer" 
               />
             </div>
 

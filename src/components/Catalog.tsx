@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import { Play, GraduationCap, BookOpen, ChevronDown, ListChecks, Clock } from "lucide-react";
+import { Play, GraduationCap, BookOpen, ChevronDown, ListChecks, Clock, Timer } from "lucide-react";
 
 type Lesson = {
   id: string;
@@ -25,27 +25,34 @@ const CATEGORY_META: Record<string, { label: string; color: string; border: stri
   Otros: { label: "Lecciones sin categoría", color: "text-slate-400", border: "border-slate-500/30", bg: "bg-slate-500/10" },
 };
 
-export default function Catalog({ lessons, title = "Catálogo de Cursos", icon: Icon = GraduationCap }: { lessons: Lesson[], title?: string, icon?: any }) {
+const ICONS = {
+  graduation: GraduationCap,
+  timer: Timer,
+};
+
+export default function Catalog({ lessons, title = "Catálogo de Cursos", iconType = "graduation" }: { lessons: Lesson[], title?: string, iconType?: "graduation" | "timer" }) {
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [selectedSubject, setSelectedSubject] = useState<string>("");
+  const Icon = ICONS[iconType] || GraduationCap;
 
   const parsedLessons = useMemo<ParsedLesson[]>(() => {
     return lessons.map(lesson => {
+      const title = lesson.title || "";
       // For exams, title is "[EXAMEN FINAL] Subject"
       if (lesson.type === "exam") {
         return { 
           ...lesson, 
           category: "ASIR", // Default to ASIR for now as requested
-          subject: lesson.title.replace("[EXAMEN FINAL] ", ""), 
+          subject: title.replace("[EXAMEN FINAL] ", ""), 
           cleanTitle: "Examen de Certificación" 
         };
       }
 
-      const match = lesson.title.match(/^\[(.*?)\] \[(.*?)\] (.*)/);
+      const match = title.match(/^\[(.*?)\] \[(.*?)\] (.*)/);
       if (match) {
         return { ...lesson, category: match[1], subject: match[2], cleanTitle: match[3] };
       }
-      return { ...lesson, category: "Otros", subject: "Sin Asignar", cleanTitle: lesson.title };
+      return { ...lesson, category: "Otros", subject: "Sin Asignar", cleanTitle: title };
     });
   }, [lessons]);
 

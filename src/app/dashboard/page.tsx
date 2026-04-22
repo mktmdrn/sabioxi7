@@ -40,34 +40,22 @@ export default async function DashboardPage({ searchParams }: { searchParams: { 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
           {/* Main Area */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className="lg:col-span-2 space-y-12">
             
             {/* Header / Welcome */}
             <div className="bg-duo-blue rounded-[2.5rem] p-6 md:p-8 border-b-8 border-duo-blue-dark relative overflow-hidden group">
               <div className="relative z-10">
                 <h2 className="text-2xl md:text-3xl font-black text-white mb-2 uppercase tracking-tight italic">
-                  ¡HOLA, {session.user?.name?.split(' ')[0].toUpperCase()}! 🚀
+                  ¡HOLA, {session.user?.name?.split(' ')[0].toUpperCase()}! 👋
                 </h2>
-                <p className="text-white text-base md:text-lg font-bold opacity-90">¿Listo para subir de nivel en ASIR?</p>
+                <p className="text-white text-base md:text-lg font-bold opacity-90">Continúa tu formación y domina el sector IT.</p>
                 
-                <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <Link 
-                    href="/campaign" 
-                    className="bg-duo-green text-white border-b-8 border-duo-green-dark active:border-b-0 active:translate-y-2 px-6 py-6 rounded-[2rem] font-black text-xl hover:brightness-110 transition-all flex flex-col items-center justify-center gap-2 group/btn shadow-lg"
-                  >
-                    <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center group-hover/btn:scale-110 transition-transform">
-                      <MapIcon className="w-10 h-10" />
-                    </div>
-                    MI AVENTURA
-                  </Link>
-
+                <div className="mt-8 flex gap-4">
                   <Link 
                     href="/arena" 
-                    className="bg-duo-red text-white border-b-8 border-[#d33131] active:border-b-0 active:translate-y-2 px-6 py-6 rounded-[2rem] font-black text-xl hover:brightness-110 transition-all flex flex-col items-center justify-center gap-2 relative shadow-lg"
+                    className="bg-duo-red text-white border-b-8 border-[#d33131] active:border-b-0 active:translate-y-2 px-8 py-4 rounded-2xl font-black text-lg hover:brightness-110 transition-all flex items-center gap-3 relative shadow-lg"
                   >
-                    <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
-                      <Swords className="w-10 h-10" />
-                    </div>
+                    <Swords className="w-6 h-6" />
                     ARENA PvP
                     {pendingChallenges.length > 0 && (
                       <span className="absolute -top-3 -right-3 w-10 h-10 bg-duo-yellow text-slate-900 text-xs font-black rounded-full flex items-center justify-center animate-bounce border-4 border-white">
@@ -80,7 +68,45 @@ export default async function DashboardPage({ searchParams }: { searchParams: { 
               <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl pointer-events-none" />
             </div>
 
-            {/* Catalog Section */}
+            {/* List of Adventures */}
+            <div className="space-y-6">
+              <h3 className="text-xl font-black text-duo-foreground uppercase italic tracking-tight flex items-center gap-2">
+                <MapIcon className="w-6 h-6 text-duo-green" />
+                NUESTRAS AVENTURAS
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {/* ASIR Campaign Card */}
+                <Link href="/campaign" className="group">
+                  <div className="bg-white border-2 border-duo-gray border-b-8 rounded-[2rem] p-6 hover:bg-[#f7f7f7] transition-all relative overflow-hidden h-full flex flex-col">
+                    <div className="w-14 h-14 bg-duo-green text-white rounded-2xl flex items-center justify-center mb-4 border-b-4 border-duo-green-dark group-hover:scale-110 transition-transform">
+                      <Zap className="w-8 h-8 fill-current" />
+                    </div>
+                    <h4 className="text-xl font-black text-duo-foreground mb-2 uppercase italic">TÍTULO DE ASIR</h4>
+                    <p className="text-sm text-duo-gray-dark font-bold flex-1">Consigue tu certificación oficial de Administrador de Sistemas en esta aventura épica.</p>
+                    <div className="mt-6 flex items-center justify-between">
+                      <div className="text-[10px] font-black text-duo-green uppercase bg-duo-green/10 px-3 py-1 rounded-full">
+                        {completedIds.length} Completado
+                      </div>
+                      <ChevronRight className="w-5 h-5 text-duo-gray-dark group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </div>
+                </Link>
+
+                {/* Placeholder for future campaign */}
+                <div className="bg-white border-2 border-duo-gray border-b-8 rounded-[2rem] p-6 opacity-60 border-dashed relative">
+                   <div className="absolute inset-0 flex items-center justify-center bg-white/40 z-10">
+                      <span className="font-black text-duo-gray-dark uppercase tracking-widest -rotate-12 border-2 border-duo-gray-dark px-4 py-1 rounded-lg">Próximamente</span>
+                   </div>
+                   <div className="w-14 h-14 bg-duo-gray text-duo-gray-dark rounded-2xl flex items-center justify-center mb-4">
+                      <Star className="w-8 h-8" />
+                    </div>
+                    <h4 className="text-xl font-black text-duo-gray-dark mb-2 uppercase italic">DAW: DESARROLLO WEB</h4>
+                    <p className="text-sm text-duo-gray-dark font-bold">Domina el frontend y el backend en el camino del desarrollador.</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Combined Catalog Section */}
             <div className="space-y-6">
               <div className="flex items-center justify-between border-b-4 border-duo-gray pb-4">
                 <h3 className="text-xl font-black text-duo-foreground uppercase italic tracking-tight flex items-center gap-2">
@@ -89,18 +115,17 @@ export default async function DashboardPage({ searchParams }: { searchParams: { 
                 </h3>
               </div>
               
-              <div className="space-y-10">
+              <div className="bg-white border-2 border-duo-gray border-b-8 rounded-[2.5rem] p-8">
+                <p className="text-duo-gray-dark font-bold mb-6 text-sm">Explora todo el contenido educativo disponible, incluyendo lecciones teóricas y exámenes de certificación.</p>
                 <Catalog 
-                  lessons={exams} 
-                  title="Certificaciones Oficiales" 
-                  iconType="timer" 
+                  lessons={[...exams, ...lessons]} 
+                  title="Todo el Contenido" 
                 />
-                <Catalog lessons={lessons} />
               </div>
             </div>
           </div>
 
-          {/* User Profile Card - Moves to bottom on mobile */}
+          {/* User Profile Card */}
           <div className="space-y-6 lg:sticky lg:top-24">
             <div className="bg-white border-2 border-duo-gray rounded-[2.5rem] p-6 shadow-sm border-b-8">
               <div className="flex flex-col items-center">

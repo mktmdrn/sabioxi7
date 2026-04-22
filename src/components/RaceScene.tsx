@@ -131,8 +131,8 @@ function CameraRig({ p1Pos, p2Pos }: { p1Pos: number; p2Pos: number }) {
     const maxPos = Math.max(p1Pos, p2Pos);
     const targetX = Math.max(maxPos, 3);
     state.camera.position.x = THREE.MathUtils.lerp(state.camera.position.x, targetX, 0.05);
-    state.camera.position.y = THREE.MathUtils.lerp(state.camera.position.y, 3, 0.05);
-    state.camera.position.z = THREE.MathUtils.lerp(state.camera.position.z, 8, 0.05);
+    state.camera.position.y = THREE.MathUtils.lerp(state.camera.position.y, 1.5, 0.05);
+    state.camera.position.z = THREE.MathUtils.lerp(state.camera.position.z, 5.5, 0.05);
     state.camera.lookAt(targetX, 0.5, 0);
   });
   return null;
@@ -160,7 +160,7 @@ export default function RaceScene({
   return (
     <div style={{ width: "100%", height: "100%" }}>
       <Canvas
-        camera={{ position: [3, 3, 8], fov: 50 }}
+        camera={{ position: [3, 1.5, 5.5], fov: 50 }}
         gl={{ antialias: true }}
         style={{ background: "linear-gradient(180deg, #0ea5e9 0%, #7dd3fc 40%, #bae6fd 100%)" }}
       >
@@ -169,7 +169,7 @@ export default function RaceScene({
         <directionalLight position={[-5, 5, -5]} intensity={0.3} color="#fde68a" />
 
         <Track />
-        <Crowd side={1} />
+        {/* Only background crowd to not block camera */}
         <Crowd side={-1} />
 
         <RunningAvatar

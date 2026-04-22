@@ -55,7 +55,7 @@ export default function RunningAvatar({
   return (
     <group ref={groupRef}>
       {/* Scale down for race */}
-      <group scale={[0.6, 0.6, 0.6]}>
+      <group scale={[0.75, 0.75, 0.75]}>
         {/* LEGS with running animation */}
         <AnimatedLeg side={-1} outfit="#374151" speed={speed} timeRef={timeRef} />
         <AnimatedLeg side={1} outfit="#374151" speed={speed} timeRef={timeRef} />

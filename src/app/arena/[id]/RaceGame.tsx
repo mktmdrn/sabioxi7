@@ -296,9 +296,13 @@ export default function RaceGame({
               <span className="ml-2 text-amber-400 font-bold animate-pulse">BOOST!</span>
             )}
           </div>
-          {phase === "racing" && (
-            <span className="text-white font-bold tabular-nums">{timeLeft}s</span>
-          )}
+          <div className="text-center">
+            {phase === "racing" ? (
+              <span className="text-white font-bold tabular-nums text-lg">{timeLeft}s</span>
+            ) : (
+              <span className="text-slate-500 font-mono text-xs">Sala #{challengeId.slice(-4)}</span>
+            )}
+          </div>
           <div className="text-sm text-right">
             <span className="text-slate-400">{opponentName}</span>
             <span className="text-white font-bold ml-2">Lv.{opponentLevel}</span>

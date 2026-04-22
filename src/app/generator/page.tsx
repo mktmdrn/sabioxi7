@@ -2,13 +2,24 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { addLesson, updateLesson, getLessons, Question, Lesson } from "@/actions/db";
 import { LayoutDashboard, CheckCircle, AlertTriangle, Search, Edit3, PlusCircle } from "lucide-react";
 import Link from "next/link";
 
 export default function GeneratorPage() {
   const router = useRouter();
+  const { data: session, status } = useSession();
   const [mode, setMode] = useState<"create" | "edit">("create");
+  
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/login");
+    } else if (status === "authenticated" && (session?.user as any)?.role !== "admin") {
+      router.push("/dashboard");
+    }
+  }, [status, session, router]);
+
   const [allLessons, setAllLessons] = useState<Lesson[]>([]);
   const [selectedLessonId, setSelectedLessonId] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
@@ -26,6 +37,14 @@ export default function GeneratorPage() {
     };
     fetchAll();
   }, []);
+
+  if (status === "loading") {
+    return <div className="min-h-screen bg-[#f7f7f7] flex items-center justify-center font-black text-duo-blue uppercase tracking-widest animate-pulse">Cargando Panel...</div>;
+  }
+
+  if (!session || (session?.user as any)?.role !== "admin") {
+    return null;
+  }
 
   const handleSelectLesson = (id: string) => {
     const lesson = allLessons.find(l => l.id === id);
@@ -116,10 +135,11 @@ export default function GeneratorPage() {
               <p className="text-duo-yellow font-black text-xs uppercase tracking-[0.2em] mt-1">Gestor de Contenido</p>
             </div>
           </div>
-          <Link href="/dashboard" className="bg-white border-2 border-duo-gray border-b-4 active:border-b-0 active:translate-y-1 px-6 py-3 rounded-2xl text-duo-gray-dark hover:text-duo-foreground transition-all flex items-center gap-2 font-black uppercase text-xs tracking-widest">
-            Volver al Dashboard
+          <Link href="/dashboard/admin" className="bg-white border-2 border-duo-gray border-b-4 active:border-b-0 active:translate-y-1 px-6 py-3 rounded-2xl text-duo-gray-dark hover:text-duo-foreground transition-all flex items-center gap-2 font-black uppercase text-xs tracking-widest">
+            Volver al Panel Admin
           </Link>
         </header>
+
 
         {/* Mode Toggle */}
         <div className="flex bg-duo-gray/20 p-2 rounded-[2.5rem] border-2 border-duo-gray w-fit">

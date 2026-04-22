@@ -2,7 +2,7 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { getUsers, getTestLogs, activateUser, deactivateUser } from "@/actions/admin";
 import Link from "next/link";
-import { Shield, CheckCircle, XCircle, UserCheck, Activity, Star, Users, ArrowRight, Zap } from "lucide-react";
+import { Shield, CheckCircle, XCircle, UserCheck, Activity, Star, Users, ArrowRight, Zap, BookOpen } from "lucide-react";
 
 export default async function AdminDashboardPage() {
   const session = await auth();
@@ -70,12 +70,18 @@ export default async function AdminDashboardPage() {
       </div>
 
       {/* Tool Navigation Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <ToolCard 
           title="Gestión de Usuarios" 
           desc="Activa, desactiva o edita permisos de alumnos." 
           icon={<Users className="w-6 h-6 text-blue-500" />}
           href="#users-table"
+        />
+        <ToolCard 
+          title="Crear Cursos" 
+          desc="Generador de lecciones y exámenes con validación." 
+          icon={<BookOpen className="w-6 h-6 text-emerald-500" />}
+          href="/generator"
         />
         <ToolCard 
           title="Cargar Estrellas" 
@@ -90,6 +96,7 @@ export default async function AdminDashboardPage() {
           href="/dashboard/admin/activity"
         />
       </div>
+
 
       <div id="users-table" className="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-xl mt-12">
         <div className="p-6 border-b border-slate-800 flex items-center gap-2 bg-slate-950/30">

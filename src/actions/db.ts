@@ -599,9 +599,14 @@ export async function getAdventureDetail(id: string): Promise<Adventure & { mile
 }
 
 export async function upsertAdventure(adventure: Partial<Adventure>): Promise<Adventure> {
+  // Strip non-DB fields like 'milestones' which might be present in the state
+  const { id, name, description, is_published } = adventure;
+  const dbData: any = { name, description, is_published };
+  if (id) dbData.id = id;
+
   const { data, error } = await supabase
     .from("adventures")
-    .upsert(adventure)
+    .upsert(dbData)
     .select()
     .single();
 

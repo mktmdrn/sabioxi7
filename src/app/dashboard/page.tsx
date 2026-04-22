@@ -1,7 +1,7 @@
 import { auth, signOut } from "@/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { LayoutDashboard, User, Mail, Shield, LogOut, ExternalLink, Play, Star, PlusCircle, Sparkles, Swords, Timer, Map as MapIcon, GraduationCap } from "lucide-react";
+import { LayoutDashboard, User, Mail, Shield, LogOut, ExternalLink, Play, Star, PlusCircle, Sparkles, Swords, Timer, Map as MapIcon, GraduationCap, Zap, ChevronRight } from "lucide-react";
 import { getUserPoints, getLessons, getAvatarConfig, getUserXp, getCompletedLessons } from "@/actions/db";
 import { calculateLevel, getRankInfo } from "@/lib/levels";
 import { getChallengesForUser } from "@/actions/arena";

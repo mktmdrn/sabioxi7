@@ -29,88 +29,90 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl">
-        <div className="flex flex-col items-center mb-8">
-          <div className="w-16 h-16 bg-blue-600/20 rounded-2xl flex items-center justify-center mb-4 border border-blue-500/30">
-            <UserPlus className="w-8 h-8 text-blue-500" />
-          </div>
-          <h1 className="text-3xl font-bold text-white tracking-tight">Crear Cuenta</h1>
-          <p className="text-slate-400 mt-2 text-center">
-            Regístrate para acceder a las lecciones.
-          </p>
-        </div>
-
-        {success ? (
-          <div className="bg-green-500/10 border border-green-500/20 p-6 rounded-2xl text-center space-y-4">
-            <CheckCircle className="w-12 h-12 text-green-500 mx-auto" />
-            <h2 className="text-xl font-bold text-white">¡Registro completado!</h2>
-            <p className="text-green-400">
-              Tu cuenta ha sido creada y está pendiente de activación. Un administrador debe aprobarte para poder entrar.
+    <div className="min-h-screen bg-[#f7f7f7] flex items-center justify-center p-4 font-sans">
+      <div className="w-full max-w-md">
+        <div className="bg-white border-2 border-duo-gray border-b-8 rounded-3xl p-8 shadow-sm">
+          <div className="flex flex-col items-center mb-8">
+            <div className="w-20 h-20 bg-duo-green/10 rounded-2xl flex items-center justify-center mb-4 border-2 border-duo-green/20">
+              <UserPlus className="w-10 h-10 text-duo-green" />
+            </div>
+            <h1 className="text-3xl font-black text-duo-foreground tracking-tight italic uppercase">Crear Cuenta</h1>
+            <p className="text-duo-gray-dark mt-2 text-center font-black text-sm uppercase tracking-widest">
+              Únete a la aventura de ASIR
             </p>
-            <Link href="/login" className="block w-full py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-xl font-bold transition-colors">
-              Volver al Login
-            </Link>
           </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div>
-              <label className="block text-sm font-medium text-slate-400 mb-1.5">Nombre completo</label>
-              <input
-                name="name"
-                type="text"
-                required
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
-                placeholder="Juan Pérez"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-slate-400 mb-1.5">Correo electrónico</label>
-              <input
-                name="email"
-                type="email"
-                required
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
-                placeholder="correo@ejemplo.com"
-              />
-            </div>
 
-            <div>
-              <label className="block text-sm font-medium text-slate-400 mb-1.5">Contraseña</label>
-              <input
-                name="password"
-                type="password"
-                required
-                minLength={6}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
-                placeholder="••••••••"
-              />
-            </div>
-
-            {error && (
-              <div className="flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/20 text-red-400 rounded-lg text-sm">
-                <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                <p>{error}</p>
-              </div>
-            )}
-
-            <button
-              type="submit"
-              disabled={isPending}
-              className="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-xl hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isPending ? "Registrando..." : "Registrarse"}
-            </button>
-            
-            <p className="text-center text-sm text-slate-400 pt-4 border-t border-slate-800">
-              ¿Ya tienes cuenta?{" "}
-              <Link href="/login" className="text-blue-400 hover:text-blue-300 font-medium">
-                Inicia sesión aquí
+          {success ? (
+            <div className="bg-duo-green/10 border-2 border-duo-green p-6 rounded-3xl text-center space-y-4">
+              <CheckCircle className="w-12 h-12 text-duo-green mx-auto" />
+              <h2 className="text-xl font-black text-duo-green uppercase italic">¡REGISTRO ÉPICO!</h2>
+              <p className="text-duo-foreground font-medium">
+                Tu cuenta ha sido creada. Un administrador debe aprobarte antes de poder empezar a jugar.
+              </p>
+              <Link href="/login" className="block w-full py-4 bg-duo-blue text-white rounded-2xl font-black text-lg border-b-4 border-duo-blue-dark active:border-b-0 active:translate-y-1 transition-all uppercase">
+                VOLVER AL LOGIN
               </Link>
-            </p>
-          </form>
-        )}
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div>
+                <label className="block text-xs font-black text-duo-gray-dark uppercase tracking-widest mb-1.5 ml-1">Nombre completo</label>
+                <input
+                  name="name"
+                  type="text"
+                  required
+                  className="w-full bg-[#f7f7f7] border-2 border-duo-gray rounded-2xl px-4 py-4 text-duo-foreground focus:outline-none focus:border-duo-blue transition-all font-bold"
+                  placeholder="Juan Pérez"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-xs font-black text-duo-gray-dark uppercase tracking-widest mb-1.5 ml-1">Email</label>
+                <input
+                  name="email"
+                  type="email"
+                  required
+                  className="w-full bg-[#f7f7f7] border-2 border-duo-gray rounded-2xl px-4 py-4 text-duo-foreground focus:outline-none focus:border-duo-blue transition-all font-bold"
+                  placeholder="tu@email.com"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-black text-duo-gray-dark uppercase tracking-widest mb-1.5 ml-1">Contraseña</label>
+                <input
+                  name="password"
+                  type="password"
+                  required
+                  minLength={6}
+                  className="w-full bg-[#f7f7f7] border-2 border-duo-gray rounded-2xl px-4 py-4 text-duo-foreground focus:outline-none focus:border-duo-blue transition-all font-bold"
+                  placeholder="••••••••"
+                />
+              </div>
+
+              {error && (
+                <div className="flex items-center gap-2 p-4 bg-duo-red/10 border-2 border-duo-red text-duo-red rounded-2xl text-sm font-black italic uppercase">
+                  <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                  <p>{error}</p>
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={isPending}
+                className="w-full bg-duo-green text-white border-b-8 border-duo-green-dark active:border-b-0 active:translate-y-2 py-4 rounded-2xl font-black text-xl uppercase transition-all flex items-center justify-center gap-2"
+              >
+                {isPending ? "REGISTRANDO..." : "REGISTRARSE"}
+              </button>
+              
+              <p className="text-center text-xs font-black text-duo-gray-dark uppercase pt-6 border-t-2 border-duo-gray">
+                ¿Ya tienes cuenta?{" "}
+                <Link href="/login" className="text-duo-blue hover:underline">
+                  Inicia sesión
+                </Link>
+              </p>
+            </form>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, Check, XCircle, ArrowRight, RefreshCcw } from "lucide-react";
+import { X, Check, XCircle, Star } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Lesson, Question, addPointToUser, recordTestLog, addXpToUser } from "@/actions/db";
@@ -21,93 +21,57 @@ export default function LessonClient({ lesson, userId }: { lesson: Lesson; userI
   const totalQuestions = lesson.questions.length;
   const progressPercent = (currentIndex / totalQuestions) * 100;
 
-  // Shuffle options when question changes
   useEffect(() => {
     if (currentQ) {
       const allOptions = [currentQ.correctAnswer, ...currentQ.wrongAnswers];
-      // Fisher-Yates shuffle
       for (let i = allOptions.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [allOptions[i], allOptions[j]] = [allOptions[j], allOptions[i]];
       }
       setShuffledOptions(allOptions);
-      setSelectedOption(null);
-      setStatus("idle");
     }
   }, [currentIndex, currentQ]);
-
-  if (!currentQ && status !== "finished") {
-    return <div className="p-10 text-center">Cargando...</div>;
-  }
-
-  const playDing = () => {
-    try {
-      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-      if (!AudioContext) return;
-      const audioCtx = new AudioContext();
-      const oscillator = audioCtx.createOscillator();
-      const gainNode = audioCtx.createGain();
-      
-      oscillator.type = "sine";
-      oscillator.frequency.setValueAtTime(800, audioCtx.currentTime);
-      oscillator.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.1);
-      
-      gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
-      
-      oscillator.connect(gainNode);
-      gainNode.connect(audioCtx.destination);
-      
-      oscillator.start();
-      oscillator.stop(audioCtx.currentTime + 0.5);
-    } catch (e) {
-      console.log("Audio not supported", e);
-    }
-  };
 
   const handleCheck = () => {
     if (!selectedOption) return;
     if (selectedOption === currentQ.correctAnswer) {
       setStatus("correct");
       setScore((prev) => prev + 1);
-      playDing();
     } else {
       setStatus("incorrect");
     }
   };
 
-  const handleContinue = async () => {
+  const handleNext = () => {
     if (currentIndex < totalQuestions - 1) {
       setCurrentIndex((prev) => prev + 1);
+      setSelectedOption(null);
+      setStatus("idle");
     } else {
-      // Finish lesson
-      const newScore = score + (status === "correct" ? 1 : 0);
-      const percentage = newScore / totalQuestions;
-      const isApproved = percentage >= 0.9;
-      
-      setStatus("finished");
-      setIsSaving(true);
-      
-      if (isApproved) {
-        confetti({
-          particleCount: 150,
-          spread: 70,
-          origin: { y: 0.6 },
-          colors: ["#22c55e", "#3b82f6", "#eab308"]
-        });
-        await addPointToUser(userId);
-        // Award XP: 15 for perfect, 10 for approved
-        const isPerfect = percentage >= 1;
-        await addXpToUser(userId, isPerfect ? 15 : 10);
-      }
-      
-      // Save to logs
-      await recordTestLog(userId, lesson.id, newScore, isApproved);
-      setIsSaving(false);
+      handleFinish();
     }
   };
 
-  const bgColor = status === "correct" ? "bg-green-100" : status === "incorrect" ? "bg-red-100" : "bg-white";
+  const handleFinish = async () => {
+    setStatus("finished");
+    setIsSaving(true);
+    const finalScore = score + (status === "correct" ? 1 : 0);
+    const percentage = finalScore / totalQuestions;
+    const isApproved = percentage >= 0.9;
+
+    if (isApproved) {
+      confetti({
+        particleCount: 150,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+      await addPointToUser(userId);
+      await addXpToUser(userId, 10);
+    }
+
+    await recordTestLog(userId, lesson.id, finalScore, isApproved);
+    setIsSaving(false);
+  };
 
   if (status === "finished") {
     const finalScore = score;
@@ -115,159 +79,165 @@ export default function LessonClient({ lesson, userId }: { lesson: Lesson; userI
     const isApproved = percentage >= 0.9;
 
     return (
-      <div className="h-[calc(100dvh-4rem)] bg-white text-slate-900 flex flex-col items-center justify-center p-4 md:p-6">
-        <div className="max-w-md w-full text-center space-y-8">
+      <div className="min-h-screen bg-[#f7f7f7] text-duo-foreground flex flex-col items-center justify-center p-6 text-center font-sans">
+        <div className="max-w-2xl w-full bg-white border-2 border-duo-gray border-b-8 p-10 rounded-[3rem] space-y-8">
           {isApproved ? (
             <>
-              <div className="w-24 h-24 md:w-32 md:h-32 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-8 border-4 border-green-500">
-                <Check className="w-12 h-12 md:w-16 md:h-16 text-green-500" />
+              <div className="w-32 h-32 bg-duo-yellow/20 rounded-full flex items-center justify-center mx-auto border-4 border-duo-yellow animate-bounce">
+                <Check className="w-16 h-16 text-duo-yellow" />
               </div>
-              <h1 className="text-3xl md:text-4xl font-extrabold text-slate-800">¡Lección superada!</h1>
-              <p className="text-lg text-slate-500 font-medium">
-                ¡Has conseguido un {Math.round(percentage * 100)}% de aciertos! ¡Ganaste 1 punto!
-              </p>
-              <button
-                onClick={() => router.push("/dashboard")}
-                disabled={isSaving}
-                className="w-full py-4 text-xl font-bold rounded-2xl bg-green-500 text-white border-b-4 border-green-600 hover:bg-green-400 active:border-b-0 active:translate-y-1 transition-all"
-              >
-                Volver al Dashboard
-              </button>
+              <div>
+                <h1 className="text-5xl font-black text-duo-foreground mb-2 italic">¡IMPRESIONANTE!</h1>
+                <p className="text-duo-blue font-black tracking-widest uppercase">Has dominado esta lección</p>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-[#f7f7f7] p-4 rounded-2xl border-2 border-duo-gray">
+                  <p className="text-[10px] text-duo-gray-dark font-black uppercase mb-1">Aciertos</p>
+                  <p className="text-2xl font-black">{finalScore}/{totalQuestions}</p>
+                </div>
+                <div className="bg-[#f7f7f7] p-4 rounded-2xl border-2 border-duo-gray">
+                  <p className="text-[10px] text-duo-gray-dark font-black uppercase mb-1">XP Ganada</p>
+                  <p className="text-2xl font-black text-duo-blue">+10 XP</p>
+                </div>
+              </div>
             </>
           ) : (
             <>
-              <div className="w-24 h-24 md:w-32 md:h-32 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-8 border-4 border-red-500">
-                <XCircle className="w-12 h-12 md:w-16 md:h-16 text-red-500" />
+              <div className="w-32 h-32 bg-duo-red/20 rounded-full flex items-center justify-center mx-auto border-4 border-duo-red">
+                <XCircle className="w-16 h-16 text-duo-red" />
               </div>
-              <h1 className="text-3xl md:text-4xl font-extrabold text-slate-800">¡Casi lo tienes!</h1>
-              <p className="text-lg text-slate-500 font-medium">
-                Conseguiste un {Math.round(percentage * 100)}%. Necesitas un 90% para aprobar.
+              <h1 className="text-4xl font-black text-duo-foreground italic uppercase">Sigue practicando</h1>
+              <p className="text-duo-gray-dark font-medium text-lg">
+                Has obtenido un {Math.round(percentage * 100)}%. ¡No te rindas, vuelve a intentarlo!
               </p>
-              <button
-                onClick={() => window.location.reload()}
-                className="w-full py-4 text-xl font-bold rounded-2xl bg-blue-500 text-white border-b-4 border-blue-600 hover:bg-blue-400 active:border-b-0 active:translate-y-1 transition-all mb-4"
-              >
-                Reintentar
-              </button>
-              <button
-                onClick={() => router.push("/dashboard")}
-                className="w-full py-4 text-lg font-bold rounded-2xl bg-slate-200 text-slate-500 hover:bg-slate-300 transition-all"
-              >
-                Volver al Dashboard
-              </button>
             </>
           )}
+
+          <button
+            onClick={() => router.push("/dashboard")}
+            disabled={isSaving}
+            className="w-full py-5 text-xl font-black rounded-2xl bg-duo-blue text-white border-b-8 border-duo-blue-dark hover:brightness-110 transition-all active:border-b-0 active:translate-y-2 disabled:opacity-50 shadow-none"
+          >
+            VOLVER AL PANEL
+          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className={`h-[calc(100dvh-4rem)] overflow-hidden ${bgColor} text-slate-900 flex flex-col transition-colors duration-300 font-sans`}>
-      {/* Header / Progress */}
-      <header className="max-w-4xl mx-auto w-full p-2 md:p-4 flex items-center gap-4">
-        <Link href="/dashboard" className="text-slate-400 hover:text-slate-600 transition-colors">
-          <X className="w-6 h-6 md:w-8 md:h-8" />
-        </Link>
-        <div className="flex-1 flex items-center gap-3">
-          <div className="flex-1 h-2 md:h-3 bg-slate-200 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-green-500 transition-all duration-500 ease-out rounded-full"
-              style={{ width: `${progressPercent}%` }}
-            />
+    <div className="h-screen bg-white text-duo-foreground flex flex-col font-sans">
+      {/* Header */}
+      <header className="p-4 flex items-center justify-between bg-white border-b-2 border-duo-gray">
+        <button onClick={() => router.push("/dashboard")} className="text-duo-gray-dark hover:text-duo-foreground transition-colors">
+          <X className="w-8 h-8" />
+        </button>
+        
+        {/* Progress Bar */}
+        <div className="flex-1 mx-6 h-4 bg-duo-gray rounded-full overflow-hidden">
+          <div 
+            className="h-full bg-duo-green transition-all duration-300 relative" 
+            style={{ width: `${progressPercent}%` }}
+          >
+            <div className="absolute top-1 left-1 right-1 h-1 bg-white/30 rounded-full" />
           </div>
-          <span className="text-xs md:text-sm font-bold text-slate-500 min-w-[3rem]">
-            {Math.round(progressPercent)}%
-          </span>
+        </div>
+
+        <div className="flex items-center gap-2 bg-duo-yellow/10 px-4 py-2 rounded-xl border border-duo-yellow/20">
+          <Star className="w-5 h-5 text-duo-yellow fill-current" />
+          <span className="font-black text-duo-yellow">{score}</span>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="flex-1 max-w-2xl mx-auto w-full p-4 md:p-6 flex flex-col pt-2 md:pt-4">
-        <h2 className="text-xl md:text-2xl font-extrabold text-slate-800 mb-4 md:mb-6 text-center md:text-left shrink-0">
-          {currentQ.question}
-        </h2>
+      {/* Question */}
+      <main className="flex-1 overflow-y-auto p-6 flex flex-col items-center justify-center">
+        <div className="max-w-2xl w-full space-y-10">
+          <h2 className="text-2xl md:text-3xl font-black text-duo-foreground text-center italic">
+            {currentQ.question}
+          </h2>
 
-        <div className="flex-1 flex flex-col gap-3 md:gap-4 mb-4 md:mb-6">
-          {shuffledOptions.map((option, idx) => {
-            const isSelected = selectedOption === option;
-            const isWrongAndSelected = status === "incorrect" && isSelected;
-            const isCorrectAndSelected = status === "correct" && isSelected;
-            const isCorrectOption = status !== "idle" && option === currentQ.correctAnswer;
+          <div className="grid grid-cols-1 gap-3">
+            {shuffledOptions.map((option, idx) => {
+              const isSelected = selectedOption === option;
+              const isCorrect = status === "correct" && isSelected;
+              const isWrong = status === "incorrect" && isSelected;
 
-            let buttonClasses = "flex-1 p-3 md:p-4 rounded-2xl border-2 border-b-4 text-left font-bold text-base md:text-lg transition-all flex items-center ";
-            
-            if (isWrongAndSelected) {
-              buttonClasses += "border-red-500 bg-red-50 text-red-600 border-b-2 translate-y-[2px]";
-            } else if (isCorrectAndSelected || isCorrectOption) {
-              buttonClasses += "border-green-500 bg-green-50 text-green-600 border-b-2 translate-y-[2px]";
-            } else if (isSelected) {
-              buttonClasses += "border-blue-400 bg-blue-50 text-blue-600 border-b-2 translate-y-[2px]";
-            } else {
-              buttonClasses += "border-slate-200 bg-white text-slate-700 hover:bg-slate-50";
-            }
-
-            return (
-              <button
-                key={idx}
-                onClick={() => status === "idle" && setSelectedOption(option)}
-                disabled={status !== "idle"}
-                className={buttonClasses}
-              >
-                <span className="w-full text-center md:text-left line-clamp-2">{option}</span>
-              </button>
-            );
-          })}
+              return (
+                <button
+                  key={idx}
+                  onClick={() => status === "idle" && setSelectedOption(option)}
+                  disabled={status !== "idle"}
+                  className={`
+                    group p-5 rounded-2xl text-left font-black text-lg border-2 border-b-8 transition-all
+                    ${status === "idle" 
+                      ? isSelected 
+                        ? "bg-duo-blue/10 border-duo-blue text-duo-blue translate-y-2 border-b-0" 
+                        : "bg-white border-duo-gray text-duo-foreground hover:bg-[#f7f7f7]"
+                      : isCorrect
+                        ? "bg-duo-green/10 border-duo-green text-duo-green translate-y-2 border-b-0"
+                        : isWrong
+                          ? "bg-duo-red/10 border-duo-red text-duo-red translate-y-2 border-b-0"
+                          : "bg-white border-duo-gray text-duo-foreground opacity-50"}
+                  `}
+                >
+                  <div className="flex items-center gap-4">
+                    <span className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border-2 font-black text-xs ${isSelected ? "bg-duo-blue border-duo-blue text-white" : "bg-white border-duo-gray text-duo-gray-dark"}`}>
+                      {idx + 1}
+                    </span>
+                    {option}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </main>
 
-      {/* Bottom Action Bar */}
-      <footer className="border-t-2 border-slate-200 bg-white relative min-h-[80px] md:min-h-[100px] flex items-center">
-        <div className="max-w-4xl mx-auto w-full px-4 md:px-6">
-          {status === "idle" ? (
-            <button
-              onClick={handleCheck}
-              disabled={!selectedOption}
-              className={`w-full py-3 md:py-4 text-lg md:text-xl font-bold rounded-2xl border-b-4 transition-all ${
-                selectedOption
-                  ? "bg-green-500 text-white border-green-600 hover:bg-green-400 active:border-b-0 active:translate-y-1 cursor-pointer"
-                  : "bg-slate-200 text-slate-400 border-slate-300 cursor-not-allowed"
-              }`}
-            >
-              Comprobar
-            </button>
-          ) : (
-            <div className={`absolute inset-0 p-4 md:p-6 flex items-center justify-between ${status === "correct" ? "bg-green-100" : "bg-red-100"}`}>
-              <div className="max-w-4xl mx-auto w-full flex items-center justify-between gap-4 md:gap-6">
-                <div className={`flex items-center gap-3 md:gap-4 ${status === "correct" ? "text-green-600" : "text-red-600"} font-extrabold text-xl md:text-2xl`}>
-                  {status === "correct" ? (
-                    <>
-                      <div className="w-8 h-8 md:w-10 md:h-10 bg-white rounded-full flex items-center justify-center">
-                        <Check className="w-6 h-6 md:w-8 md:h-8 text-green-500" />
-                      </div>
-                      ¡Correcto!
-                    </>
-                  ) : (
-                    <>
-                      <div className="w-8 h-8 md:w-10 md:h-10 bg-white rounded-full flex items-center justify-center">
-                        <XCircle className="w-6 h-6 md:w-8 md:h-8 text-red-500" />
-                      </div>
-                      <span className="hidden sm:inline">Incorrecto. ¡Inténtalo de nuevo!</span>
-                      <span className="sm:hidden">Incorrecto</span>
-                    </>
-                  )}
+      {/* Footer */}
+      <footer className={`p-6 border-t-2 transition-colors ${
+        status === "correct" ? "bg-duo-green/10 border-duo-green/20" : 
+        status === "incorrect" ? "bg-duo-red/10 border-duo-red/20" : 
+        "bg-white border-duo-gray"
+      }`}>
+        <div className="max-w-2xl mx-auto w-full flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            {status === "correct" && (
+              <div className="flex items-center gap-3 text-duo-green">
+                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center border-2 border-duo-green">
+                  <Check className="w-8 h-8" />
                 </div>
-                <button
-                  onClick={handleContinue}
-                  className={`py-3 md:py-4 px-6 md:px-10 text-lg md:text-xl font-bold rounded-2xl border-b-4 text-white active:border-b-0 active:translate-y-1 transition-all ${
-                    status === "correct" ? "bg-green-500 border-green-600 hover:bg-green-400" : "bg-red-500 border-red-600 hover:bg-red-400"
-                  }`}
-                >
-                  Continuar
-                </button>
+                <span className="text-xl font-black uppercase italic">¡Buen trabajo!</span>
               </div>
-            </div>
-          )}
+            )}
+            {status === "incorrect" && (
+              <div className="flex items-center gap-3 text-duo-red text-center sm:text-left">
+                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center border-2 border-duo-red hidden sm:flex">
+                  <X className="w-8 h-8" />
+                </div>
+                <div>
+                  <p className="text-lg font-black uppercase italic">Solución correcta:</p>
+                  <p className="font-bold">{currentQ.correctAnswer}</p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <button
+            onClick={status === "idle" ? handleCheck : handleNext}
+            disabled={!selectedOption && status === "idle"}
+            className={`
+              w-full sm:w-auto px-16 py-4 rounded-2xl font-black text-lg transition-all border-b-8 active:border-b-0 active:translate-y-2
+              ${!selectedOption && status === "idle" 
+                ? "bg-duo-gray border-duo-gray-dark text-duo-gray-dark" 
+                : status === "correct"
+                  ? "bg-duo-green border-duo-green-dark text-white"
+                  : status === "incorrect"
+                    ? "bg-duo-red border-duo-red-dark text-white"
+                    : "bg-duo-green border-duo-green-dark text-white"}
+            `}
+          >
+            {status === "idle" ? "COMPROBAR" : "SIGUIENTE"}
+          </button>
         </div>
       </footer>
     </div>

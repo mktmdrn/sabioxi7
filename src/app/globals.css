@@ -1,19 +1,43 @@
 @import "tailwindcss";
 
 :root {
-  --background: #020617;
-  --foreground: #f8fafc;
+  --background: #ffffff;
+  --foreground: #4b4b4b;
+  
+  /* Duolingo Brand Colors */
+  --duo-green: #58cc02;
+  --duo-green-dark: #46a302;
+  --duo-blue: #1cb0f6;
+  --duo-blue-dark: #1899d6;
+  --duo-yellow: #ffc800;
+  --duo-orange: #ff9600;
+  --duo-red: #ff4b4b;
+  --duo-purple: #ce82ff;
+  --duo-gray: #e5e5e5;
+  --duo-gray-dark: #afafaf;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  
+  --color-duo-green: var(--duo-green);
+  --color-duo-green-dark: var(--duo-green-dark);
+  --color-duo-blue: var(--duo-blue);
+  --color-duo-blue-dark: var(--duo-blue-dark);
+  --color-duo-yellow: var(--duo-yellow);
+  --color-duo-orange: var(--duo-orange);
+  --color-duo-red: var(--duo-red);
+  --color-duo-purple: var(--duo-purple);
+  --color-duo-gray: var(--duo-gray);
+  --color-duo-gray-dark: var(--duo-gray-dark);
+
+  --font-sans: "DIN Next Rounded", "Inter", "system-ui", sans-serif;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
 }

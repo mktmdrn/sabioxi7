@@ -70,7 +70,7 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full bg-slate-800/50 border border-slate-700 text-white rounded-xl py-3 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all placeholder:text-slate-600"
-                  placeholder="admin@example.com"
+                  placeholder="correo@ejemplo.com"
                 />
               </div>
             </div>
@@ -110,11 +110,6 @@ export default function LoginPage() {
             </p>
           </form>
 
-        </div>
-        
-        {/* Helper info for basic login */}
-        <div className="mt-6 text-center text-slate-500 text-xs uppercase tracking-widest bg-white/5 py-2 px-4 rounded-full border border-white/5">
-          Admin: admin@example.com / admin123
         </div>
       </div>
     </div>

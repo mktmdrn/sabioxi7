@@ -27,6 +27,9 @@ export default function GeneratorPage() {
   const [filterCourse, setFilterCourse] = useState<string | null>(null);
   const [filterSubject, setFilterSubject] = useState<string | null>(null);
   
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<string | null>(null);
+
   const [selectedCourse, setSelectedCourse] = useState("");
   const [customCourse, setCustomCourse] = useState("");
   const [selectedSubject, setSelectedSubject] = useState("");
@@ -107,17 +110,24 @@ export default function GeneratorPage() {
     setView("form");
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("¿Seguro que quieres borrar esta lección?")) return;
+  const confirmDelete = async () => {
+    if (!itemToDelete) return;
     setIsSubmitting(true);
     try {
-      await deleteLesson(id);
+      await deleteLesson(itemToDelete);
       await fetchAll();
+      setShowDeleteModal(false);
+      setItemToDelete(null);
     } catch (err) {
       alert("Error al borrar lección");
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleDeleteClick = (id: string) => {
+    setItemToDelete(id);
+    setShowDeleteModal(true);
   };
 
   const validateAndParse = (text: string): Question[] | null => {
@@ -315,7 +325,7 @@ export default function GeneratorPage() {
                           </button>
                           <button 
                             type="button"
-                            onClick={(e) => { e.preventDefault(); handleDelete(l.id); }}
+                            onClick={(e) => { e.preventDefault(); handleDeleteClick(l.id); }}
                             disabled={isSubmitting}
                             className="p-3 bg-white border-2 border-duo-gray border-b-4 rounded-xl text-duo-red hover:bg-duo-red hover:text-white transition-all active:translate-y-1 active:border-b-0 disabled:opacity-50"
                           >
@@ -421,6 +431,38 @@ export default function GeneratorPage() {
           </div>
         )}
       </div>
+
+      {/* Custom Delete Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-duo-foreground/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white border-2 border-duo-gray border-b-8 rounded-[2.5rem] p-8 max-w-md w-full shadow-2xl animate-in zoom-in-95 duration-200">
+            <div className="w-20 h-20 bg-duo-red/10 rounded-3xl flex items-center justify-center mx-auto mb-6 border-2 border-duo-red/20">
+              <AlertTriangle className="w-10 h-10 text-duo-red" />
+            </div>
+            <h3 className="text-2xl font-black text-duo-foreground text-center uppercase italic tracking-tighter mb-4">
+              ¿Confirmar Borrado?
+            </h3>
+            <p className="text-duo-gray-dark font-bold text-center leading-relaxed mb-8">
+              Esta acción es irreversible y eliminará también todo el progreso de los alumnos en esta lección.
+            </p>
+            <div className="flex gap-4">
+              <button 
+                onClick={() => { setShowDeleteModal(false); setItemToDelete(null); }}
+                className="flex-1 bg-[#f7f7f7] border-2 border-duo-gray border-b-4 active:border-b-0 active:translate-y-1 py-4 rounded-2xl text-duo-gray-dark font-black uppercase text-xs tracking-widest transition-all"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={confirmDelete}
+                disabled={isSubmitting}
+                className="flex-1 bg-duo-red text-white border-b-8 border-duo-red-dark py-4 rounded-2xl font-black uppercase italic tracking-widest hover:brightness-110 active:translate-y-2 transition-all disabled:opacity-50"
+              >
+                {isSubmitting ? "Borrando..." : "Sí, Borrar"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

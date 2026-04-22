@@ -330,6 +330,14 @@ export async function deleteLessonsByCourse(courseName: string): Promise<{ succe
 
   const ids = lessons.map(l => l.id);
 
+  // Delete test logs first
+  const { error: logError } = await supabase
+    .from("test_logs")
+    .delete()
+    .in("lesson_id", ids);
+
+  if (logError) throw logError;
+
   // Delete questions
   const { error: qError } = await supabase
     .from("questions")
@@ -389,7 +397,15 @@ export async function syncLessonWithQuestions(title: string, newQuestions: Quest
 }
 
 export async function deleteLesson(id: string): Promise<void> {
-  // Delete questions first
+  // Delete test logs first (FK constraint)
+  const { error: logError } = await supabase
+    .from("test_logs")
+    .delete()
+    .eq("lesson_id", id);
+
+  if (logError) throw new Error("Failed to delete test logs: " + logError.message);
+
+  // Delete questions
   const { error: qError } = await supabase
     .from("questions")
     .delete()
@@ -407,6 +423,7 @@ export async function deleteLesson(id: string): Promise<void> {
 }
 
 export type CourseStat = {
+  id: string;
   course: string;
   subject: string;
   lessonTitle: string;
@@ -439,6 +456,7 @@ export async function getCourseStats(): Promise<CourseStat[]> {
     const lessonTitle = match ? match[3] : lesson.title;
 
     statsMap[lesson.id] = {
+      id: lesson.id,
       course,
       subject,
       lessonTitle,
@@ -460,4 +478,32 @@ export async function getCourseStats(): Promise<CourseStat[]> {
   });
 
   return Object.values(statsMap);
+}
+
+export async function deleteLessons(ids: string[]): Promise<void> {
+  if (ids.length === 0) return;
+
+  // Delete test logs first
+  const { error: logError } = await supabase
+    .from("test_logs")
+    .delete()
+    .in("lesson_id", ids);
+
+  if (logError) throw new Error("Failed to delete test logs: " + logError.message);
+
+  // Delete questions
+  const { error: qError } = await supabase
+    .from("questions")
+    .delete()
+    .in("lesson_id", ids);
+
+  if (qError) throw new Error("Failed to delete questions: " + qError.message);
+
+  // Delete lessons
+  const { error: lError } = await supabase
+    .from("lessons")
+    .delete()
+    .in("id", ids);
+
+  if (lError) throw new Error("Failed to delete lessons: " + lError.message);
 }

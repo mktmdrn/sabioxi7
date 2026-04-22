@@ -461,19 +461,19 @@ export default function RaceGame({
 
       {/* Mobile touch controls */}
       {phase === "racing" && (
-        <div className="sm:hidden flex gap-4 p-4 bg-slate-900 border-t border-slate-800">
+        <div className="sm:hidden flex gap-3 p-3 bg-slate-900 border-t border-slate-800 shrink-0">
           <button
             onTouchStart={() => handleTouch("ArrowLeft")}
-            className={`flex-1 py-6 rounded-2xl font-extrabold text-2xl transition-all ${
-              lastKey === "ArrowLeft" ? "bg-blue-600 text-white scale-95" : "bg-slate-800 text-slate-300 border-2 border-slate-700"
+            className={`flex-1 py-4 rounded-xl font-extrabold text-xl transition-all ${
+              lastKey === "ArrowLeft" ? "bg-blue-600 text-white scale-95" : "bg-slate-800 text-slate-400 border border-slate-700"
             }`}
           >
             ← IZQ
           </button>
           <button
             onTouchStart={() => handleTouch("ArrowRight")}
-            className={`flex-1 py-6 rounded-2xl font-extrabold text-2xl transition-all ${
-              lastKey === "ArrowRight" ? "bg-blue-600 text-white scale-95" : "bg-slate-800 text-slate-300 border-2 border-slate-700"
+            className={`flex-1 py-4 rounded-xl font-extrabold text-xl transition-all ${
+              lastKey === "ArrowRight" ? "bg-blue-600 text-white scale-95" : "bg-slate-800 text-slate-400 border border-slate-700"
             }`}
           >
             DER →

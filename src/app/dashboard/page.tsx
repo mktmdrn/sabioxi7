@@ -76,8 +76,8 @@ export default async function DashboardPage({ searchParams }: { searchParams: { 
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {/* ASIR Campaign Card */}
-                <Link href="/campaign" className="group">
-                  <div className="bg-white border-2 border-duo-gray border-b-8 rounded-[2rem] p-6 hover:bg-[#f7f7f7] transition-all relative overflow-hidden h-full flex flex-col">
+                <Link href="/campaign/asir" className="group relative z-20 cursor-pointer">
+                  <div className="bg-white border-2 border-duo-gray border-b-8 rounded-[2rem] p-6 hover:bg-[#f7f7f7] transition-all relative overflow-hidden h-full flex flex-col pointer-events-none group-hover:pointer-events-auto">
                     <div className="w-14 h-14 bg-duo-green text-white rounded-2xl flex items-center justify-center mb-4 border-b-4 border-duo-green-dark group-hover:scale-110 transition-transform">
                       <Zap className="w-8 h-8 fill-current" />
                     </div>
@@ -85,24 +85,29 @@ export default async function DashboardPage({ searchParams }: { searchParams: { 
                     <p className="text-sm text-duo-gray-dark font-bold flex-1">Consigue tu certificación oficial de Administrador de Sistemas en esta aventura épica.</p>
                     <div className="mt-6 flex items-center justify-between">
                       <div className="text-[10px] font-black text-duo-green uppercase bg-duo-green/10 px-3 py-1 rounded-full">
-                        {completedIds.length} Completado
+                        ACTIVA
                       </div>
                       <ChevronRight className="w-5 h-5 text-duo-gray-dark group-hover:translate-x-1 transition-transform" />
                     </div>
                   </div>
                 </Link>
 
-                {/* Placeholder for future campaign */}
-                <div className="bg-white border-2 border-duo-gray border-b-8 rounded-[2rem] p-6 opacity-60 border-dashed relative">
-                   <div className="absolute inset-0 flex items-center justify-center bg-white/40 z-10">
-                      <span className="font-black text-duo-gray-dark uppercase tracking-widest -rotate-12 border-2 border-duo-gray-dark px-4 py-1 rounded-lg">Próximamente</span>
-                   </div>
-                   <div className="w-14 h-14 bg-duo-gray text-duo-gray-dark rounded-2xl flex items-center justify-center mb-4">
-                      <Star className="w-8 h-8" />
+                {/* DAW Campaign Card */}
+                <Link href="/campaign/daw" className="group relative z-20 cursor-pointer">
+                  <div className="bg-white border-2 border-duo-gray border-b-8 rounded-[2rem] p-6 hover:bg-[#f7f7f7] transition-all relative overflow-hidden h-full flex flex-col">
+                    <div className="w-14 h-14 bg-duo-blue text-white rounded-2xl flex items-center justify-center mb-4 border-b-4 border-duo-blue-dark group-hover:scale-110 transition-transform">
+                      <Star className="w-8 h-8 fill-current" />
                     </div>
-                    <h4 className="text-xl font-black text-duo-gray-dark mb-2 uppercase italic">DAW: DESARROLLO WEB</h4>
-                    <p className="text-sm text-duo-gray-dark font-bold">Domina el frontend y el backend en el camino del desarrollador.</p>
-                </div>
+                    <h4 className="text-xl font-black text-duo-foreground mb-2 uppercase italic">DESARROLLO WEB (DAW)</h4>
+                    <p className="text-sm text-duo-gray-dark font-bold flex-1">Domina el desarrollo de aplicaciones web desde el frontend hasta el servidor.</p>
+                    <div className="mt-6 flex items-center justify-between">
+                      <div className="text-[10px] font-black text-duo-blue uppercase bg-duo-blue/10 px-3 py-1 rounded-full">
+                        NUEVA
+                      </div>
+                      <ChevronRight className="w-5 h-5 text-duo-gray-dark group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </div>
+                </Link>
               </div>
             </div>
 

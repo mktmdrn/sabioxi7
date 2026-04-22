@@ -33,46 +33,67 @@ export default async function ArenaPage() {
   ).slice(0, 5);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200">
+    <div className="min-h-screen bg-[#f7f7f7] text-duo-foreground font-sans">
+      {/* Header */}
+      <header className="sticky top-0 z-50 bg-white border-b-4 border-duo-gray p-4">
+        <div className="max-w-xl mx-auto flex items-center justify-between">
+          <Link href="/dashboard" className="text-duo-gray-dark hover:text-duo-foreground transition-all flex items-center gap-2 font-black uppercase text-sm">
+            <ArrowLeft className="w-6 h-6" /> Volver
+          </Link>
+          <div className="text-center">
+            <h1 className="text-xl font-black text-duo-foreground uppercase italic tracking-tight flex items-center gap-2">
+              <Swords className="w-6 h-6 text-duo-red" />
+              ARENA PvP
+            </h1>
+            <p className="text-[10px] font-black text-duo-red uppercase tracking-widest">Duelo de Sabios</p>
+          </div>
+          <div className="flex items-center gap-2 bg-duo-yellow/10 px-3 py-1 rounded-xl border-2 border-duo-yellow/20">
+            <Star className="w-5 h-5 text-duo-yellow fill-duo-yellow" />
+            <span className="text-duo-yellow font-black">{myXp}</span>
+          </div>
+        </div>
+      </header>
 
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-
+      <main className="max-w-4xl mx-auto px-4 py-8 space-y-10">
         {/* Incoming challenges */}
         {pendingForMe.length > 0 && (
-          <div className="bg-red-500/10 border border-red-500/20 rounded-3xl p-6">
-            <h2 className="text-xl font-bold text-red-400 mb-4 flex items-center gap-2">
-              <Swords className="w-5 h-5" />
+          <div className="bg-duo-red/5 border-2 border-duo-red border-b-8 rounded-[2.5rem] p-6 md:p-8">
+            <h2 className="text-xl font-black text-duo-red mb-6 flex items-center gap-3 uppercase italic">
+              <div className="w-10 h-10 bg-duo-red rounded-xl flex items-center justify-center border-b-4 border-[#d33131] shadow-sm">
+                <Swords className="w-5 h-5 text-white" />
+              </div>
               ¡Te han retado! ({pendingForMe.length})
             </h2>
-            <div className="space-y-3">
+            <div className="space-y-4">
               {pendingForMe.map((c: any) => {
                 const challenger = c.challenger as any;
                 const cLevel = calculateLevel(challenger?.xp || 0);
                 const cRank = getRankInfo(cLevel);
                 return (
-                  <div key={c.id} className="flex items-center justify-between bg-slate-900 rounded-2xl p-4 border border-slate-800">
-                    <div className="flex items-center gap-3">
-                      <span className="text-2xl">{cRank.emoji}</span>
+                  <div key={c.id} className="flex items-center justify-between bg-white rounded-3xl p-5 border-2 border-duo-gray border-b-4">
+                    <div className="flex items-center gap-4">
+                      <div className="w-14 h-14 bg-duo-gray/20 rounded-2xl flex items-center justify-center text-3xl">
+                        {cRank.emoji}
+                      </div>
                       <div>
-                        <p className="font-bold text-white">{challenger?.name}</p>
-                        <p className="text-xs text-slate-400">Nivel {cLevel} · {cRank.name}</p>
+                        <p className="font-black text-duo-foreground text-lg uppercase leading-tight">{challenger?.name}</p>
+                        <p className="text-xs font-bold text-duo-gray-dark uppercase tracking-widest mt-1">Nivel {cLevel} · {cRank.name}</p>
                       </div>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-3">
                       <form action={async () => {
                         "use server";
                         await acceptChallenge(c.id);
                       }}>
-                        <button className="bg-green-500 text-white px-4 py-2 rounded-xl font-bold text-sm hover:bg-green-400 transition-colors flex items-center gap-1">
-                          <Check className="w-4 h-4" /> Aceptar
+                        <button className="bg-duo-green text-white border-b-4 border-duo-green-dark active:border-b-0 active:translate-y-1 px-6 py-3 rounded-2xl font-black text-sm uppercase transition-all flex items-center gap-2">
+                          <Check className="w-4 h-4 font-black" /> Aceptar
                         </button>
                       </form>
                       <form action={async () => {
                         "use server";
                         await declineChallenge(c.id);
                       }}>
-                        <button className="bg-slate-800 text-slate-300 px-4 py-2 rounded-xl font-bold text-sm hover:bg-slate-700 transition-colors flex items-center gap-1">
+                        <button className="bg-white text-duo-red border-2 border-duo-gray border-b-4 active:border-b-0 active:translate-y-1 px-6 py-3 rounded-2xl font-black text-sm uppercase transition-all flex items-center gap-2">
                           <X className="w-4 h-4" /> Rechazar
                         </button>
                       </form>
@@ -86,12 +107,14 @@ export default async function ArenaPage() {
 
         {/* Active games */}
         {activeGames.length > 0 && (
-          <div className="bg-amber-500/10 border border-amber-500/20 rounded-3xl p-6">
-            <h2 className="text-xl font-bold text-amber-400 mb-4 flex items-center gap-2">
-              <Play className="w-5 h-5" />
+          <div className="bg-duo-yellow/5 border-2 border-duo-yellow border-b-8 rounded-[2.5rem] p-6 md:p-8">
+            <h2 className="text-xl font-black text-duo-yellow mb-6 flex items-center gap-3 uppercase italic">
+              <div className="w-10 h-10 bg-duo-yellow rounded-xl flex items-center justify-center border-b-4 border-[#e5a400] shadow-sm">
+                <Play className="w-5 h-5 text-white" />
+              </div>
               Retos Activos ({activeGames.length})
             </h2>
-            <div className="space-y-3">
+            <div className="space-y-4">
               {activeGames.map((c: any) => {
                 const isChallenger = (c.challenger as any)?.id === userId;
                 const opponent = isChallenger ? c.challenged as any : c.challenger as any;
@@ -126,29 +149,33 @@ export default async function ArenaPage() {
 
         {/* Recent results */}
         {recentCompleted.length > 0 && (
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6">
-            <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-              <Trophy className="w-5 h-5 text-amber-500" />
+          <div className="bg-white border-2 border-duo-gray border-b-8 rounded-[2.5rem] p-6 md:p-8 shadow-sm">
+            <h2 className="text-xl font-black text-duo-foreground mb-6 flex items-center gap-3 uppercase italic">
+              <div className="w-10 h-10 bg-duo-yellow rounded-xl flex items-center justify-center border-b-4 border-[#e5a400] shadow-sm">
+                <Trophy className="w-5 h-5 text-white" />
+              </div>
               Resultados Recientes
             </h2>
-            <div className="space-y-3">
+            <div className="space-y-4">
               {recentCompleted.map((c: any) => {
                 const isChallenger = (c.challenger as any)?.id === userId;
                 const opponent = isChallenger ? c.challenged as any : c.challenger as any;
                 const won = c.winner_id === userId;
                 const draw = c.winner_id === null;
                 return (
-                  <div key={c.id} className="flex items-center justify-between bg-slate-800/50 rounded-2xl p-4 border border-slate-700/50">
-                    <div className="flex items-center gap-3">
-                      <span className="text-2xl">{won ? "🏆" : draw ? "🤝" : "😢"}</span>
+                  <div key={c.id} className="flex items-center justify-between bg-[#f7f7f7] rounded-3xl p-5 border-2 border-duo-gray border-b-4">
+                    <div className="flex items-center gap-4">
+                      <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-3xl shadow-sm border border-duo-gray">
+                        {won ? "🏆" : draw ? "🤝" : "😢"}
+                      </div>
                       <div>
-                        <p className="font-bold text-white">vs {opponent?.name || "Jugador Desconocido"}</p>
-                        <p className="text-xs text-slate-400">
-                          {c.challenger_score} vs {c.challenged_score}
+                        <p className="font-black text-duo-foreground uppercase leading-tight">vs {opponent?.name || "Jugador"}</p>
+                        <p className="text-xs font-black text-duo-gray-dark mt-1">
+                          {c.challenger_score} PUNTOS vs {c.challenged_score} PUNTOS
                         </p>
                       </div>
                     </div>
-                    <span className={`font-bold text-sm px-3 py-1 rounded-full ${won ? "bg-green-500/20 text-green-400" : draw ? "bg-slate-700 text-slate-300" : "bg-red-500/20 text-red-400"}`}>
+                    <span className={`font-black text-xs px-4 py-2 rounded-xl border-2 border-b-4 uppercase ${won ? "bg-duo-green/10 border-duo-green text-duo-green" : draw ? "bg-duo-gray/20 border-duo-gray text-duo-gray-dark" : "bg-duo-red/10 border-duo-red text-duo-red"}`}>
                       {won ? "+20 XP" : draw ? "+10 XP" : "+5 XP"}
                     </span>
                   </div>
@@ -159,12 +186,12 @@ export default async function ArenaPage() {
         )}
 
         {/* Public Ranking */}
-        <div>
-          <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
-            <Trophy className="w-5 h-5 text-amber-500" />
-            Ranking Público
+        <div className="space-y-6">
+          <h2 className="text-2xl font-black text-duo-foreground uppercase italic tracking-tight flex items-center gap-3">
+            <Trophy className="w-8 h-8 text-duo-yellow fill-duo-yellow" />
+            Ranking de Sabios
           </h2>
-          <div className="space-y-3">
+          <div className="space-y-4">
             {players.map((player: any, index: number) => {
               const pLevel = calculateLevel(player.xp || 0);
               const pRank = getRankInfo(pLevel);
@@ -174,39 +201,39 @@ export default async function ArenaPage() {
               );
               
               // Styling for top 3
-              let rankStyle = "bg-slate-800 text-slate-400";
-              if (index === 0) rankStyle = "bg-amber-500 text-white border-2 border-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.5)]";
-              else if (index === 1) rankStyle = "bg-slate-300 text-slate-800 border-2 border-white shadow-[0_0_15px_rgba(203,213,225,0.5)]";
-              else if (index === 2) rankStyle = "bg-amber-700 text-white border-2 border-amber-600 shadow-[0_0_15px_rgba(180,83,9,0.5)]";
+              let rankStyle = "bg-duo-gray text-duo-gray-dark border-duo-gray";
+              if (index === 0) rankStyle = "bg-duo-yellow text-white border-b-4 border-[#e5a400] scale-110 z-10 shadow-lg";
+              else if (index === 1) rankStyle = "bg-slate-300 text-white border-b-4 border-slate-400";
+              else if (index === 2) rankStyle = "bg-[#cd7f32] text-white border-b-4 border-[#a0522d]";
 
               return (
-                <div key={player.id} className={`flex items-center justify-between rounded-2xl p-4 border transition-all ${isMe ? "bg-blue-900/20 border-blue-500/50" : "bg-slate-900 border-slate-800 hover:border-slate-700"}`}>
-                  <div className="flex items-center gap-4">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg ${rankStyle}`}>
+                <div key={player.id} className={`flex items-center justify-between rounded-[2rem] p-5 border-2 border-b-8 transition-all ${isMe ? "bg-duo-blue/5 border-duo-blue shadow-sm" : "bg-white border-duo-gray hover:bg-duo-gray/5"}`}>
+                  <div className="flex items-center gap-5">
+                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-xl italic ${rankStyle}`}>
                       #{index + 1}
                     </div>
-                    <div className="w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center text-2xl relative">
+                    <div className="w-14 h-14 bg-white border-2 border-duo-gray rounded-2xl flex items-center justify-center text-3xl relative shadow-sm">
                       {pRank.emoji}
-                      {isMe && <span className="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 rounded-full border-2 border-slate-900"></span>}
+                      {isMe && <span className="absolute -top-1 -right-1 w-4 h-4 bg-duo-blue rounded-full border-2 border-white ring-2 ring-duo-blue/20"></span>}
                     </div>
                     <div>
-                      <p className="font-bold text-white flex items-center gap-2">
+                      <p className="font-black text-duo-foreground uppercase text-lg leading-tight flex items-center gap-2">
                         {player.name}
-                        {isMe && <span className="text-xs bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-md">Tú</span>}
+                        {isMe && <span className="text-[10px] bg-duo-blue text-white px-2 py-0.5 rounded-lg border-b-2 border-duo-blue-dark">TÚ</span>}
                       </p>
-                      <p className="text-xs text-slate-400">Lv.{pLevel} · {pRank.name} · {player.xp || 0} XP</p>
+                      <p className="text-xs font-black text-duo-gray-dark uppercase tracking-widest mt-1">Lv.{pLevel} · {pRank.name} · {player.xp || 0} XP</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4">
-                    <div className="hidden sm:flex items-center gap-1 bg-amber-500/10 px-3 py-1.5 rounded-full">
-                      <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
-                      <span className="text-amber-500 font-bold text-sm">{player.points || 0}</span>
+                  <div className="flex items-center gap-6">
+                    <div className="hidden sm:flex items-center gap-2 bg-duo-yellow/10 px-4 py-2 rounded-2xl border-2 border-duo-yellow/20">
+                      <Star className="w-5 h-5 text-duo-yellow fill-duo-yellow" />
+                      <span className="text-duo-yellow font-black text-lg">{player.points || 0}</span>
                     </div>
                     
                     {!isMe && (
-                      <div className="w-28">
+                      <div className="w-32">
                         {alreadyChallenged ? (
-                          <div className="w-full py-2 text-center text-sm font-bold text-amber-500 bg-amber-500/10 rounded-xl">
+                          <div className="w-full py-3 text-center text-xs font-black uppercase text-duo-yellow bg-duo-yellow/10 rounded-2xl border-2 border-duo-yellow/20 italic">
                             ⏳ Pendiente
                           </div>
                         ) : (
@@ -214,8 +241,8 @@ export default async function ArenaPage() {
                             "use server";
                             await createChallenge(userId, player.id);
                           }}>
-                            <button className="w-full bg-red-500 text-white border-b-4 border-red-600 active:border-b-0 active:translate-y-[4px] py-2 rounded-xl font-bold text-sm hover:bg-red-400 transition-all flex items-center justify-center gap-2">
-                              <Swords className="w-4 h-4" />
+                            <button className="w-full bg-duo-red text-white border-b-4 border-[#d33131] active:border-b-0 active:translate-y-1 py-3 rounded-2xl font-black text-xs uppercase tracking-widest hover:brightness-110 transition-all flex items-center justify-center gap-2">
+                              <Swords className="w-4 h-4 font-black" />
                               Retar
                             </button>
                           </form>
@@ -231,29 +258,33 @@ export default async function ArenaPage() {
 
         {/* My pending sent */}
         {myPending.length > 0 && (
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6">
-            <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-              <Clock className="w-5 h-5 text-slate-400" />
+          <div className="bg-white border-2 border-duo-gray border-b-8 rounded-[2.5rem] p-6 md:p-8 shadow-sm">
+            <h2 className="text-xl font-black text-duo-gray-dark mb-6 flex items-center gap-3 uppercase italic">
+              <div className="w-10 h-10 bg-duo-gray rounded-xl flex items-center justify-center border-b-4 border-duo-gray-dark">
+                <Clock className="w-5 h-5 text-white" />
+              </div>
               Retos Enviados ({myPending.length})
             </h2>
-            <div className="space-y-3">
+            <div className="space-y-4">
               {myPending.map((c: any) => {
                 const opponent = c.challenged as any;
                 return (
-                  <div key={c.id} className="flex items-center justify-between bg-slate-800/50 rounded-2xl p-4 border border-slate-700/50">
-                    <div className="flex items-center gap-3">
-                      <span className="text-xl">⏳</span>
+                  <div key={c.id} className="flex items-center justify-between bg-[#f7f7f7] rounded-3xl p-5 border-2 border-duo-gray border-b-4">
+                    <div className="flex items-center gap-4">
+                      <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-2xl shadow-sm">
+                        ⏳
+                      </div>
                       <div>
-                        <p className="font-bold text-white">vs {opponent?.name}</p>
-                        <p className="text-xs text-slate-400">Esperando que acepte...</p>
+                        <p className="font-black text-duo-foreground uppercase leading-tight">Reto a {opponent?.name}</p>
+                        <p className="text-xs font-black text-duo-gray-dark mt-1">Esperando aceptación...</p>
                       </div>
                     </div>
                     <form action={async () => {
                       "use server";
                       await cancelChallenge(c.id, userId);
                     }}>
-                      <button className="bg-slate-800 text-slate-300 px-4 py-2 rounded-xl font-bold text-sm hover:bg-red-500/20 hover:text-red-400 transition-colors flex items-center gap-1">
-                        <X className="w-4 h-4" /> Cancelar
+                      <button className="bg-white text-duo-gray-dark border-2 border-duo-gray border-b-4 px-5 py-2.5 rounded-2xl font-black text-xs uppercase hover:bg-duo-red/10 hover:text-duo-red hover:border-duo-red transition-all">
+                        Cancelar
                       </button>
                     </form>
                   </div>

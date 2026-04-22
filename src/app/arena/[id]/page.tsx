@@ -47,21 +47,23 @@ export default async function ChallengePage({ params }: { params: { id: string }
     const draw = challenge.winner_id === null;
 
     return (
-      <div className="h-[calc(100dvh-4rem)] bg-slate-950 flex items-center justify-center p-4">
-        <div className="max-w-md w-full text-center space-y-8">
-          <div className="text-7xl">{won ? "🏆" : draw ? "🤝" : "😢"}</div>
-          <h1 className="text-4xl font-extrabold text-white">
-            {won ? "¡Victoria!" : draw ? "¡Empate!" : "Derrota..."}
-          </h1>
-          <p className={`font-bold text-lg ${won ? "text-green-400" : draw ? "text-slate-300" : "text-red-400"}`}>
-            vs {opponent?.name} · {won ? "+20 XP" : draw ? "+10 XP" : "+5 XP"}
-          </p>
-          <div className="flex gap-3">
-            <Link href="/arena" className="flex-1 bg-slate-800 text-white py-4 rounded-2xl font-bold hover:bg-slate-700 transition-colors text-center">
+      <div className="min-h-screen bg-[#f7f7f7] flex items-center justify-center p-6 font-sans">
+        <div className="max-w-md w-full bg-white border-2 border-duo-gray border-b-8 rounded-[3rem] p-10 text-center space-y-8 shadow-sm">
+          <div className="text-8xl filter drop-shadow-lg animate-bounce">{won ? "🏆" : draw ? "🤝" : "😢"}</div>
+          <div>
+            <h1 className="text-4xl font-black text-duo-foreground uppercase italic tracking-tighter">
+              {won ? "¡Victoria!" : draw ? "¡Empate!" : "Derrota..."}
+            </h1>
+            <p className={`font-black text-lg mt-2 uppercase tracking-tight ${won ? "text-duo-green" : draw ? "text-duo-gray-dark" : "text-duo-red"}`}>
+              vs {opponent?.name} · {won ? "+20 XP" : draw ? "+10 XP" : "+5 XP"}
+            </p>
+          </div>
+          <div className="flex flex-col gap-4">
+            <Link href="/arena" className="bg-white text-duo-foreground border-2 border-duo-gray border-b-4 active:border-b-0 active:translate-y-1 py-4 rounded-2xl font-black uppercase text-sm tracking-widest hover:bg-duo-gray/5 transition-all">
               Volver a la Arena
             </Link>
-            <Link href="/dashboard" className="flex-1 bg-blue-600 text-white py-4 rounded-2xl font-bold hover:bg-blue-500 transition-colors text-center">
-              Dashboard
+            <Link href="/dashboard" className="bg-duo-blue text-white border-b-4 border-duo-blue-dark active:border-b-0 active:translate-y-1 py-4 rounded-2xl font-black uppercase text-sm tracking-widest hover:brightness-110 transition-all shadow-lg shadow-duo-blue/20">
+              Ir al Dashboard
             </Link>
           </div>
         </div>
@@ -89,12 +91,12 @@ export default async function ChallengePage({ params }: { params: { id: string }
 
   // Pending or other status
   return (
-    <div className="h-[calc(100dvh-4rem)] bg-slate-950 flex items-center justify-center p-4">
-      <div className="max-w-md w-full text-center space-y-6">
-        <p className="text-4xl">⚔️</p>
-        <h1 className="text-2xl font-bold text-white">Reto pendiente</h1>
-        <p className="text-slate-400">Este reto aún no ha sido aceptado.</p>
-        <Link href="/arena" className="block w-full bg-slate-800 text-white py-4 rounded-2xl font-bold hover:bg-slate-700 transition-colors">
+    <div className="min-h-screen bg-[#f7f7f7] flex items-center justify-center p-6 font-sans">
+      <div className="max-w-md w-full bg-white border-2 border-duo-gray border-b-8 rounded-[3rem] p-10 text-center space-y-6 shadow-sm">
+        <div className="text-6xl animate-pulse">⚔️</div>
+        <h1 className="text-2xl font-black text-duo-foreground uppercase italic">Reto pendiente</h1>
+        <p className="text-duo-gray-dark font-bold">Este reto aún no ha sido aceptado por tu oponente.</p>
+        <Link href="/arena" className="block w-full bg-duo-blue text-white border-b-4 border-duo-blue-dark active:border-b-0 active:translate-y-1 py-4 rounded-2xl font-black uppercase text-sm tracking-widest hover:brightness-110 transition-all">
           Volver a la Arena
         </Link>
       </div>

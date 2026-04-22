@@ -297,7 +297,7 @@ export default function RaceGame({
   const progressOp = (opPos / FINISH_LINE) * 100;
 
   return (
-    <div className="h-[calc(100dvh-4rem)] bg-slate-950 relative overflow-hidden flex flex-col">
+    <div className="h-[calc(100dvh-4rem)] bg-white relative overflow-hidden flex flex-col font-sans">
       {/* 3D Scene - Now as the background */}
       <div className="absolute inset-0 z-0">
         <RaceScene
@@ -313,45 +313,45 @@ export default function RaceGame({
       </div>
 
       {/* HUD Overlay - Top */}
-      <header className="bg-slate-900/40 backdrop-blur-sm border-b border-white/10 px-4 py-2 z-30 pointer-events-none">
+      <header className="bg-white/80 backdrop-blur-md border-b-4 border-duo-gray px-4 py-3 z-30 pointer-events-none shadow-sm">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <div className="text-sm">
-            <span className="text-slate-300">Tú</span>
-            <span className="text-white font-bold ml-2">Lv.{userLevel}</span>
+          <div className="text-xs font-black uppercase tracking-widest text-duo-blue flex items-center gap-2">
+            <span className="bg-duo-blue text-white px-2 py-0.5 rounded-lg border-b-2 border-duo-blue-dark">TÚ</span>
+            <span className="text-duo-foreground">Lv.{userLevel}</span>
             {hasBooster && !boosterUsed && (
-              <span className="ml-2 text-amber-400 animate-pulse">🚀</span>
+              <span className="text-duo-yellow animate-pulse">🚀</span>
             )}
             {myBoosting && (
-              <span className="ml-2 text-amber-400 font-bold animate-pulse font-mono text-xs">BOOST!</span>
+              <span className="text-duo-yellow font-black animate-pulse text-[10px]">¡BOOST!</span>
             )}
           </div>
           <div className="text-center">
             {phase === "racing" ? (
-              <span className="text-white font-bold tabular-nums text-lg drop-shadow-lg">{timeLeft}s</span>
+              <div className="bg-duo-gray/10 px-6 py-1 rounded-2xl border-2 border-duo-gray border-b-4">
+                <span className="text-duo-foreground font-black tabular-nums text-xl italic">{timeLeft}S</span>
+              </div>
             ) : (
-              <span className="text-white/60 font-mono text-xs">Sala #{challengeId.slice(-4)}</span>
+              <span className="text-duo-gray-dark font-black text-[10px] uppercase tracking-[0.2em]">SALA #{challengeId.slice(-4)}</span>
             )}
           </div>
-          <div className="text-sm text-right">
-            <span className="text-slate-300">{opponentName}</span>
-            <span className="text-white font-bold ml-2">Lv.{opponentLevel}</span>
+          <div className="text-xs font-black uppercase tracking-widest text-duo-red flex items-center gap-2 text-right">
+            <span className="text-duo-foreground">Lv.{opponentLevel}</span>
+            <span className="bg-duo-red text-white px-2 py-0.5 rounded-lg border-b-2 border-[#d33131]">{opponentName.split(' ')[0]}</span>
             {opBoosting && (
-              <span className="ml-2 text-red-400 font-bold animate-pulse font-mono text-xs">BOOST!</span>
+              <span className="text-duo-yellow font-black animate-pulse text-[10px]">¡BOOST!</span>
             )}
           </div>
         </div>
         {phase === "racing" && (
-          <div className="max-w-4xl mx-auto mt-2 space-y-1">
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] text-blue-300 w-8 font-bold">TÚ</span>
-              <div className="flex-1 h-1.5 bg-black/40 rounded-full overflow-hidden border border-white/10">
-                <div className="h-full bg-blue-500 transition-all duration-100 rounded-full" style={{ width: `${progressMe}%` }} />
+          <div className="max-w-4xl mx-auto mt-4 space-y-2">
+            <div className="flex items-center gap-3">
+              <div className="flex-1 h-3 bg-duo-gray rounded-full overflow-hidden border-2 border-duo-gray shadow-inner">
+                <div className="h-full bg-duo-blue transition-all duration-100 rounded-full border-r-4 border-duo-blue-dark" style={{ width: `${progressMe}%` }} />
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] text-red-300 w-8 font-bold">{opponentName.slice(0, 4).toUpperCase()}</span>
-              <div className="flex-1 h-1.5 bg-black/40 rounded-full overflow-hidden border border-white/10">
-                <div className="h-full bg-red-500 transition-all duration-100 rounded-full" style={{ width: `${progressOp}%` }} />
+            <div className="flex items-center gap-3">
+              <div className="flex-1 h-3 bg-duo-gray rounded-full overflow-hidden border-2 border-duo-gray shadow-inner">
+                <div className="h-full bg-duo-red transition-all duration-100 rounded-full border-r-4 border-[#d33131]" style={{ width: `${progressOp}%` }} />
               </div>
             </div>
           </div>
@@ -361,51 +361,59 @@ export default function RaceGame({
       {/* Main Container for Overlays (Connecting, Lobby, Countdown, Finished) */}
       <div className="flex-1 relative z-20 pointer-events-none">
         {phase === "connecting" && (
-          <div className="absolute inset-0 bg-black/70 flex items-center justify-center pointer-events-auto">
+          <div className="absolute inset-0 bg-white/60 backdrop-blur-sm flex items-center justify-center pointer-events-auto">
             <div className="text-center space-y-4">
-              <div className="text-5xl animate-spin">⏳</div>
-              <p className="text-white text-xl font-bold">Conectando...</p>
+              <div className="text-6xl animate-spin">🦉</div>
+              <p className="text-duo-foreground text-xl font-black uppercase italic tracking-tight">Conectando con la Arena...</p>
             </div>
           </div>
         )}
 
         {phase === "lobby" && (
-          <div className="absolute inset-0 bg-black/20 flex items-center justify-center p-4 pointer-events-auto">
-            <div className="text-center space-y-4 max-w-sm w-full bg-slate-900/90 backdrop-blur-md p-6 rounded-3xl border border-white/10 shadow-2xl">
-              <div className="text-5xl">⚔️</div>
-              <h1 className="text-2xl font-extrabold text-white">Sala de Espera</h1>
-              <p className="text-slate-300 text-sm">vs <span className="font-bold">{opponentName}</span></p>
+          <div className="absolute inset-0 bg-[#f7f7f7]/40 flex items-center justify-center p-6 pointer-events-auto">
+            <div className="text-center space-y-6 max-w-sm w-full bg-white p-8 rounded-[3rem] border-2 border-duo-gray border-b-8 shadow-2xl">
+              <div className="text-6xl animate-bounce">⚔️</div>
+              <div>
+                <h1 className="text-2xl font-black text-duo-foreground uppercase italic tracking-tight">Sala de Espera</h1>
+                <p className="text-duo-gray-dark font-bold text-sm mt-1 uppercase">Duelo contra <span className="text-duo-blue">{opponentName}</span></p>
+              </div>
 
               {!hasBooster ? (
                 <button
                   onClick={handleBuyBooster}
                   disabled={stars < 3 || buyingBooster}
-                  className={`w-full py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all ${
-                    stars >= 3 ? "bg-amber-500 text-white border-b-4 border-amber-600 active:border-b-0 active:translate-y-1" : "bg-slate-800 text-slate-500"
+                  className={`w-full py-4 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-3 transition-all border-b-4 ${
+                    stars >= 3 
+                      ? "bg-duo-yellow text-white border-[#e5a400] hover:brightness-110 active:border-b-0 active:translate-y-1" 
+                      : "bg-duo-gray text-duo-gray-dark border-duo-gray-dark cursor-not-allowed"
                   }`}
                 >
-                  <Rocket className="w-4 h-4" /> Comprar Booster (3⭐)
+                  <Rocket className="w-5 h-5" /> Comprar Booster (3⭐)
                 </button>
               ) : (
-                <div className="bg-amber-500/20 border border-amber-500/30 p-2 rounded-xl text-amber-400 font-bold text-xs">
-                  🚀 Booster preparado
+                <div className="bg-duo-yellow/10 border-2 border-duo-yellow/20 p-3 rounded-2xl text-duo-yellow font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2">
+                  <Rocket className="w-4 h-4 animate-pulse" /> Booster Preparado
                 </div>
               )}
 
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {!meReady ? (
                   <button
                     onClick={handleReady}
                     disabled={!channelReady}
-                    className="w-full bg-green-500 text-white border-b-4 border-green-600 active:border-b-0 active:translate-y-1 py-3 rounded-xl font-extrabold text-lg transition-all"
+                    className="w-full bg-duo-green text-white border-b-8 border-duo-green-dark active:border-b-0 active:translate-y-2 py-5 rounded-[1.5rem] font-black text-xl uppercase italic tracking-tighter transition-all hover:brightness-110"
                   >
-                    LISTO
+                    ¡ESTOY LISTO!
                   </button>
                 ) : (
-                  <div className="text-green-400 font-bold">✅ Listo</div>
+                  <div className="bg-duo-green/10 text-duo-green font-black uppercase py-4 rounded-2xl border-2 border-duo-green/20 flex items-center justify-center gap-2">
+                    <Check className="w-5 h-5 font-black" /> ¡LISTO!
+                  </div>
                 )}
-                {opReady && !meReady && <p className="text-green-400 text-xs">✅ Rival listo</p>}
-                {!opReady && meReady && <p className="text-white/40 text-xs animate-pulse">Esperando rival...</p>}
+                <div className="h-6">
+                  {opReady && !meReady && <p className="text-duo-green text-[10px] font-black uppercase animate-pulse">✅ El rival está listo</p>}
+                  {!opReady && meReady && <p className="text-duo-gray-dark text-[10px] font-black uppercase animate-pulse italic">Esperando al oponente...</p>}
+                </div>
               </div>
             </div>
           </div>
@@ -413,51 +421,60 @@ export default function RaceGame({
 
         {phase === "countdown" && (
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-9xl font-extrabold text-white animate-ping drop-shadow-[0_0_20px_rgba(255,255,255,0.5)]">
-              {countdown > 0 ? countdown : "GO!"}
+            <div className="text-9xl font-black text-duo-foreground animate-ping drop-shadow-xl italic uppercase tracking-tighter">
+              {countdown > 0 ? countdown : "¡YA!"}
             </div>
           </div>
         )}
 
         {phase === "finished" && winner && (
-          <div className="absolute inset-0 bg-black/60 flex items-center justify-center p-4 pointer-events-auto">
-            <div className="text-center space-y-6 max-w-sm w-full bg-slate-900/95 backdrop-blur-md p-8 rounded-3xl border border-white/10 shadow-2xl">
-              <div className="text-6xl">{winner === "me" ? "🏆" : "🤝"}</div>
-              <h1 className="text-3xl font-extrabold text-white">{winner === "me" ? "¡Victoria!" : "¡Buen juego!"}</h1>
-              <div className="flex gap-2">
-                <Link href="/arena" className="flex-1 bg-slate-800 text-white py-3 rounded-xl font-bold text-sm">Arena</Link>
-                <Link href="/dashboard" className="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold text-sm">Panel</Link>
+          <div className="absolute inset-0 bg-white/40 backdrop-blur-sm flex items-center justify-center p-6 pointer-events-auto">
+            <div className="text-center space-y-8 max-w-sm w-full bg-white p-10 rounded-[3rem] border-2 border-duo-gray border-b-8 shadow-2xl">
+              <div className="text-8xl animate-bounce">{winner === "me" ? "🏆" : "🤝"}</div>
+              <div>
+                <h1 className="text-4xl font-black text-duo-foreground uppercase italic tracking-tighter">
+                  {winner === "me" ? "¡VICTORIA!" : "¡BUEN JUEGO!"}
+                </h1>
+                <p className="text-duo-gray-dark font-bold mt-2 uppercase tracking-widest text-sm">El duelo ha terminado</p>
+              </div>
+              <div className="flex flex-col gap-3">
+                <Link href="/dashboard" className="w-full bg-duo-blue text-white border-b-4 border-duo-blue-dark active:border-b-0 active:translate-y-1 py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all">
+                  Panel Principal
+                </Link>
+                <Link href="/arena" className="w-full bg-white text-duo-gray-dark border-2 border-duo-gray border-b-4 active:border-b-0 active:translate-y-1 py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all">
+                  Volver a la Arena
+                </Link>
               </div>
             </div>
           </div>
         )}
       </div>
 
-      {/* Controls Overlay - Floating higher */}
-      <div className="absolute bottom-[100px] left-0 right-0 z-40 pointer-events-none">
+      {/* Controls Overlay */}
+      <div className="absolute bottom-[80px] left-0 right-0 z-40 pointer-events-none">
         {phase === "racing" && (
-          <div className="flex justify-center gap-6 sm:gap-10 max-w-2xl mx-auto w-full pointer-events-auto">
+          <div className="flex justify-center gap-12 max-w-2xl mx-auto w-full pointer-events-auto px-6">
             <button
               onTouchStart={(e) => { e.preventDefault(); handleTouch("ArrowLeft"); }}
               onMouseDown={(e) => { e.preventDefault(); handleTouch("ArrowLeft"); }}
-              className={`w-20 h-20 sm:w-28 sm:h-28 rounded-full font-extrabold text-3xl transition-all shadow-2xl border-4 backdrop-blur-md active:scale-90 touch-none flex items-center justify-center ${
+              className={`w-24 h-24 rounded-full font-black text-4xl transition-all shadow-xl border-4 backdrop-blur-md active:scale-90 touch-none flex items-center justify-center border-b-8 ${
                 lastKey === "ArrowLeft" 
-                  ? "bg-blue-600/90 border-blue-400 text-white" 
-                  : "bg-black/20 border-white/20 text-white/40"
+                  ? "bg-duo-blue text-white border-duo-blue-dark translate-y-2" 
+                  : "bg-white/40 border-duo-gray text-duo-gray-dark"
               }`}
             >
-              ←
+              <ArrowLeft className="w-10 h-10" />
             </button>
             <button
               onTouchStart={(e) => { e.preventDefault(); handleTouch("ArrowRight"); }}
               onMouseDown={(e) => { e.preventDefault(); handleTouch("ArrowRight"); }}
-              className={`w-20 h-20 sm:w-28 sm:h-28 rounded-full font-extrabold text-3xl transition-all shadow-2xl border-4 backdrop-blur-md active:scale-90 touch-none flex items-center justify-center ${
+              className={`w-24 h-24 rounded-full font-black text-4xl transition-all shadow-xl border-4 backdrop-blur-md active:scale-90 touch-none flex items-center justify-center border-b-8 ${
                 lastKey === "ArrowRight" 
-                  ? "bg-blue-600/90 border-blue-400 text-white" 
-                  : "bg-black/20 border-white/20 text-white/40"
+                  ? "bg-duo-blue text-white border-duo-blue-dark translate-y-2" 
+                  : "bg-white/40 border-duo-gray text-duo-gray-dark"
               }`}
             >
-              →
+              <ArrowRight className="w-10 h-10" />
             </button>
           </div>
         )}

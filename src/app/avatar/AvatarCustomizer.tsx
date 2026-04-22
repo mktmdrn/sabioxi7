@@ -115,50 +115,57 @@ export default function AvatarCustomizer({
   const currentKey = activeTab;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200">
+    <div className="min-h-screen bg-[#f7f7f7] text-duo-foreground font-sans">
       {/* Header */}
-      <nav className="border-b border-slate-800 bg-slate-900/50 backdrop-blur-md sticky top-0 z-50">
+      <nav className="border-b-4 border-duo-gray bg-white sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16 items-center">
-            <Link href="/dashboard" className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
-              <ArrowLeft className="w-5 h-5" />
-              <span className="font-medium">Volver</span>
+          <div className="flex justify-between h-20 items-center">
+            <Link href="/dashboard" className="flex items-center gap-2 text-duo-gray-dark hover:text-duo-foreground transition-all font-black uppercase text-sm">
+              <ArrowLeft className="w-6 h-6" />
+              <span>Volver</span>
             </Link>
-            <h1 className="text-lg font-bold text-white flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-indigo-400" />
+            <h1 className="text-xl font-black text-duo-foreground flex items-center gap-2 uppercase italic tracking-tight">
+              <Sparkles className="w-6 h-6 text-duo-blue" />
               Personalizar Avatar
             </h1>
-            <div className="flex items-center gap-2 bg-amber-500/10 px-3 py-1.5 rounded-full border border-amber-500/20">
-              <Star className="w-5 h-5 text-amber-500 fill-amber-500" />
-              <span className="text-amber-500 font-bold">{points}</span>
+            <div className="flex items-center gap-2 bg-duo-yellow/10 px-4 py-2 rounded-2xl border-2 border-duo-yellow/20">
+              <Star className="w-6 h-6 text-duo-yellow fill-duo-yellow" />
+              <span className="text-duo-yellow font-black text-lg">{points}</span>
             </div>
           </div>
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
           {/* 3D Preview */}
-          <div className="bg-gradient-to-b from-slate-900 to-slate-950 border border-slate-800 rounded-3xl p-6 flex flex-col items-center justify-center min-h-[450px] relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5" />
+          <div className="bg-white border-2 border-duo-gray border-b-8 rounded-[3rem] p-8 flex flex-col items-center justify-center min-h-[500px] relative overflow-hidden shadow-sm">
+            <div className="absolute inset-0 bg-gradient-to-b from-duo-blue/5 to-transparent" />
             <div className="relative z-10 w-full">
               <Avatar3D config={config} size="large" />
             </div>
-            <div className="relative z-10 mt-4 flex gap-3">
+            <div className="relative z-10 mt-8">
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="bg-green-500 text-white border-b-4 border-green-600 active:border-b-0 active:translate-y-[4px] px-8 py-3 rounded-2xl font-bold text-lg hover:bg-green-400 transition-all flex items-center gap-2 disabled:opacity-50"
+                className={`
+                  px-12 py-4 rounded-2xl font-black text-xl uppercase italic tracking-tighter
+                  transition-all active:translate-y-1 disabled:opacity-50
+                  shadow-lg border-b-[6px] flex items-center gap-3
+                  ${saved 
+                    ? "bg-duo-green border-duo-green-dark text-white" 
+                    : "bg-duo-blue border-duo-blue-dark text-white hover:brightness-110 shadow-duo-blue/20"}
+                `}
               >
                 {saved ? (
                   <>
-                    <Check className="w-5 h-5" />
+                    <Check className="w-6 h-6 font-black" />
                     ¡Guardado!
                   </>
                 ) : (
                   <>
-                    <Save className="w-5 h-5" />
-                    {saving ? "Guardando..." : "Guardar"}
+                    <Save className="w-6 h-6" />
+                    {saving ? "Guardando..." : "Guardar Cambios"}
                   </>
                 )}
               </button>
@@ -166,20 +173,20 @@ export default function AvatarCustomizer({
           </div>
 
           {/* Items Panel */}
-          <div className="space-y-6">
+          <div className="space-y-8">
             {/* Tabs */}
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               {tabs.map((tab) => (
                 <button
                   key={tab.key}
                   onClick={() => setActiveTab(tab.key)}
-                  className={`flex-1 py-3 px-4 rounded-2xl font-bold text-sm transition-all flex items-center justify-center gap-2 ${
+                  className={`py-3 px-6 rounded-2xl font-black text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 border-2 ${
                     activeTab === tab.key
-                      ? "bg-indigo-600 text-white border-b-4 border-indigo-700"
-                      : "bg-slate-900 text-slate-400 border border-slate-800 hover:border-slate-700"
+                      ? "bg-duo-blue text-white border-b-4 border-duo-blue-dark shadow-sm"
+                      : "bg-white text-duo-gray-dark border-duo-gray hover:bg-duo-gray/10"
                   }`}
                 >
-                  <span>{tab.emoji}</span>
+                  <span className="text-lg">{tab.emoji}</span>
                   <span className="hidden sm:inline">{tab.label}</span>
                 </button>
               ))}
@@ -200,34 +207,33 @@ export default function AvatarCustomizer({
                       }
                     }}
                     disabled={!isUnlocked}
-                    className={`relative p-5 rounded-2xl border-2 transition-all text-center flex flex-col items-center gap-2 ${
+                    className={`relative p-6 rounded-[2rem] border-2 border-b-4 transition-all text-center flex flex-col items-center gap-3 ${
                       isActive
-                        ? "border-indigo-500 bg-indigo-500/10 text-white ring-2 ring-indigo-500/30"
+                        ? "border-duo-blue bg-duo-blue/10 text-duo-blue ring-2 ring-duo-blue/20 shadow-sm"
                         : isUnlocked
-                        ? "border-slate-800 bg-slate-900 text-slate-300 hover:border-slate-600 hover:bg-slate-800/50"
-                        : "border-slate-800/50 bg-slate-900/50 text-slate-600 cursor-not-allowed opacity-60"
+                        ? "border-duo-gray bg-white text-duo-foreground hover:border-duo-gray-dark hover:bg-duo-gray/5"
+                        : "border-duo-gray bg-duo-gray/10 text-duo-gray-dark cursor-not-allowed opacity-60"
                     }`}
                   >
                     {isActive && (
-                      <div className="absolute top-2 right-2 w-6 h-6 bg-indigo-500 rounded-full flex items-center justify-center">
-                        <Check className="w-4 h-4 text-white" />
+                      <div className="absolute top-3 right-3 w-7 h-7 bg-duo-blue rounded-full flex items-center justify-center border-2 border-white">
+                        <Check className="w-4 h-4 text-white font-black" />
                       </div>
                     )}
-                    <span className="text-3xl">{item.emoji}</span>
-                    <span className="font-bold text-sm">{item.label}</span>
+                    <span className="text-4xl filter drop-shadow-sm">{item.emoji}</span>
+                    <span className="font-black text-sm uppercase tracking-tight">{item.label}</span>
                     {!isUnlocked ? (
-                      <div className="flex items-center gap-1 text-xs text-slate-500">
+                      <div className="flex items-center gap-1.5 text-[10px] font-black text-duo-red bg-duo-red/10 px-2 py-1 rounded-lg border border-duo-red/20 uppercase">
                         <Lock className="w-3 h-3" />
-                        <Star className="w-3 h-3 fill-current" />
-                        <span>{item.cost}</span>
+                        <span>{item.cost} Estrellas</span>
                       </div>
                     ) : item.cost > 0 ? (
-                      <div className="flex items-center gap-1 text-xs text-amber-500">
+                      <div className="flex items-center gap-1.5 text-[10px] font-black text-duo-yellow bg-duo-yellow/10 px-2 py-1 rounded-lg border border-duo-yellow/20 uppercase">
                         <Star className="w-3 h-3 fill-current" />
                         <span>{item.cost}</span>
                       </div>
                     ) : (
-                      <span className="text-xs text-green-500">Gratis</span>
+                      <span className="text-[10px] font-black text-duo-green uppercase bg-duo-green/10 px-2 py-1 rounded-lg border border-duo-green/20">Gratis</span>
                     )}
                   </button>
                 );
@@ -235,9 +241,13 @@ export default function AvatarCustomizer({
             </div>
 
             {/* Info box */}
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
-              <p className="text-slate-400 text-sm leading-relaxed">
-                <span className="text-white font-bold">💡 Consejo:</span> Completa lecciones con un 90% o más de aciertos para ganar estrellas y desbloquear nuevos items para tu avatar.
+            <div className="bg-white border-2 border-duo-gray border-b-8 rounded-[2rem] p-6 shadow-sm">
+              <p className="text-duo-gray-dark font-bold text-sm leading-relaxed flex gap-3">
+                <span className="bg-duo-blue/10 p-2 rounded-xl h-fit">💡</span>
+                <span>
+                  <span className="text-duo-foreground font-black uppercase text-xs block mb-1">Consejo del Sabio:</span>
+                  Completa lecciones con un 90% o más de aciertos para ganar estrellas y desbloquear nuevos items para tu avatar.
+                </span>
               </p>
             </div>
           </div>

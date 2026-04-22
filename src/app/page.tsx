@@ -1,44 +1,44 @@
 import Link from "next/link";
-import { ArrowRight, ShieldCheck, Zap, Globe, Layout } from "lucide-react";
+import { ArrowRight, ShieldCheck, Zap, Globe, Layout, Trophy, Swords, Sparkles } from "lucide-react";
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-slate-950 text-white selection:bg-blue-500/30">
+    <div className="min-h-screen bg-white text-duo-foreground font-sans selection:bg-duo-blue/30">
       {/* Hero Section */}
       <div className="relative overflow-hidden pt-24 pb-32">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-6xl h-full">
-          <div className="absolute top-0 left-0 w-96 h-96 bg-blue-600/10 rounded-full blur-[120px] -translate-x-1/2 -translate-y-1/2" />
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-600/10 rounded-full blur-[120px] translate-x-1/2 translate-y-1/2" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-6xl h-full pointer-events-none opacity-20">
+          <div className="absolute top-0 left-0 w-96 h-96 bg-duo-blue/20 rounded-full blur-[120px] -translate-x-1/2 -translate-y-1/2" />
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-duo-green/20 rounded-full blur-[120px] translate-x-1/2 translate-y-1/2" />
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-900 border border-slate-800 text-sm font-medium text-slate-400 mb-8 animate-in fade-in slide-in-from-bottom-4">
-              <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-              Sistema de Login Seguro v5.0
+          <div className="text-center space-y-10">
+            <div className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-[#f7f7f7] border-2 border-duo-gray text-xs font-black text-duo-gray-dark uppercase tracking-widest animate-in fade-in slide-in-from-bottom-4">
+              <Sparkles className="w-4 h-4 text-duo-yellow fill-duo-yellow" />
+              La plataforma definitiva para el sector IT
             </div>
             
-            <h1 className="text-6xl md:text-8xl font-black tracking-tight mb-8 bg-gradient-to-b from-white to-slate-500 bg-clip-text text-transparent">
-              Seguridad para tus <br /> aplicaciones.
+            <h1 className="text-6xl md:text-8xl font-black tracking-tighter mb-8 text-duo-foreground leading-none italic uppercase">
+              APRENDE IT <br /> <span className="text-duo-blue">JUGANDO.</span>
             </h1>
             
-            <p className="max-w-2xl mx-auto text-xl text-slate-400 mb-12 leading-relaxed">
-              Una plantilla premium construida con Next.js 15, Auth.js y Tailwind CSS. Lista para desplegar en Vercel con un solo click.
+            <p className="max-w-2xl mx-auto text-xl md:text-2xl text-duo-gray-dark mb-12 font-bold leading-relaxed">
+              Domina ASIR y DAW con nuestra metodología gamificada. Batallas PvP, personalización de avatar y certificaciones reales.
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
               <Link 
                 href="/login" 
-                className="group px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-bold text-lg transition-all flex items-center gap-2 shadow-xl shadow-blue-500/20 active:scale-95"
+                className="group px-12 py-6 bg-duo-green text-white rounded-[2rem] font-black text-2xl uppercase italic tracking-tighter transition-all flex items-center gap-4 border-b-8 border-duo-green-dark hover:brightness-110 active:border-b-0 active:translate-y-2 shadow-xl shadow-duo-green/20"
               >
-                Empezar Ahora
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                ¡Empieza Gratis!
+                <ArrowRight className="w-8 h-8 group-hover:translate-x-2 transition-transform" />
               </Link>
               <Link 
                 href="/dashboard" 
-                className="px-8 py-4 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-white rounded-2xl font-bold text-lg transition-all active:scale-95"
+                className="px-12 py-6 bg-white text-duo-blue border-2 border-duo-gray border-b-8 rounded-[2rem] font-black text-2xl uppercase italic tracking-tighter transition-all hover:bg-duo-gray/5 active:border-b-0 active:translate-y-2"
               >
-                Ver Dashboard
+                Ver Demo
               </Link>
             </div>
           </div>
@@ -46,42 +46,51 @@ export default function LandingPage() {
       </div>
 
       {/* Features */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 border-t border-slate-900">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 border-t-4 border-duo-gray bg-[#f7f7f7]">
+        <div className="text-center mb-20">
+          <h2 className="text-4xl font-black text-duo-foreground uppercase italic tracking-tighter">¿POR QUÉ SABIOXI?</h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           <FeatureCard 
-            icon={<ShieldCheck className="w-6 h-6 text-blue-400" />}
-            title="Autenticación Segura"
-            description="Basado en Auth.js v5 con soporte para JWT y sesiones de servidor ultra seguras."
+            icon={<Swords className="w-8 h-8 text-white" />}
+            bgColor="bg-duo-red"
+            borderColor="border-duo-red-dark"
+            title="Duelos PvP en la Arena"
+            description="Compite contra otros estudiantes en tiempo real. Demuestra quién sabe más de redes y bases de datos."
           />
           <FeatureCard 
-            icon={<Zap className="w-6 h-6 text-yellow-400" />}
-            title="Rendimiento Optimizado"
-            description="Utilizando Server Components de Next.js para una carga instantánea y SEO superior."
+            icon={<Trophy className="w-8 h-8 text-white" />}
+            bgColor="bg-duo-yellow"
+            borderColor="border-[#e5a400]"
+            title="Gamificación Real"
+            description="Gana estrellas, sube de nivel y personaliza tu avatar 3D con items exclusivos."
           />
           <FeatureCard 
-            icon={<Layout className="w-6 h-6 text-purple-400" />}
-            title="UI/UX Premium"
-            description="Diseñado con Tailwind CSS enfocándose en una experiencia de usuario fluida y moderna."
+            icon={<Layout className="w-8 h-8 text-white" />}
+            bgColor="bg-duo-blue"
+            borderColor="border-duo-blue-dark"
+            title="Contenido Curado"
+            description="Todo el temario de ASIR y DAW estructurado en misiones y desafíos de alta intensidad."
           />
         </div>
       </div>
 
       {/* Footer */}
-      <footer className="py-12 border-t border-slate-900 text-center text-slate-500 text-sm">
-        <p>© 2024 SABIOXI. Desarrollado con ❤️ para Vercel.</p>
+      <footer className="py-16 border-t-4 border-duo-gray text-center text-duo-gray-dark font-black uppercase tracking-widest text-xs bg-white">
+        <p>© 2024 SABIOXI IT ACADEMY. EL FUTURO ESTÁ AQUÍ. 🦉✨</p>
       </footer>
     </div>
   );
 }
 
-function FeatureCard({ icon, title, description }: { icon: React.ReactNode, title: string, description: string }) {
+function FeatureCard({ icon, title, description, bgColor, borderColor }: { icon: React.ReactNode, title: string, description: string, bgColor: string, borderColor: string }) {
   return (
-    <div className="p-8 rounded-3xl bg-slate-900/50 border border-slate-800 hover:border-blue-500/50 transition-all group">
-      <div className="w-12 h-12 bg-slate-800 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+    <div className="p-10 rounded-[3rem] bg-white border-2 border-duo-gray border-b-8 hover:-translate-y-2 transition-all group">
+      <div className={`w-16 h-16 ${bgColor} ${borderColor} border-b-4 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform`}>
         {icon}
       </div>
-      <h3 className="text-xl font-bold mb-4">{title}</h3>
-      <p className="text-slate-400 leading-relaxed">{description}</p>
+      <h3 className="text-2xl font-black mb-4 uppercase italic tracking-tight">{title}</h3>
+      <p className="text-duo-gray-dark font-bold leading-relaxed">{description}</p>
     </div>
   );
 }

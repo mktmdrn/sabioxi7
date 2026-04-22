@@ -4,7 +4,7 @@
   --background: #ffffff;
   --foreground: #4b4b4b;
   
-  /* Duolingo Brand Colors */
+  /* Duolingo Brand Colors - Refined */
   --duo-green: #58cc02;
   --duo-green-dark: #46a302;
   --duo-blue: #1cb0f6;
@@ -12,6 +12,7 @@
   --duo-yellow: #ffc800;
   --duo-orange: #ff9600;
   --duo-red: #ff4b4b;
+  --duo-red-dark: #d33131;
   --duo-purple: #ce82ff;
   --duo-gray: #e5e5e5;
   --duo-gray-dark: #afafaf;
@@ -28,11 +29,21 @@
   --color-duo-yellow: var(--duo-yellow);
   --color-duo-orange: var(--duo-orange);
   --color-duo-red: var(--duo-red);
+  --color-duo-red-dark: var(--duo-red-dark);
   --color-duo-purple: var(--duo-purple);
   --color-duo-gray: var(--duo-gray);
   --color-duo-gray-dark: var(--duo-gray-dark);
+  --color-duo-foreground: var(--foreground);
 
   --font-sans: "DIN Next Rounded", "Inter", "system-ui", sans-serif;
+  
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+  }
+  
+  --animate-shake: shake 0.2s ease-in-out 0s 2;
 }
 
 body {
@@ -40,4 +51,18 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+}
+
+.duo-card {
+  @apply bg-white border-2 border-duo-gray border-b-8 rounded-[2rem] transition-all;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-duo-gray rounded-full hover:bg-duo-gray-dark transition-colors;
 }

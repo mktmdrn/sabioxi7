@@ -19,10 +19,10 @@ type ParsedLesson = Lesson & {
 };
 
 const CATEGORY_META: Record<string, { label: string; color: string; border: string; bg: string }> = {
-  ASIR: { label: "Administración de Sistemas Informáticos en Red", color: "text-blue-400", border: "border-blue-500/30", bg: "bg-blue-500/10" },
-  DAW: { label: "Desarrollo de Aplicaciones Web", color: "text-emerald-400", border: "border-emerald-500/30", bg: "bg-emerald-500/10" },
-  DAM: { label: "Desarrollo de Aplicaciones Multiplataforma", color: "text-amber-400", border: "border-amber-500/30", bg: "bg-amber-500/10" },
-  Otros: { label: "Lecciones sin categoría", color: "text-slate-400", border: "border-slate-500/30", bg: "bg-slate-500/10" },
+  ASIR: { label: "Administración de Sistemas Informáticos en Red", color: "text-duo-blue", border: "border-duo-blue", bg: "bg-duo-blue/10" },
+  DAW: { label: "Desarrollo de Aplicaciones Web", color: "text-duo-green", border: "border-duo-green", bg: "bg-duo-green/10" },
+  DAM: { label: "Desarrollo de Aplicaciones Multiplataforma", color: "text-duo-yellow", border: "border-duo-yellow", bg: "bg-duo-yellow/10" },
+  Otros: { label: "Lecciones sin categoría", color: "text-duo-gray-dark", border: "border-duo-gray", bg: "bg-duo-gray/10" },
 };
 
 const ICONS = {

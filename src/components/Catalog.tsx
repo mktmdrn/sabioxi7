@@ -174,7 +174,7 @@ export default function Catalog({ lessons, title = "Catálogo de Cursos", iconTy
                 {idx + 1}
               </div>
               <div className="flex-1 min-w-0">
-                <h5 className="font-black text-duo-foreground text-sm truncate uppercase" title={lesson.cleanTitle}>
+                <h5 className="font-black text-duo-foreground text-sm line-clamp-2 uppercase leading-tight mb-0.5" title={lesson.cleanTitle}>
                   {lesson.cleanTitle}
                 </h5>
                 <div className="flex items-center gap-3 mt-0.5">

@@ -40,34 +40,59 @@ export default async function DashboardPage({ searchParams }: { searchParams: { 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
           {/* Main Area */}
-          <div className="lg:col-span-2 space-y-12">
+          <div className="lg:col-span-3 space-y-12">
             
-            {/* Header / Welcome */}
-            <div className="bg-duo-blue rounded-[2.5rem] p-6 md:p-8 border-b-8 border-duo-blue-dark relative overflow-hidden group">
-              <div className="relative z-10">
-                <h2 className="text-2xl md:text-3xl font-black text-white mb-2 uppercase tracking-tight italic">
-                  ¡HOLA, {session.user?.name?.split(' ')[0].toUpperCase()}! 👋
-                </h2>
-                <p className="text-white text-base md:text-lg font-bold opacity-90">Continúa tu formación y domina el sector IT.</p>
+            {/* Header / Welcome / Avatar Combined */}
+            <div className="bg-duo-blue rounded-[2.5rem] p-8 md:p-10 border-b-8 border-duo-blue-dark relative overflow-hidden group">
+              <div className="relative z-10 flex flex-col md:flex-row items-center gap-10 md:justify-between">
                 
-                <div className="mt-8 flex gap-4">
-                  <Link 
-                    href="/arena" 
-                    className="bg-duo-red text-white border-b-8 border-[#d33131] active:border-b-0 active:translate-y-2 px-8 py-4 rounded-2xl font-black text-lg hover:brightness-110 transition-all flex items-center gap-3 relative shadow-lg"
-                  >
-                    <Swords className="w-6 h-6" />
-                    ARENA PvP
-                    {pendingChallenges.length > 0 && (
-                      <span className="absolute -top-3 -right-3 w-10 h-10 bg-duo-yellow text-slate-900 text-xs font-black rounded-full flex items-center justify-center animate-bounce border-4 border-white">
-                        {pendingChallenges.length}
-                      </span>
-                    )}
-                  </Link>
-                </div>
-              </div>
-              <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl pointer-events-none" />
-            </div>
+                <div className="flex-1 text-center md:text-left">
+                  <h2 className="text-3xl md:text-5xl font-black text-white mb-4 uppercase tracking-tight italic">
+                    ¡HOLA, {session.user?.name?.split(' ')[0].toUpperCase()}! 👋
+                  </h2>
+                  <p className="text-white text-lg md:text-2xl font-bold opacity-95 max-w-xl">
+                    Continúa tu formación y domina el sector IT. Tienes el rango de <span className="text-duo-yellow italic">{rank.name}</span>.
+                  </p>
+                  
+                  <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                    <Link 
+                      href="/arena" 
+                      className="bg-duo-red text-white border-b-8 border-[#d33131] active:border-b-0 active:translate-y-2 px-8 py-5 rounded-2xl font-black text-xl hover:brightness-110 transition-all flex items-center justify-center gap-3 relative shadow-lg"
+                    >
+                      <Swords className="w-6 h-6" />
+                      ARENA PvP
+                      {pendingChallenges.length > 0 && (
+                        <span className="absolute -top-3 -right-3 w-10 h-10 bg-duo-yellow text-slate-900 text-xs font-black rounded-full flex items-center justify-center animate-bounce border-4 border-white">
+                          {pendingChallenges.length}
+                        </span>
+                      )}
+                    </Link>
 
+                    <Link
+                      href="/avatar"
+                      className="bg-white text-duo-blue border-b-8 border-slate-200 active:border-b-0 active:translate-y-2 px-8 py-5 rounded-2xl font-black text-xl hover:bg-[#f0f9ff] transition-all flex items-center justify-center gap-3 shadow-lg"
+                    >
+                      <Sparkles className="w-6 h-6 text-duo-yellow fill-current" />
+                      PERSONALIZAR
+                    </Link>
+                  </div>
+                </div>
+
+                <div className="relative group/avatar">
+                  <div className="absolute inset-0 bg-white/20 rounded-full blur-3xl scale-150 group-hover/avatar:scale-[2] transition-transform duration-700" />
+                  <div className="relative bg-white/10 backdrop-blur-sm p-4 rounded-full border-4 border-white/20 shadow-2xl group-hover/avatar:rotate-3 transition-transform duration-500">
+                    <MiniAvatar config={avatarConfig} />
+                    <div className="absolute -bottom-4 -right-4 bg-duo-yellow border-4 border-white p-3 rounded-2xl shadow-xl transform group-hover/avatar:scale-110 transition-transform">
+                      <span className="text-3xl">{rank.emoji}</span>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+              <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-white/5 to-transparent pointer-events-none" />
+              <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-white/10 rounded-full blur-3xl pointer-events-none" />
+            </div>
+            
             {/* List of Adventures */}
             <div className="space-y-6">
               <h3 className="text-xl font-black text-duo-foreground uppercase italic tracking-tight flex items-center gap-2">
@@ -76,9 +101,9 @@ export default async function DashboardPage({ searchParams }: { searchParams: { 
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {/* ASIR Campaign Card */}
-                <Link href="/campaign/asir" className="group relative z-20 cursor-pointer">
-                  <div className="bg-white border-2 border-duo-gray border-b-8 rounded-[2rem] p-6 hover:bg-[#f7f7f7] transition-all relative overflow-hidden h-full flex flex-col pointer-events-none group-hover:pointer-events-auto">
-                    <div className="w-14 h-14 bg-duo-green text-white rounded-2xl flex items-center justify-center mb-4 border-b-4 border-duo-green-dark group-hover:scale-110 transition-transform">
+                <Link href="/campaign/asir" className="group relative z-20 cursor-pointer text-left">
+                  <div className="bg-white border-2 border-duo-gray border-b-8 rounded-[2rem] p-6 hover:bg-[#f7f7f7] transition-all relative overflow-hidden h-full flex flex-col">
+                    <div className="w-14 h-14 bg-duo-green text-white rounded-2xl flex items-center justify-center mb-4 border-b-4 border-duo-green-dark group-hover:scale-110 transition-transform text-left">
                       <Zap className="w-8 h-8 fill-current" />
                     </div>
                     <h4 className="text-xl font-black text-duo-foreground mb-2 uppercase italic">TÍTULO DE ASIR</h4>
@@ -93,7 +118,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: { 
                 </Link>
 
                 {/* DAW Campaign Card */}
-                <Link href="/campaign/daw" className="group relative z-20 cursor-pointer">
+                <Link href="/campaign/daw" className="group relative z-20 cursor-pointer text-left">
                   <div className="bg-white border-2 border-duo-gray border-b-8 rounded-[2rem] p-6 hover:bg-[#f7f7f7] transition-all relative overflow-hidden h-full flex flex-col">
                     <div className="w-14 h-14 bg-duo-blue text-white rounded-2xl flex items-center justify-center mb-4 border-b-4 border-duo-blue-dark group-hover:scale-110 transition-transform">
                       <Star className="w-8 h-8 fill-current" />
@@ -126,58 +151,6 @@ export default async function DashboardPage({ searchParams }: { searchParams: { 
                   lessons={[...exams, ...lessons]} 
                   title="Todo el Contenido" 
                 />
-              </div>
-            </div>
-          </div>
-
-          {/* User Profile Card */}
-          <div className="space-y-6 lg:sticky lg:top-24">
-            <div className="bg-white border-2 border-duo-gray rounded-[2.5rem] p-6 shadow-sm border-b-8">
-              <div className="flex flex-col items-center">
-                <div className="relative">
-                  <MiniAvatar config={avatarConfig} />
-                  <div className="absolute -bottom-2 -right-2 bg-duo-yellow border-4 border-white p-2 rounded-xl">
-                    <span className="text-lg">{rank.emoji}</span>
-                  </div>
-                </div>
-                
-                <div className="w-full mt-8 space-y-4">
-                  <div className="bg-[#f7f7f7] p-5 rounded-3xl border-2 border-duo-gray text-center">
-                    <p className="text-[10px] font-black text-duo-gray-dark uppercase tracking-[0.2em] mb-1">Rango del Sabio</p>
-                    <span className="text-2xl font-black text-duo-foreground italic uppercase">{rank.name}</span>
-                  </div>
-
-                  <Link
-                    href="/avatar"
-                    className="w-full bg-duo-blue text-white border-b-4 border-duo-blue-dark active:border-b-0 active:translate-y-1 px-6 py-4 rounded-2xl font-black text-center hover:brightness-110 transition-all flex items-center justify-center gap-3"
-                  >
-                    <Sparkles className="w-5 h-5 text-duo-yellow" />
-                    PERSONALIZAR
-                  </Link>
-
-                  <div className="pt-6 grid grid-cols-1 gap-3">
-                    <div className="flex items-center gap-4 bg-duo-blue/5 p-3 rounded-2xl border border-duo-blue/10">
-                      <div className="w-10 h-10 bg-duo-blue text-white rounded-xl flex items-center justify-center border-b-4 border-duo-blue-dark">
-                        <User className="w-5 h-5" />
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-[9px] text-duo-gray-dark font-black uppercase">Usuario</p>
-                        <p className="text-sm font-black truncate">{session.user?.name}</p>
-                      </div>
-                    </div>
-                    {role === "admin" && (
-                      <Link href="/dashboard/admin" className="flex items-center gap-4 bg-duo-yellow/5 p-3 rounded-2xl border border-duo-yellow/10 hover:bg-duo-yellow/10 transition-colors">
-                        <div className="w-10 h-10 bg-duo-yellow text-white rounded-xl flex items-center justify-center border-b-4 border-[#c89b00]">
-                          <Shield className="w-5 h-5" />
-                        </div>
-                        <div>
-                          <p className="text-[9px] text-duo-gray-dark font-black uppercase">Acceso</p>
-                          <p className="text-sm font-black">ADMINISTRADOR</p>
-                        </div>
-                      </Link>
-                    )}
-                  </div>
-                </div>
               </div>
             </div>
           </div>

@@ -328,16 +328,16 @@ function CharacterBody({ config }: { config: AvatarConfig }) {
         {/* ===== EYEBROWS (Animated) ===== */}
         <mesh 
           position={[-0.12, 0.15, 0.28]} 
-          rotation={[0, 0, expression === "anger" ? 0.4 : expression === "surprise" ? -0.2 : 0.1]}
+          rotation={[0, 0, (expression === "anger" ? 0.4 : expression === "surprise" ? -0.2 : 0.1) + Math.PI / 2]}
         >
-          <capsuleGeometry args={[0.01, 0.06, 4, 8]} rotation={[0, 0, Math.PI / 2]} />
+          <capsuleGeometry args={[0.01, 0.06, 4, 8]} />
           <meshStandardMaterial color={HAIR_COLOR} />
         </mesh>
         <mesh 
           position={[0.12, 0.15, 0.28]} 
-          rotation={[0, 0, expression === "anger" ? -0.4 : expression === "surprise" ? 0.2 : -0.1]}
+          rotation={[0, 0, (expression === "anger" ? -0.4 : expression === "surprise" ? 0.2 : -0.1) + Math.PI / 2]}
         >
-          <capsuleGeometry args={[0.01, 0.06, 4, 8]} rotation={[0, 0, Math.PI / 2]} />
+          <capsuleGeometry args={[0.01, 0.06, 4, 8]} />
           <meshStandardMaterial color={HAIR_COLOR} />
         </mesh>
 

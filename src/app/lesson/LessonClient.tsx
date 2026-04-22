@@ -115,7 +115,7 @@ export default function LessonClient({ lesson, userId }: { lesson: Lesson; userI
     const isApproved = percentage >= 0.9;
 
     return (
-      <div className="min-h-screen bg-white text-slate-900 flex flex-col items-center justify-center p-4 md:p-6">
+      <div className="h-[calc(100dvh-4rem)] bg-white text-slate-900 flex flex-col items-center justify-center p-4 md:p-6">
         <div className="max-w-md w-full text-center space-y-8">
           {isApproved ? (
             <>
@@ -163,7 +163,7 @@ export default function LessonClient({ lesson, userId }: { lesson: Lesson; userI
   }
 
   return (
-    <div className={`min-h-screen ${bgColor} text-slate-900 flex flex-col transition-colors duration-300 font-sans`}>
+    <div className={`h-[calc(100dvh-4rem)] overflow-hidden ${bgColor} text-slate-900 flex flex-col transition-colors duration-300 font-sans`}>
       {/* Header / Progress */}
       <header className="max-w-4xl mx-auto w-full p-2 md:p-4 flex items-center gap-4">
         <Link href="/dashboard" className="text-slate-400 hover:text-slate-600 transition-colors">

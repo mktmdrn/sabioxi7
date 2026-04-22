@@ -6,6 +6,7 @@ import { getUserPoints, getLessons, getAvatarConfig, getUserXp } from "@/actions
 import { calculateLevel, getRankInfo } from "@/lib/levels";
 import { getChallengesForUser } from "@/actions/arena";
 import MiniAvatar from "@/components/MiniAvatar";
+import Catalog from "@/components/Catalog";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -69,40 +70,8 @@ export default async function DashboardPage() {
             </div>
 
             {/* Lessons Section */}
-            <div>
-              <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
-                <Play className="w-5 h-5 text-green-500 fill-green-500" />
-                Lecciones Disponibles
-              </h3>
-              
-              {lessons.length === 0 ? (
-                <div className="bg-slate-900 border border-slate-800 p-8 rounded-3xl text-center">
-                  <p className="text-slate-400 mb-4">Aún no hay lecciones creadas.</p>
-                  <Link href="/generator" className="text-indigo-400 hover:text-indigo-300 font-medium">
-                    Ve al generador para crear la primera
-                  </Link>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  {lessons.map((lesson, idx) => (
-                    <div key={lesson.id} className="bg-slate-900 border border-slate-800 p-6 rounded-3xl hover:border-slate-700 transition-all flex flex-col h-full group">
-                      <div className="w-12 h-12 bg-green-500/10 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                        <span className="text-green-500 font-extrabold text-xl">{idx + 1}</span>
-                      </div>
-                      <h4 className="text-xl font-bold text-white mb-2">{lesson.title}</h4>
-                      <p className="text-slate-400 text-sm flex-1 mb-6">{lesson.questions.length} preguntas</p>
-                      
-                      <Link 
-                        href={`/lesson/${lesson.id}`}
-                        className="bg-green-500 text-white border-b-4 border-green-600 active:border-b-0 active:translate-y-[4px] px-6 py-3 rounded-2xl font-bold text-center hover:bg-green-400 transition-all flex items-center justify-center gap-2 w-full mt-auto"
-                      >
-                        <Play className="w-4 h-4 fill-current" />
-                        Jugar
-                      </Link>
-                    </div>
-                  ))}
-                </div>
-              )}
+            <div className="w-full">
+              <Catalog lessons={lessons} />
             </div>
           </div>
 

@@ -214,6 +214,17 @@ export async function getAllActivePlayers() {
   return data;
 }
 
+export async function getCompletedLessons(userId: string): Promise<string[]> {
+  const { data, error } = await supabase
+    .from("test_logs")
+    .select("lesson_id")
+    .eq("user_id", userId)
+    .eq("passed", true);
+  
+  if (error || !data) return [];
+  return Array.from(new Set(data.map(l => l.lesson_id)));
+}
+
 export async function addStarsToUserByEmail(email: string, amount: number): Promise<{ success: boolean; message: string }> {
   // First find user by email
   const { data: user, error: findError } = await supabase

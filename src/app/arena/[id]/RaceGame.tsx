@@ -433,17 +433,17 @@ export default function RaceGame({
         )}
       </div>
 
-      {/* Controls Overlay - Bottom */}
-      <div className="mt-auto z-30 p-4 sm:p-10 pointer-events-none">
+      {/* Controls Overlay - Fixed at bottom */}
+      <div className="absolute bottom-0 left-0 right-0 z-40 p-6 sm:p-10 pointer-events-none">
         {phase === "racing" && (
-          <div className="flex justify-center gap-4 sm:gap-8 max-w-2xl mx-auto w-full pointer-events-auto">
+          <div className="flex justify-center gap-6 sm:gap-10 max-w-2xl mx-auto w-full pointer-events-auto">
             <button
               onTouchStart={(e) => { e.preventDefault(); handleTouch("ArrowLeft"); }}
               onMouseDown={(e) => { e.preventDefault(); handleTouch("ArrowLeft"); }}
-              className={`w-16 h-16 sm:w-24 sm:h-24 sm:flex-1 rounded-full sm:rounded-2xl font-extrabold text-xl sm:text-3xl transition-all shadow-2xl border-2 sm:border-4 backdrop-blur-md active:scale-90 touch-none flex items-center justify-center ${
+              className={`w-20 h-20 sm:w-28 sm:h-28 rounded-full font-extrabold text-3xl transition-all shadow-2xl border-4 backdrop-blur-md active:scale-90 touch-none flex items-center justify-center ${
                 lastKey === "ArrowLeft" 
-                  ? "bg-blue-600/80 border-blue-400 text-white" 
-                  : "bg-white/10 border-white/20 text-white/60"
+                  ? "bg-blue-600/90 border-blue-400 text-white" 
+                  : "bg-black/20 border-white/20 text-white/40"
               }`}
             >
               ←
@@ -451,10 +451,10 @@ export default function RaceGame({
             <button
               onTouchStart={(e) => { e.preventDefault(); handleTouch("ArrowRight"); }}
               onMouseDown={(e) => { e.preventDefault(); handleTouch("ArrowRight"); }}
-              className={`w-16 h-16 sm:w-24 sm:h-24 sm:flex-1 rounded-full sm:rounded-2xl font-extrabold text-xl sm:text-3xl transition-all shadow-2xl border-2 sm:border-4 backdrop-blur-md active:scale-90 touch-none flex items-center justify-center ${
+              className={`w-20 h-20 sm:w-28 sm:h-28 rounded-full font-extrabold text-3xl transition-all shadow-2xl border-4 backdrop-blur-md active:scale-90 touch-none flex items-center justify-center ${
                 lastKey === "ArrowRight" 
-                  ? "bg-blue-600/80 border-blue-400 text-white" 
-                  : "bg-white/10 border-white/20 text-white/60"
+                  ? "bg-blue-600/90 border-blue-400 text-white" 
+                  : "bg-black/20 border-white/20 text-white/40"
               }`}
             >
               →

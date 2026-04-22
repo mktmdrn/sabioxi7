@@ -2,13 +2,9 @@
 
 import dynamic from "next/dynamic";
 
-const Avatar3D = dynamic(() => import("@/components/Avatar3D"), { ssr: false });
+import { AvatarConfig } from "@/actions/db";
 
-type AvatarConfig = {
-  color: string;
-  hat: string;
-  accessory: string;
-};
+const Avatar3D = dynamic(() => import("@/components/Avatar3D"), { ssr: false });
 
 export default function MiniAvatar({ config }: { config: AvatarConfig }) {
   return (

@@ -2,7 +2,7 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { getUsers, getTestLogs, activateUser, deactivateUser } from "@/actions/admin";
 import Link from "next/link";
-import { Shield, CheckCircle, XCircle, UserX, UserCheck, Activity } from "lucide-react";
+import { Shield, CheckCircle, XCircle, UserX, UserCheck, Activity, Rocket } from "lucide-react";
 
 export default async function AdminDashboardPage() {
   const session = await auth();
@@ -25,10 +25,10 @@ export default async function AdminDashboardPage() {
         <div className="flex-1"></div>
         <Link 
           href="/arena/practice" 
-          className="bg-amber-500 text-white px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-amber-400 transition-all flex items-center gap-2 shadow-lg shadow-amber-500/20"
+          className="bg-indigo-600 text-white px-6 py-3 rounded-2xl font-extrabold text-sm hover:bg-indigo-500 transition-all flex items-center gap-2 shadow-xl shadow-indigo-500/30 border-b-4 border-indigo-700 active:border-b-0 active:translate-y-1"
         >
-          <Activity className="w-4 h-4" />
-          Probar Estética Juego
+          <Rocket className="w-5 h-5" />
+          ENTRAR MODO PRÁCTICA (3D)
         </Link>
       </div>
 

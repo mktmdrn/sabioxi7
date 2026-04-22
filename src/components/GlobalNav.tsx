@@ -116,9 +116,14 @@ export function GlobalNav() {
             <Swords className="w-4 h-4 inline mr-1" /> Arena
           </Link>
           {role === "admin" && (
-            <Link href="/dashboard/admin" className={`text-sm font-medium transition-colors ${pathname === "/dashboard/admin" ? "text-amber-500" : "text-slate-400 hover:text-amber-500"}`}>
-              Admin
-            </Link>
+            <>
+              <Link href="/dashboard/admin" className={`text-sm font-medium transition-colors ${pathname === "/dashboard/admin" ? "text-amber-500" : "text-slate-400 hover:text-amber-500"}`}>
+                Admin
+              </Link>
+              <Link href="/arena/practice" className={`text-sm font-medium transition-colors ${pathname === "/arena/practice" ? "text-indigo-400" : "text-slate-400 hover:text-indigo-400"}`}>
+                Practice
+              </Link>
+            </>
           )}
         </div>
       </div>

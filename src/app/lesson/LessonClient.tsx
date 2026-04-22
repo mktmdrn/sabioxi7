@@ -128,38 +128,38 @@ export default function LessonClient({ lesson, userId }: { lesson: Lesson; userI
   }
 
   return (
-    <div className="fixed inset-0 z-[100] bg-white text-duo-foreground flex flex-col font-sans overflow-hidden">
+    <div className="fixed inset-0 top-16 z-40 bg-white text-duo-foreground flex flex-col font-sans overflow-hidden">
       {/* Header */}
-      <header className="p-3 md:p-6 flex items-center justify-between bg-white border-b-2 border-duo-gray shrink-0">
+      <header className="p-3 md:p-5 flex items-center justify-between bg-white border-b-2 border-duo-gray shrink-0">
         <button onClick={() => router.push("/dashboard")} className="text-duo-gray-dark hover:text-duo-foreground transition-colors p-1">
-          <X className="w-7 h-7 md:w-9 md:h-9" />
+          <X className="w-6 h-6 md:w-8 md:h-8" />
         </button>
         
         {/* Progress Bar */}
-        <div className="flex-1 mx-4 md:mx-10 h-3 md:h-5 bg-duo-gray rounded-full overflow-hidden">
+        <div className="flex-1 mx-4 md:mx-10 h-3 md:h-4 bg-duo-gray rounded-full overflow-hidden">
           <div 
             className="h-full bg-duo-green transition-all duration-500 relative" 
             style={{ width: `${progressPercent}%` }}
           >
-            <div className="absolute top-1 left-1 right-1 h-0.5 md:h-1.5 bg-white/30 rounded-full" />
+            <div className="absolute top-1 left-1 right-1 h-0.5 md:h-1 bg-white/30 rounded-full" />
           </div>
         </div>
 
-        <div className="flex items-center gap-2 bg-duo-yellow/10 px-3 py-1.5 md:px-5 md:py-2.5 rounded-2xl border-2 border-duo-yellow/20 shrink-0">
+        <div className="flex items-center gap-2 bg-duo-yellow/10 px-3 py-1 md:px-5 md:py-2 rounded-2xl border-2 border-duo-yellow/20 shrink-0">
           <Star className="w-4 h-4 md:w-6 md:h-6 text-duo-yellow fill-current" />
           <span className="font-black text-duo-yellow text-sm md:text-xl tabular-nums">{score}</span>
         </div>
       </header>
 
       {/* Question Area */}
-      <main className="flex-1 flex flex-col items-center justify-center p-4 md:p-10 min-h-0">
+      <main className="flex-1 flex flex-col items-center justify-center p-4 md:p-6 min-h-0 relative">
         <div className="max-w-3xl w-full flex flex-col h-full max-h-full">
-          <div className="flex-1 flex flex-col justify-center py-4 md:py-10 space-y-6 md:space-y-12">
-            <h2 className="text-xl sm:text-2xl md:text-4xl font-black text-duo-foreground text-center italic leading-tight px-2">
+          <div className="flex-1 flex flex-col justify-center py-2 md:py-6 space-y-4 md:space-y-8">
+            <h2 className="text-lg sm:text-xl md:text-3xl font-black text-duo-foreground text-center italic leading-tight px-2 shrink-0">
               {currentQ.question}
             </h2>
 
-            <div className="grid grid-cols-1 gap-2.5 md:gap-4 w-full max-w-2xl mx-auto overflow-y-auto pr-1 custom-scrollbar">
+            <div className="grid grid-cols-1 gap-2 md:gap-3 w-full max-w-2xl mx-auto overflow-y-auto pr-1 custom-scrollbar pb-4">
               {shuffledOptions.map((option, idx) => {
                 const isSelected = selectedOption === option;
                 const isCorrect = status === "correct" && isSelected;
@@ -171,7 +171,7 @@ export default function LessonClient({ lesson, userId }: { lesson: Lesson; userI
                     onClick={() => handleOptionSelect(option)}
                     disabled={status !== "idle"}
                     className={`
-                      group w-full p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] text-left font-black text-base sm:text-lg md:text-2xl border-2 border-b-4 md:border-b-8 transition-all
+                      group w-full p-4 md:p-5 rounded-2xl md:rounded-3xl text-left font-black text-base md:text-xl border-2 border-b-4 md:border-b-8 transition-all
                       ${status === "idle" 
                         ? isSelected 
                           ? "bg-duo-blue/10 border-duo-blue text-duo-blue translate-y-1 md:translate-y-2 border-b-0 shadow-inner" 
@@ -183,8 +183,8 @@ export default function LessonClient({ lesson, userId }: { lesson: Lesson; userI
                             : "bg-white border-duo-gray text-duo-foreground opacity-30"}
                     `}
                   >
-                    <div className="flex items-center gap-4 md:gap-6">
-                      <span className={`w-8 h-8 md:w-10 md:h-10 rounded-xl flex items-center justify-center shrink-0 border-2 font-black text-xs md:text-sm shadow-sm ${isSelected ? "bg-duo-blue border-duo-blue text-white" : "bg-white border-duo-gray text-duo-gray-dark"}`}>
+                    <div className="flex items-center gap-3 md:gap-5">
+                      <span className={`w-8 h-8 md:w-10 md:h-10 rounded-xl flex items-center justify-center shrink-0 border-2 font-black text-[10px] md:text-xs shadow-sm ${isSelected ? "bg-duo-blue border-duo-blue text-white" : "bg-white border-duo-gray text-duo-gray-dark"}`}>
                         {idx + 1}
                       </span>
                       <span className="leading-tight break-words">{option}</span>
@@ -197,36 +197,35 @@ export default function LessonClient({ lesson, userId }: { lesson: Lesson; userI
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className={`p-4 md:p-6 border-t-2 shrink-0 transition-all duration-500 ${
-        status === "correct" ? "bg-duo-green/10 border-duo-green/20" : 
-        status === "incorrect" ? "bg-duo-red/10 border-duo-red/20" : 
-        "bg-white border-duo-gray translate-y-full opacity-0 pointer-events-none"
-      }`}>
-        <div className="max-w-2xl mx-auto w-full flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            {status === "correct" && (
-              <div className="flex items-center gap-3 text-duo-green animate-in slide-in-from-bottom-2">
-                <div className="w-10 h-10 md:w-12 md:h-12 bg-white rounded-full flex items-center justify-center border-2 border-duo-green shadow-sm">
-                  <Check className="w-6 h-6 md:w-8 md:h-8" />
+      {/* Footer Area - Conditional to prevent white space gap */}
+      {status !== "idle" && (
+        <footer className={`p-4 md:p-6 border-t-2 shrink-0 transition-all duration-500 animate-in slide-in-from-bottom-full ${
+          status === "correct" ? "bg-duo-green/10 border-duo-green/20" : 
+          "bg-duo-red/10 border-duo-red/20"
+        }`}>
+          <div className="max-w-2xl mx-auto w-full flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              {status === "correct" && (
+                <div className="flex items-center gap-3 text-duo-green animate-in slide-in-from-bottom-2">
+                  <div className="w-10 h-10 md:w-12 md:h-12 bg-white rounded-full flex items-center justify-center border-2 border-duo-green shadow-sm">
+                    <Check className="w-6 h-6 md:w-8 md:h-8" />
+                  </div>
+                  <span className="text-lg md:text-xl font-black uppercase italic tracking-tight">¡Excelente!</span>
                 </div>
-                <span className="text-lg md:text-xl font-black uppercase italic tracking-tight">¡Excelente!</span>
-              </div>
-            )}
-            {status === "incorrect" && (
-              <div className="flex items-center gap-3 text-duo-red text-center sm:text-left animate-in slide-in-from-bottom-2">
-                <div className="w-10 h-10 md:w-12 md:h-12 bg-white rounded-full flex items-center justify-center border-2 border-duo-red hidden sm:flex shadow-sm">
-                  <X className="w-6 h-6 md:w-8 md:h-8" />
+              )}
+              {status === "incorrect" && (
+                <div className="flex items-center gap-3 text-duo-red text-center sm:text-left animate-in slide-in-from-bottom-2">
+                  <div className="w-10 h-10 md:w-12 md:h-12 bg-white rounded-full flex items-center justify-center border-2 border-duo-red hidden sm:flex shadow-sm">
+                    <X className="w-6 h-6 md:w-8 md:h-8" />
+                  </div>
+                  <div>
+                    <p className="text-[8px] md:text-[10px] font-black uppercase tracking-widest opacity-70">Respuesta correcta:</p>
+                    <p className="font-bold text-base md:text-lg leading-tight">{currentQ.correctAnswer}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-[8px] md:text-[10px] font-black uppercase tracking-widest opacity-70">Respuesta correcta:</p>
-                  <p className="font-bold text-base md:text-lg leading-tight">{currentQ.correctAnswer}</p>
-                </div>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
 
-          {status !== "idle" && (
             <button
               onClick={handleNext}
               className={`
@@ -238,9 +237,9 @@ export default function LessonClient({ lesson, userId }: { lesson: Lesson; userI
             >
               SIGUIENTE
             </button>
-          )}
-        </div>
-      </footer>
+          </div>
+        </footer>
+      )}
     </div>
   );
 }

@@ -131,24 +131,26 @@ export default function LessonClient({ lesson, userId }: { lesson: Lesson; userI
     <div className="fixed inset-0 top-16 z-40 bg-white text-duo-foreground flex flex-col font-sans overflow-hidden">
       {/* Header */}
       <header className="p-3 md:p-5 flex items-center justify-between bg-white border-b-2 border-duo-gray shrink-0">
-        <button onClick={() => router.push("/dashboard")} className="text-duo-gray-dark hover:text-duo-foreground transition-colors p-1">
+        <button onClick={() => router.push("/dashboard")} className="text-duo-gray-dark hover:text-duo-foreground transition-colors p-1 shrink-0">
           <X className="w-6 h-6 md:w-8 md:h-8" />
         </button>
         
-        {/* Progress Bar */}
-        <div className="flex-1 mx-4 md:mx-10 h-3 md:h-4 bg-duo-gray rounded-full overflow-hidden">
-          <div 
-            className="h-full bg-duo-green transition-all duration-500 relative" 
-            style={{ width: `${progressPercent}%` }}
-          >
-            <div className="absolute top-1 left-1 right-1 h-0.5 md:h-1 bg-white/30 rounded-full" />
+        {/* Progress Bar & Counter */}
+        <div className="flex-1 mx-4 md:mx-10 flex flex-col items-center">
+          <div className="w-full h-3 md:h-4 bg-duo-gray rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-duo-green transition-all duration-500 relative" 
+              style={{ width: `${progressPercent}%` }}
+            >
+              <div className="absolute top-1 left-1 right-1 h-0.5 md:h-1 bg-white/30 rounded-full" />
+            </div>
           </div>
+          <span className="text-[10px] md:text-xs font-black text-duo-gray-dark uppercase tracking-widest mt-1.5 tabular-nums">
+            {currentIndex + 1} / {totalQuestions}
+          </span>
         </div>
 
-        <div className="flex items-center gap-2 bg-duo-yellow/10 px-3 py-1 md:px-5 md:py-2 rounded-2xl border-2 border-duo-yellow/20 shrink-0">
-          <Star className="w-4 h-4 md:w-6 md:h-6 text-duo-yellow fill-current" />
-          <span className="font-black text-duo-yellow text-sm md:text-xl tabular-nums">{score}</span>
-        </div>
+        <div className="w-8 md:w-12 shrink-0" /> {/* Spacer to balance the X button */}
       </header>
 
       {/* Question Area */}

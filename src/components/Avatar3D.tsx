@@ -48,111 +48,129 @@ function CharacterBody({ config }: { config: AvatarConfig }) {
     }
   });
 
-  const outfitColor = OUTFIT_COLOR[config.color] || OUTFIT_COLOR.blue;
+  const accentColor = OUTFIT_COLOR[config.color] || OUTFIT_COLOR.blue;
   const outfitDark = useMemo(() => {
-    const c = new THREE.Color(outfitColor);
+    const c = new THREE.Color(accentColor);
     c.multiplyScalar(0.7);
     return "#" + c.getHexString();
-  }, [outfitColor]);
+  }, [accentColor]);
+
+  // Materials PBR
+  const skinMat = { color: SKIN, roughness: 0.55, metalness: 0 };
+  const clothWhiteMat = { color: "#ffffff", roughness: 0.85, metalness: 0 };
+  const clothAccentMat = { color: accentColor, roughness: 0.8, metalness: 0 };
+  const pantsMat = { color: "#334155", roughness: 0.9, metalness: 0 };
+  const rubberMat = { color: "#f8fafc", roughness: 0.3, metalness: 0.1 };
+  const soleMat = { color: "#1e293b", roughness: 0.6, metalness: 0 };
 
   return (
     <group ref={groupRef}>
       {/* ===== LEGS ===== */}
       {/* Left leg */}
       <group position={[-0.18, -1.2, 0]}>
-        {/* Upper leg (tapered) */}
+        {/* Upper leg */}
         <mesh position={[0, -0.15, 0]}>
           <cylinderGeometry args={[0.11, 0.08, 0.45, 12]} />
-          <meshStandardMaterial color="#374151" roughness={0.7} />
+          <meshStandardMaterial {...pantsMat} />
         </mesh>
-        {/* Knee / joint */}
+        {/* Knee */}
         <mesh position={[0, -0.38, 0]}>
           <sphereGeometry args={[0.08, 12, 12]} />
-          <meshStandardMaterial color="#374151" roughness={0.7} />
+          <meshStandardMaterial {...pantsMat} />
         </mesh>
         {/* Lower leg */}
         <mesh position={[0, -0.65, 0]}>
           <cylinderGeometry args={[0.08, 0.07, 0.45, 12]} />
-          <meshStandardMaterial color="#374151" roughness={0.7} />
+          <meshStandardMaterial {...pantsMat} />
         </mesh>
-        {/* Shoe (more rounded) */}
-        <mesh position={[0, -0.9, 0.08]} scale={[1, 1, 1.2]} rotation={[Math.PI / 2, 0, 0]}>
-          <capsuleGeometry args={[0.1, 0.15, 8, 16]} />
-          <meshStandardMaterial color="#111827" roughness={0.5} />
+        {/* Shoe Body */}
+        <mesh position={[0, -0.9, 0.08]} scale={[1, 1, 1.25]} rotation={[Math.PI / 2, 0, 0]}>
+          <capsuleGeometry args={[0.11, 0.15, 8, 16]} />
+          <meshStandardMaterial {...rubberMat} />
+        </mesh>
+        {/* Shoe Sole */}
+        <mesh position={[0, -1.02, 0.08]} scale={[1.1, 0.2, 1.3]}>
+          <boxGeometry args={[0.2, 0.1, 0.3]} />
+          <meshStandardMaterial {...soleMat} />
         </mesh>
       </group>
 
       {/* Right leg */}
       <group position={[0.18, -1.2, 0]}>
-        {/* Upper leg */}
         <mesh position={[0, -0.15, 0]}>
           <cylinderGeometry args={[0.11, 0.08, 0.45, 12]} />
-          <meshStandardMaterial color="#374151" roughness={0.7} />
+          <meshStandardMaterial {...pantsMat} />
         </mesh>
-        {/* Knee */}
         <mesh position={[0, -0.38, 0]}>
           <sphereGeometry args={[0.08, 12, 12]} />
-          <meshStandardMaterial color="#374151" roughness={0.7} />
+          <meshStandardMaterial {...pantsMat} />
         </mesh>
-        {/* Lower leg */}
         <mesh position={[0, -0.65, 0]}>
           <cylinderGeometry args={[0.08, 0.07, 0.45, 12]} />
-          <meshStandardMaterial color="#374151" roughness={0.7} />
+          <meshStandardMaterial {...pantsMat} />
         </mesh>
-        {/* Shoe */}
-        <mesh position={[0, -0.9, 0.08]} scale={[1, 1, 1.2]} rotation={[Math.PI / 2, 0, 0]}>
-          <capsuleGeometry args={[0.1, 0.15, 8, 16]} />
-          <meshStandardMaterial color="#111827" roughness={0.5} />
+        <mesh position={[0, -0.9, 0.08]} scale={[1, 1, 1.25]} rotation={[Math.PI / 2, 0, 0]}>
+          <capsuleGeometry args={[0.11, 0.15, 8, 16]} />
+          <meshStandardMaterial {...rubberMat} />
+        </mesh>
+        <mesh position={[0, -1.02, 0.08]} scale={[1.1, 0.2, 1.3]}>
+          <boxGeometry args={[0.2, 0.1, 0.3]} />
+          <meshStandardMaterial {...soleMat} />
         </mesh>
       </group>
 
-      {/* ===== TORSO (Tapered / V-Shape) ===== */}
+      {/* ===== TORSO (Sporty White + Accents) ===== */}
       <group position={[0, -0.6, 0]}>
-        {/* Main Chest (Wide) */}
+        {/* Chest (White shirt) */}
         <mesh position={[0, 0.25, 0]}>
           <capsuleGeometry args={[0.26, 0.3, 12, 24]} />
-          <meshStandardMaterial color={outfitColor} roughness={0.5} />
+          <meshStandardMaterial {...clothWhiteMat} />
         </mesh>
-        {/* Waist (Narrower) */}
+        {/* Sporty Stripe Accent */}
+        <mesh position={[0, 0.25, 0.02]} scale={[1.02, 0.4, 1.02]}>
+          <capsuleGeometry args={[0.26, 0.1, 12, 24]} />
+          <meshStandardMaterial {...clothAccentMat} />
+        </mesh>
+        {/* Waist (White shirt continuation) */}
         <mesh position={[0, -0.05, 0]}>
           <cylinderGeometry args={[0.22, 0.2, 0.4, 16]} />
-          <meshStandardMaterial color={outfitColor} roughness={0.5} />
+          <meshStandardMaterial {...clothWhiteMat} />
         </mesh>
-        {/* Hips (Rounded bottom) */}
+        {/* Hips (Pants start) */}
         <mesh position={[0, -0.25, 0]}>
           <sphereGeometry args={[0.21, 16, 16, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2]} />
-          <meshStandardMaterial color={outfitColor} roughness={0.5} />
+          <meshStandardMaterial {...pantsMat} />
         </mesh>
       </group>
 
-      {/* Collar Detail */}
-      <mesh position={[0, -0.22, 0.22]} rotation={[0.4, 0, 0]}>
-        <planeGeometry args={[0.2, 0.1]} />
-        <meshStandardMaterial color={outfitDark} roughness={0.5} side={THREE.DoubleSide} />
+      {/* Collar Accent */}
+      <mesh position={[0, -0.22, 0.23]} rotation={[0.4, 0, 0]}>
+        <planeGeometry args={[0.18, 0.08]} />
+        <meshStandardMaterial color={accentColor} roughness={0.5} side={THREE.DoubleSide} />
       </mesh>
 
       {/* ===== ARMS ===== */}
       {/* Left arm */}
       <group position={[-0.38, -0.38, 0]} rotation={[0, 0, 0.2]}>
-        {/* Upper arm */}
+        {/* Upper arm (Sleeve) */}
         <mesh position={[0, -0.15, 0]}>
-          <capsuleGeometry args={[0.075, 0.25, 8, 16]} />
-          <meshStandardMaterial color={outfitColor} roughness={0.5} />
+          <capsuleGeometry args={[0.08, 0.25, 8, 16]} />
+          <meshStandardMaterial {...clothWhiteMat} />
         </mesh>
         {/* Elbow */}
         <mesh position={[0, -0.3, 0]}>
           <sphereGeometry args={[0.07, 8, 8]} />
-          <meshStandardMaterial color={SKIN} roughness={0.6} />
+          <meshStandardMaterial {...skinMat} />
         </mesh>
         {/* Forearm */}
         <mesh position={[0, -0.48, 0]}>
           <cylinderGeometry args={[0.065, 0.055, 0.3, 8]} />
-          <meshStandardMaterial color={SKIN} roughness={0.6} />
+          <meshStandardMaterial {...skinMat} />
         </mesh>
-        {/* Hand (Mitten style) */}
+        {/* Hand */}
         <mesh position={[0, -0.68, 0]} scale={[1, 1.2, 0.6]}>
           <sphereGeometry args={[0.08, 12, 12]} />
-          <meshStandardMaterial color={SKIN} roughness={0.6} />
+          <meshStandardMaterial {...skinMat} />
         </mesh>
       </group>
 
@@ -160,23 +178,23 @@ function CharacterBody({ config }: { config: AvatarConfig }) {
       <group position={[0.38, -0.38, 0]} rotation={[0, 0, -0.2]}>
         {/* Upper arm */}
         <mesh position={[0, -0.15, 0]}>
-          <capsuleGeometry args={[0.075, 0.25, 8, 16]} />
-          <meshStandardMaterial color={outfitColor} roughness={0.5} />
+          <capsuleGeometry args={[0.08, 0.25, 8, 16]} />
+          <meshStandardMaterial {...clothWhiteMat} />
         </mesh>
         {/* Elbow */}
         <mesh position={[0, -0.3, 0]}>
           <sphereGeometry args={[0.07, 8, 8]} />
-          <meshStandardMaterial color={SKIN} roughness={0.6} />
+          <meshStandardMaterial {...skinMat} />
         </mesh>
         {/* Forearm */}
         <mesh position={[0, -0.48, 0]}>
           <cylinderGeometry args={[0.065, 0.055, 0.3, 8]} />
-          <meshStandardMaterial color={SKIN} roughness={0.6} />
+          <meshStandardMaterial {...skinMat} />
         </mesh>
-        {/* Hand (Mitten style) */}
+        {/* Hand */}
         <mesh position={[0, -0.68, 0]} scale={[1, 1.2, 0.6]}>
           <sphereGeometry args={[0.08, 12, 12]} />
-          <meshStandardMaterial color={SKIN} roughness={0.6} />
+          <meshStandardMaterial {...skinMat} />
         </mesh>
       </group>
 

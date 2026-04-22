@@ -19,6 +19,8 @@ export type Lesson = {
   title: string;
   createdAt: number;
   questions: Question[];
+  type: string;
+  durationMinutes: number;
 };
 
 export async function addLesson(title: string, questions: Question[]): Promise<string> {
@@ -61,10 +63,11 @@ export async function recordTestLog(userId: string, lessonId: string, score: num
   if (error) console.error("Could not record test log:", error);
 }
 
-export async function getLessons(): Promise<Lesson[]> {
+export async function getLessons(type: string = "lesson"): Promise<Lesson[]> {
   const { data: lessonsData, error: lError } = await supabase
     .from("lessons")
-    .select("id, title, created_at")
+    .select("id, title, created_at, type, duration_minutes")
+    .eq("type", type)
     .order("created_at", { ascending: true });
 
   if (lError || !lessonsData) return [];
@@ -87,6 +90,8 @@ export async function getLessons(): Promise<Lesson[]> {
       title: l.title,
       createdAt: l.created_at,
       questions: qList,
+      type: l.type,
+      durationMinutes: l.duration_minutes || 0
     };
   });
 
@@ -96,7 +101,7 @@ export async function getLessons(): Promise<Lesson[]> {
 export async function getLessonById(id: string): Promise<Lesson | null> {
   const { data: lData, error: lError } = await supabase
     .from("lessons")
-    .select("id, title, created_at")
+    .select("id, title, created_at, type, duration_minutes")
     .eq("id", id)
     .single();
 
@@ -113,6 +118,8 @@ export async function getLessonById(id: string): Promise<Lesson | null> {
     id: lData.id,
     title: lData.title,
     createdAt: lData.created_at,
+    type: lData.type,
+    durationMinutes: lData.duration_minutes || 0,
     questions: qData.map((q) => ({
       question: q.question,
       correctAnswer: q.correct_answer,

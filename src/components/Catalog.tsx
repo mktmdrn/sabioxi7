@@ -2,12 +2,14 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import { Play, GraduationCap, BookOpen, ChevronDown, ListChecks } from "lucide-react";
+import { Play, GraduationCap, BookOpen, ChevronDown, ListChecks, Clock } from "lucide-react";
 
 type Lesson = {
   id: string;
   title: string;
   questions: any[];
+  type?: string;
+  durationMinutes?: number;
 };
 
 type ParsedLesson = Lesson & {
@@ -23,12 +25,22 @@ const CATEGORY_META: Record<string, { label: string; color: string; border: stri
   Otros: { label: "Lecciones sin categoría", color: "text-slate-400", border: "border-slate-500/30", bg: "bg-slate-500/10" },
 };
 
-export default function Catalog({ lessons }: { lessons: Lesson[] }) {
+export default function Catalog({ lessons, title = "Catálogo de Cursos", icon: Icon = GraduationCap }: { lessons: Lesson[], title?: string, icon?: any }) {
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [selectedSubject, setSelectedSubject] = useState<string>("");
 
   const parsedLessons = useMemo<ParsedLesson[]>(() => {
     return lessons.map(lesson => {
+      // For exams, title is "[EXAMEN FINAL] Subject"
+      if (lesson.type === "exam") {
+        return { 
+          ...lesson, 
+          category: "ASIR", // Default to ASIR for now as requested
+          subject: lesson.title.replace("[EXAMEN FINAL] ", ""), 
+          cleanTitle: "Examen de Certificación" 
+        };
+      }
+
       const match = lesson.title.match(/^\[(.*?)\] \[(.*?)\] (.*)/);
       if (match) {
         return { ...lesson, category: match[1], subject: match[2], cleanTitle: match[3] };
@@ -67,8 +79,8 @@ export default function Catalog({ lessons }: { lessons: Lesson[] }) {
   return (
     <div className="space-y-6">
       <h3 className="text-xl font-bold text-white flex items-center gap-2">
-        <GraduationCap className="w-6 h-6 text-indigo-400" />
-        Catálogo de Cursos
+        <Icon className="w-6 h-6 text-indigo-400" />
+        {title}
       </h3>
 
       {/* Filters Row */}
@@ -131,7 +143,7 @@ export default function Catalog({ lessons }: { lessons: Lesson[] }) {
             <span className="text-white font-medium text-sm">{effectiveSubject}</span>
           </div>
           <span className="ml-auto text-xs font-bold text-slate-500 bg-slate-800 px-2.5 py-1 rounded-lg">
-            {filteredLessons.length} temas
+            {filteredLessons.length} {filteredLessons[0].type === "exam" ? "exámenes" : "temas"}
           </span>
         </div>
       )}
@@ -140,14 +152,14 @@ export default function Catalog({ lessons }: { lessons: Lesson[] }) {
       {!selectedCategory && (
         <div className="bg-slate-900/50 border border-dashed border-slate-700 rounded-2xl p-10 text-center">
           <ListChecks className="w-12 h-12 text-slate-600 mx-auto mb-4" />
-          <p className="text-slate-400 font-medium">Selecciona un curso y asignatura para ver las lecciones disponibles.</p>
+          <p className="text-slate-400 font-medium">Selecciona un curso y asignatura para ver las opciones disponibles.</p>
         </div>
       )}
 
       {selectedCategory && !effectiveSubject && subjects.length > 1 && (
         <div className="bg-slate-900/50 border border-dashed border-slate-700 rounded-2xl p-10 text-center">
           <BookOpen className="w-12 h-12 text-slate-600 mx-auto mb-4" />
-          <p className="text-slate-400 font-medium">Selecciona una asignatura para ver los temas.</p>
+          <p className="text-slate-400 font-medium">Selecciona una asignatura para continuar.</p>
         </div>
       )}
 
@@ -156,23 +168,30 @@ export default function Catalog({ lessons }: { lessons: Lesson[] }) {
           {filteredLessons.map((lesson, idx) => (
             <div
               key={lesson.id}
-              className="flex items-center gap-4 bg-slate-900 border border-slate-800 p-4 rounded-2xl hover:border-slate-700 hover:bg-slate-800/50 transition-all group"
+              className={`flex items-center gap-4 border p-4 rounded-2xl transition-all group ${lesson.type === "exam" ? "bg-amber-500/5 border-amber-500/20 hover:border-amber-500/40" : "bg-slate-900 border-slate-800 hover:border-slate-700 hover:bg-slate-800/50"}`}
             >
-              <div className="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center font-bold text-slate-500 group-hover:text-indigo-400 group-hover:bg-indigo-500/10 transition-colors shrink-0 text-sm">
+              <div className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold transition-colors shrink-0 text-sm ${lesson.type === "exam" ? "bg-amber-500 text-slate-900" : "bg-slate-800 text-slate-500 group-hover:text-indigo-400 group-hover:bg-indigo-500/10"}`}>
                 {idx + 1}
               </div>
               <div className="flex-1 min-w-0">
                 <h5 className="font-bold text-white text-sm truncate" title={lesson.cleanTitle}>
                   {lesson.cleanTitle}
                 </h5>
-                <p className="text-slate-500 text-xs mt-0.5">{lesson.questions.length} preguntas</p>
+                <div className="flex items-center gap-3 mt-0.5">
+                  <p className="text-slate-500 text-xs">{lesson.questions.length} preguntas</p>
+                  {lesson.durationMinutes && (
+                    <p className="text-amber-500/80 text-xs font-bold flex items-center gap-1">
+                      <Clock className="w-3 h-3" /> {lesson.durationMinutes} min
+                    </p>
+                  )}
+                </div>
               </div>
               <Link
-                href={`/lesson/${lesson.id}`}
-                className="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2.5 rounded-xl transition-all shadow-lg shadow-indigo-500/20 active:scale-95 flex items-center gap-2 font-bold text-sm shrink-0"
+                href={`/${lesson.type === "exam" ? "exam" : "lesson"}/${lesson.id}`}
+                className={`${lesson.type === "exam" ? "bg-amber-500 hover:bg-amber-400 text-slate-900" : "bg-indigo-600 hover:bg-indigo-500 text-white"} px-4 py-2.5 rounded-xl transition-all shadow-lg active:scale-95 flex items-center gap-2 font-bold text-sm shrink-0`}
               >
                 <Play className="w-4 h-4 fill-current" />
-                <span className="hidden sm:inline">Jugar</span>
+                <span className="hidden sm:inline">{lesson.type === "exam" ? "Empezar Examen" : "Jugar"}</span>
               </Link>
             </div>
           ))}

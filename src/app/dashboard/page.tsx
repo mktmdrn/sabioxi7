@@ -1,7 +1,7 @@
 import { auth, signOut } from "@/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { LayoutDashboard, User, Mail, Shield, LogOut, ExternalLink, Play, Star, PlusCircle, Sparkles, Swords } from "lucide-react";
+import { LayoutDashboard, User, Mail, Shield, LogOut, ExternalLink, Play, Star, PlusCircle, Sparkles, Swords, Timer } from "lucide-react";
 import { getUserPoints, getLessons, getAvatarConfig, getUserXp } from "@/actions/db";
 import { calculateLevel, getRankInfo } from "@/lib/levels";
 import { getChallengesForUser } from "@/actions/arena";
@@ -13,7 +13,12 @@ export default async function DashboardPage() {
   const userId = session?.user?.id;
   const role = (session?.user as any)?.role;
   const points = userId ? await getUserPoints(userId) : 0;
-  const lessons = await getLessons();
+  
+  const [lessons, exams] = await Promise.all([
+    getLessons("lesson"),
+    getLessons("exam")
+  ]);
+
   const avatarConfig = userId ? await getAvatarConfig(userId) : { color: "blue", hat: "none", accessory: "none" };
   const xp = userId ? await getUserXp(userId) : 0;
   const level = calculateLevel(xp);
@@ -33,7 +38,7 @@ export default async function DashboardPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Welcome Card */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className="lg:col-span-2 space-y-12">
             <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-3xl p-8 shadow-xl shadow-blue-500/10 relative overflow-hidden">
               <div className="relative z-10">
                 <h2 className="text-3xl font-bold text-white mb-2">¡Hola, {session.user?.name}! 👋</h2>
@@ -60,13 +65,19 @@ export default async function DashboardPage() {
                       </span>
                     )}
                   </Link>
-                  <button className="bg-white/10 text-white border border-white/20 px-6 py-3 rounded-2xl font-semibold hover:bg-white/20 transition-colors flex items-center gap-2">
-                    Ver Perfil <ExternalLink className="w-4 h-4" />
-                  </button>
                 </div>
               </div>
               {/* Background abstract shape */}
               <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/4 blur-3xl" />
+            </div>
+
+            {/* Exams Section */}
+            <div className="w-full">
+              <Catalog 
+                lessons={exams} 
+                title="Exámenes de Certificación Oficial" 
+                icon={Timer} 
+              />
             </div>
 
             {/* Lessons Section */}

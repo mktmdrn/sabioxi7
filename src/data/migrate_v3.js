@@ -11,11 +11,13 @@ async function migrate() {
     await client.connect();
     console.log("Connected to Supabase Postgres.");
 
+    // Add type and duration to lessons
     await client.query(`
-      ALTER TABLE users
-        ADD COLUMN IF NOT EXISTS avatar_config JSONB DEFAULT '{"color":"blue","hat":"none","accessory":"none"}'::jsonb;
+      ALTER TABLE lessons 
+        ADD COLUMN IF NOT EXISTS type TEXT DEFAULT 'lesson',
+        ADD COLUMN IF NOT EXISTS duration_minutes INTEGER DEFAULT 0;
     `);
-    console.log("Added avatar_config column to users table.");
+    console.log("Updated lessons table with type and duration.");
 
     console.log("Migration v3 completed successfully.");
   } catch (err) {

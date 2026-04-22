@@ -102,20 +102,26 @@ function CharacterBody({ config }: { config: AvatarConfig }) {
           </group>
         ))}
 
-        {/* ── HAIR (simple cap) ── */}
+        {/* ── HAIR (upward swept style) ── */}
         <group>
-          {/* Hair base dome */}
-          <mesh position={[0, 0.1, -0.04]} scale={[1.08, 0.8, 1.08]}>
-            <sphereGeometry args={[0.39, 48, 32, 0, Math.PI * 2, 0, Math.PI * 0.55]} />
+          {/* Hair base dome (rotated back to clear forehead) */}
+          <mesh position={[0, 0.1, -0.06]} rotation={[-0.25, 0, 0]} scale={[1.08, 0.8, 1.1]}>
+            <sphereGeometry args={[0.39, 48, 32, 0, Math.PI * 2, 0, Math.PI * 0.52]} />
+            <meshPhysicalMaterial {...hairClay} />
+          </mesh>
+
+          {/* Upward swept volume (Pompadour style) */}
+          <mesh position={[0, 0.28, 0.12]} rotation={[0.4, 0, 0]} scale={[0.9, 0.45, 0.7]}>
+            <sphereGeometry args={[0.32, 32, 24]} />
             <meshPhysicalMaterial {...hairClay} />
           </mesh>
           
-          {/* Spike variant */}
+          {/* Spike variant (integrated with swept base) */}
           {config.hair === "spike" && (
             <group position={[0, 0.4, 0]}>
-              {[[-0.12, 0.08, 0.18], [0, 0.18, 0.22], [0.12, 0.08, 0.18]].map((p, i) => (
-                <mesh key={i} position={[p[0], p[1], p[2]]} rotation={[p[2] * 1.2, 0, 0]}>
-                  <coneGeometry args={[0.07, 0.22, 12]} />
+              {[[-0.12, 0.15, 0.1], [0, 0.25, 0.15], [0.12, 0.15, 0.1]].map((p, i) => (
+                <mesh key={i} position={[p[0], p[1], p[2]]} rotation={[p[2] * 1.5, 0, 0]}>
+                  <coneGeometry args={[0.07, 0.25, 12]} />
                   <meshPhysicalMaterial {...hairClay} />
                 </mesh>
               ))}

@@ -24,7 +24,11 @@ export default function GeneratorPage() {
   const [selectedLessonId, setSelectedLessonId] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   
-  const [title, setTitle] = useState("");
+  // New structured title states
+  const [course, setCourse] = useState("");
+  const [subject, setSubject] = useState("");
+  const [lessonTitle, setLessonTitle] = useState("");
+  
   const [input, setInput] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -38,6 +42,17 @@ export default function GeneratorPage() {
     fetchAll();
   }, []);
 
+  // Extract unique courses and subjects from existing lessons
+  const existingCourses = Array.from(new Set(allLessons.map(l => {
+    const match = l.title.match(/^\[(.*?)\]/);
+    return match ? match[1] : null;
+  }).filter(Boolean))) as string[];
+
+  const existingSubjects = Array.from(new Set(allLessons.map(l => {
+    const match = l.title.match(/^\[.*?\] \[(.*?)\]/);
+    return match ? match[1] : null;
+  }).filter(Boolean))) as string[];
+
   if (status === "loading") {
     return <div className="min-h-screen bg-[#f7f7f7] flex items-center justify-center font-black text-duo-blue uppercase tracking-widest animate-pulse">Cargando Panel...</div>;
   }
@@ -50,7 +65,19 @@ export default function GeneratorPage() {
     const lesson = allLessons.find(l => l.id === id);
     if (lesson) {
       setSelectedLessonId(id);
-      setTitle(lesson.title);
+      
+      // Parse structured title: [Course] [Subject] Title
+      const match = lesson.title.match(/^\[(.*?)\] \[(.*?)\] (.*)/);
+      if (match) {
+        setCourse(match[1]);
+        setSubject(match[2]);
+        setLessonTitle(match[3]);
+      } else {
+        setCourse("");
+        setSubject("");
+        setLessonTitle(lesson.title);
+      }
+
       // Convert questions to text format
       const text = lesson.questions.map(q => {
         return `${q.question}\n${q.correctAnswer}\n${q.wrongAnswers[0]}\n${q.wrongAnswers[1]}\n${q.wrongAnswers[2]}`;
@@ -90,19 +117,26 @@ export default function GeneratorPage() {
     setError(null);
     setSuccess(false);
     
+    if (!course || !subject || !lessonTitle) {
+      setError("Faltan campos: Curso, Asignatura y Título son obligatorios.");
+      return;
+    }
+
     const questions = validateAndParse(input);
     if (!questions) return;
+
+    const fullTitle = `[${course}] [${subject}] ${lessonTitle}`;
 
     setIsSubmitting(true);
     try {
       if (mode === "create") {
-        await addLesson(title || "Lección sin título", questions);
+        await addLesson(fullTitle, questions);
       } else {
-        await updateLesson(selectedLessonId, title, questions);
+        await updateLesson(selectedLessonId, fullTitle, questions);
       }
       setSuccess(true);
       if (mode === "create") {
-        setTitle("");
+        setLessonTitle("");
         setInput("");
       }
       setTimeout(() => {
@@ -203,15 +237,49 @@ export default function GeneratorPage() {
             </div>
           </div>
 
-          <div className="mb-10 group">
-            <label className="block text-xs font-black uppercase tracking-[0.3em] text-duo-gray-dark mb-3 ml-2 group-focus-within:text-duo-blue transition-colors">Título del Desafío</label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Ej: [ASIR] [Redes] Protocolos de Capa 3"
-              className="w-full bg-[#f7f7f7] border-2 border-duo-gray border-b-4 rounded-[1.5rem] p-6 text-duo-foreground focus:outline-none focus:border-duo-blue transition-all font-black text-2xl uppercase italic tracking-tighter placeholder:opacity-30"
-            />
+          <div className="mb-10 space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="group">
+                <label className="block text-xs font-black uppercase tracking-[0.3em] text-duo-gray-dark mb-3 ml-2 group-focus-within:text-duo-blue transition-colors">Nombre del Curso</label>
+                <input
+                  type="text"
+                  list="course-list"
+                  value={course}
+                  onChange={(e) => setCourse(e.target.value)}
+                  placeholder="Ej: ASIR, DAW, 1º ESO..."
+                  className="w-full bg-[#f7f7f7] border-2 border-duo-gray border-b-4 rounded-[1.5rem] p-6 text-duo-foreground focus:outline-none focus:border-duo-blue transition-all font-black text-xl uppercase italic tracking-tighter placeholder:opacity-30"
+                />
+                <datalist id="course-list">
+                  {existingCourses.map(c => <option key={c} value={c} />)}
+                </datalist>
+              </div>
+
+              <div className="group">
+                <label className="block text-xs font-black uppercase tracking-[0.3em] text-duo-gray-dark mb-3 ml-2 group-focus-within:text-duo-blue transition-colors">Asignatura</label>
+                <input
+                  type="text"
+                  list="subject-list"
+                  value={subject}
+                  onChange={(e) => setSubject(e.target.value)}
+                  placeholder="Ej: Redes, Programación..."
+                  className="w-full bg-[#f7f7f7] border-2 border-duo-gray border-b-4 rounded-[1.5rem] p-6 text-duo-foreground focus:outline-none focus:border-duo-blue transition-all font-black text-xl uppercase italic tracking-tighter placeholder:opacity-30"
+                />
+                <datalist id="subject-list">
+                  {existingSubjects.map(s => <option key={s} value={s} />)}
+                </datalist>
+              </div>
+            </div>
+
+            <div className="group">
+              <label className="block text-xs font-black uppercase tracking-[0.3em] text-duo-gray-dark mb-3 ml-2 group-focus-within:text-duo-blue transition-colors">Título del Tema</label>
+              <input
+                type="text"
+                value={lessonTitle}
+                onChange={(e) => setLessonTitle(e.target.value)}
+                placeholder="Ej: Protocolos de Capa 3"
+                className="w-full bg-[#f7f7f7] border-2 border-duo-gray border-b-4 rounded-[1.5rem] p-6 text-duo-foreground focus:outline-none focus:border-duo-blue transition-all font-black text-2xl uppercase italic tracking-tighter placeholder:opacity-30"
+              />
+            </div>
           </div>
 
           <div className="relative group">
@@ -255,12 +323,12 @@ export default function GeneratorPage() {
             </div>
             <button
               onClick={handleSubmit}
-              disabled={isSubmitting || (mode === "create" && !title) || (mode === "edit" && !selectedLessonId)}
+              disabled={isSubmitting || (mode === "create" && (!course || !subject || !lessonTitle)) || (mode === "edit" && !selectedLessonId)}
               className={`
                 px-16 py-6 rounded-[2.5rem] font-black text-2xl uppercase italic tracking-tighter
                 transition-all active:translate-y-2 disabled:opacity-50 disabled:cursor-not-allowed
                 shadow-2xl border-b-8
-                ${isSubmitting || (mode === "create" && !title) || (mode === "edit" && !selectedLessonId)
+                ${isSubmitting || (mode === "create" && (!course || !subject || !lessonTitle)) || (mode === "edit" && !selectedLessonId)
                   ? "bg-duo-gray border-duo-gray-dark text-duo-gray-dark"
                   : "bg-duo-green border-duo-green-dark text-white hover:brightness-110 shadow-duo-green/30"}
               `}

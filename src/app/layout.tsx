@@ -28,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang="es" className="h-full">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased h-full bg-[#f7f7f7] text-slate-900`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased h-full bg-[#f7f7f7] text-duo-foreground`}
       >
         <Providers>
           <GlobalNav />

@@ -66,6 +66,7 @@ export default function RaceGame({
   const channelRef = useRef<any>(null);
   const myPosRef = useRef(0);
   const opPosRef = useRef(0);
+  const mySpeedRef = useRef(0);
   const speedDecayRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const boostTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const raceTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -186,14 +187,16 @@ export default function RaceGame({
     }, 1000);
 
     speedDecayRef.current = setInterval(() => {
-      setMySpeed((prev) => Math.max(0, prev * 0.85));
+      mySpeedRef.current *= 0.85;
+      if (mySpeedRef.current < 0.01) mySpeedRef.current = 0;
+      setMySpeed(mySpeedRef.current);
     }, 100);
 
     const broadcastInterval = setInterval(() => {
       channelRef.current?.send({
         type: "broadcast",
         event: "position",
-        payload: { pos: myPosRef.current, speed: 1, boosting: myBoosting },
+        payload: { pos: myPosRef.current, speed: mySpeedRef.current, boosting: myBoosting },
       });
     }, 50);
 
@@ -227,6 +230,8 @@ export default function RaceGame({
       const newPos = Math.min(myPosRef.current + step, FINISH_LINE);
       myPosRef.current = newPos;
       setMyPos(newPos);
+      
+      mySpeedRef.current = 1;
       setMySpeed(1);
 
       if (newPos >= FINISH_LINE && !finishedRef.current) {
@@ -278,6 +283,7 @@ export default function RaceGame({
     const newPos = Math.min(myPosRef.current + step, FINISH_LINE);
     myPosRef.current = newPos;
     setMyPos(newPos);
+    mySpeedRef.current = 1;
     setMySpeed(1);
     if (newPos >= FINISH_LINE && !finishedRef.current) {
       finishedRef.current = true;

@@ -85,8 +85,8 @@ function Track() {
         <meshStandardMaterial color="#dc6b40" roughness={0.7} />
       </mesh>
       {/* Lane lines */}
-      {[-1, 0, 1].map((i) => (
-        <mesh key={i} rotation={[-Math.PI / 2, 0, 0]} position={[25, 0.01, i * 2]}>
+      {[-0.75, 0.75, 2.25].map((z) => (
+        <mesh key={z} rotation={[-Math.PI / 2, 0, 0]} position={[25, 0.01, z]}>
           <planeGeometry args={[56, 0.05]} />
           <meshStandardMaterial color="white" />
         </mesh>
@@ -130,10 +130,10 @@ function CameraRig({ p1Pos, p2Pos }: { p1Pos: number; p2Pos: number }) {
   useFrame((state) => {
     const maxPos = Math.max(p1Pos, p2Pos);
     const targetX = Math.max(maxPos, 3);
-    state.camera.position.x = THREE.MathUtils.lerp(state.camera.position.x, targetX, 0.05);
-    state.camera.position.y = THREE.MathUtils.lerp(state.camera.position.y, 1.5, 0.05);
-    state.camera.position.z = THREE.MathUtils.lerp(state.camera.position.z, 5.5, 0.05);
-    state.camera.lookAt(targetX, 0.5, 0);
+    state.camera.position.x = THREE.MathUtils.lerp(state.camera.position.x, targetX - 2, 0.05);
+    state.camera.position.y = THREE.MathUtils.lerp(state.camera.position.y, 2.2, 0.05);
+    state.camera.position.z = THREE.MathUtils.lerp(state.camera.position.z, 6, 0.05);
+    state.camera.lookAt(targetX + 1, 1.2, 0);
   });
   return null;
 }

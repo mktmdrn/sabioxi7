@@ -38,7 +38,7 @@ export default function RunningAvatar({
     const runCycle = running ? Math.sin(t * 2) : 0;
     const bounce = running ? Math.abs(Math.sin(t * 2)) * 0.06 : Math.sin(t * 0.8) * 0.015;
 
-    groupRef.current.position.set(position, bounce, lane * 2);
+    groupRef.current.position.set(position, 1.05 + bounce, lane * 1.5);
     groupRef.current.rotation.y = 0;
 
     // Lean forward when running

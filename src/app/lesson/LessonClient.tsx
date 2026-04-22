@@ -165,21 +165,26 @@ export default function LessonClient({ lesson, userId }: { lesson: Lesson; userI
   return (
     <div className={`min-h-screen ${bgColor} text-slate-900 flex flex-col transition-colors duration-300 font-sans`}>
       {/* Header / Progress */}
-      <header className="max-w-4xl mx-auto w-full p-4 md:p-6 flex items-center gap-4">
+      <header className="max-w-4xl mx-auto w-full p-2 md:p-4 flex items-center gap-4">
         <Link href="/dashboard" className="text-slate-400 hover:text-slate-600 transition-colors">
           <X className="w-6 h-6 md:w-8 md:h-8" />
         </Link>
-        <div className="flex-1 h-3 md:h-4 bg-slate-200 rounded-full overflow-hidden">
-          <div
-            className="h-full bg-green-500 transition-all duration-500 ease-out rounded-full"
-            style={{ width: `${progressPercent}%` }}
-          />
+        <div className="flex-1 flex items-center gap-3">
+          <div className="flex-1 h-2 md:h-3 bg-slate-200 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-green-500 transition-all duration-500 ease-out rounded-full"
+              style={{ width: `${progressPercent}%` }}
+            />
+          </div>
+          <span className="text-xs md:text-sm font-bold text-slate-500 min-w-[3rem]">
+            {Math.round(progressPercent)}%
+          </span>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 max-w-2xl mx-auto w-full p-4 md:p-6 flex flex-col justify-center">
-        <h2 className="text-2xl md:text-3xl font-extrabold text-slate-800 mb-6 md:mb-10 text-center md:text-left">
+      <main className="flex-1 max-w-2xl mx-auto w-full p-4 md:p-6 flex flex-col justify-start pt-4 md:pt-8">
+        <h2 className="text-xl md:text-2xl font-extrabold text-slate-800 mb-6 md:mb-8 text-center md:text-left">
           {currentQ.question}
         </h2>
 
@@ -217,7 +222,7 @@ export default function LessonClient({ lesson, userId }: { lesson: Lesson; userI
       </main>
 
       {/* Bottom Action Bar */}
-      <footer className="border-t-2 border-slate-200 bg-white relative min-h-[100px] md:min-h-[120px] flex items-center">
+      <footer className="border-t-2 border-slate-200 bg-white relative min-h-[80px] md:min-h-[100px] flex items-center">
         <div className="max-w-4xl mx-auto w-full px-4 md:px-6">
           {status === "idle" ? (
             <button

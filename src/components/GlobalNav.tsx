@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { createClient } from "@supabase/supabase-js";
 import { useRouter, usePathname } from "next/navigation";
-import { Bell, Swords, LogOut, LayoutDashboard, Check, X, Star, Plus, ChevronDown, Shield, Zap, Activity, Users, BookOpen, Map } from "lucide-react";
+import { Bell, Swords, LogOut, LayoutDashboard, Check, X, Star, Plus, ChevronDown, Shield, Zap, Activity, Users, BookOpen, Map, Menu } from "lucide-react";
 import Link from "next/link";
 import { acceptChallenge, declineChallenge, getChallengesForUser } from "@/actions/arena";
 import { getUserXp, getUserPoints, addStarsToUserByEmail } from "@/actions/db";
@@ -23,6 +23,7 @@ export function GlobalNav() {
   const [isOpen, setIsOpen] = useState(false);
   const [hasNew, setHasNew] = useState(false);
   const [userData, setUserData] = useState({ level: 0, points: 0, rank: { name: "", emoji: "" } });
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
   // Admin Star Management State
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
@@ -33,6 +34,11 @@ export function GlobalNav() {
 
   const userId = session?.user?.id;
   const role = (session?.user as any)?.role;
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname]);
 
   const fetchChallenges = async () => {
     if (!userId) return;
@@ -127,11 +133,21 @@ export function GlobalNav() {
   return (
     <nav className="fixed top-0 left-0 right-0 h-16 bg-white/90 backdrop-blur-md border-b-2 border-duo-gray z-50 flex items-center justify-between px-4 sm:px-6 shadow-sm">
       {/* Logo / Links */}
-      <div className="flex items-center gap-6">
+      <div className="flex items-center gap-4 sm:gap-6">
+        {/* Mobile Menu Button */}
+        <button 
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="md:hidden p-2 rounded-xl bg-[#f7f7f7] border-2 border-duo-gray text-duo-gray-dark hover:text-duo-blue transition-all"
+        >
+          {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+        </button>
+
         <Link href="/dashboard" className="text-duo-foreground font-black text-lg flex items-center gap-2 italic uppercase tracking-tighter hover:scale-105 transition-transform">
           <span className="text-duo-yellow text-2xl drop-shadow-sm">⚡</span>
-          <span className="hidden xs:inline">SABIOXI</span>
+          <span className="xs:inline">SABIOXI</span>
         </Link>
+
+        {/* Desktop Links */}
         <div className="hidden md:flex items-center gap-4">
           <Link href="/dashboard" className={`text-xs font-black uppercase tracking-widest transition-all px-3 py-2 rounded-xl ${pathname === "/dashboard" ? "text-duo-blue bg-duo-blue/5" : "text-duo-gray-dark hover:text-duo-blue hover:bg-duo-blue/5"}`}>
             <LayoutDashboard className="w-4 h-4 inline mr-1.5" /> Inicio
@@ -372,6 +388,64 @@ export function GlobalNav() {
                 {adminStatus.type === "loading" ? "PROCESANDO..." : "CARGAR ESTRELLAS"}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+      {/* Mobile Menu Overlay */}
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 top-16 bg-[#f7f7f7] z-[100] animate-in slide-in-from-left duration-300 overflow-y-auto pb-10">
+          <div className="p-6 space-y-4">
+             <Link 
+              href="/dashboard" 
+              className={`flex items-center gap-4 p-5 rounded-3xl border-2 border-b-8 transition-all ${pathname === "/dashboard" ? "bg-duo-blue border-duo-blue-dark text-white" : "bg-white border-duo-gray text-duo-foreground"}`}
+             >
+               <LayoutDashboard className="w-6 h-6" />
+               <span className="font-black uppercase italic text-lg tracking-tight">Inicio</span>
+             </Link>
+
+             <Link 
+              href="/courses" 
+              className={`flex items-center gap-4 p-5 rounded-3xl border-2 border-b-8 transition-all ${pathname === "/courses" ? "bg-duo-green border-duo-green-dark text-white" : "bg-white border-duo-gray text-duo-foreground"}`}
+             >
+               <Star className="w-6 h-6" />
+               <span className="font-black uppercase italic text-lg tracking-tight">Cursos</span>
+             </Link>
+
+             <Link 
+              href="/arena" 
+              className={`flex items-center gap-4 p-5 rounded-3xl border-2 border-b-8 transition-all ${pathname.startsWith("/arena") ? "bg-duo-red border-duo-red-dark text-white" : "bg-white border-duo-gray text-duo-foreground"}`}
+             >
+               <Swords className="w-6 h-6" />
+               <span className="font-black uppercase italic text-lg tracking-tight">Arena</span>
+             </Link>
+
+             <Link 
+              href="/arena/practice" 
+              className={`flex items-center gap-4 p-5 rounded-3xl border-2 border-b-8 transition-all ${pathname === "/arena/practice" ? "bg-indigo-500 border-indigo-600 text-white" : "bg-white border-duo-gray text-duo-foreground"}`}
+             >
+               <PlayCircle className="w-6 h-6" />
+               <span className="font-black uppercase italic text-lg tracking-tight">Practice</span>
+             </Link>
+
+             {role === "admin" && (
+               <div className="mt-10 space-y-4">
+                  <h3 className="px-4 text-[10px] font-black uppercase tracking-[0.2em] text-duo-gray-dark mb-2">Administración</h3>
+                  <div className="grid grid-cols-1 gap-3">
+                    <Link href="/dashboard/admin" className="flex items-center gap-3 p-4 bg-white border-2 border-duo-gray rounded-2xl font-bold text-sm">
+                      <Shield className="w-4 h-4 text-amber-500" /> Panel Principal
+                    </Link>
+                    <Link href="/generator" className="flex items-center gap-3 p-4 bg-white border-2 border-duo-gray rounded-2xl font-bold text-sm">
+                      <BookOpen className="w-4 h-4 text-amber-500" /> Gestión Cursos
+                    </Link>
+                    <Link href="/dashboard/adventures" className="flex items-center gap-3 p-4 bg-white border-2 border-duo-gray rounded-2xl font-bold text-sm">
+                      <Map className="w-4 h-4 text-amber-500" /> Gestión Aventuras
+                    </Link>
+                    <Link href="/generator/advanced" className="flex items-center gap-3 p-4 bg-white border-2 border-duo-gray rounded-2xl font-bold text-sm text-duo-blue">
+                      <Zap className="w-4 h-4" /> Cargador Avanzado
+                    </Link>
+                  </div>
+               </div>
+             )}
           </div>
         </div>
       )}

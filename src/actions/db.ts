@@ -49,6 +49,38 @@ export async function addLesson(title: string, questions: Question[]): Promise<s
   return lessonId;
 }
 
+export async function updateLesson(lessonId: string, title: string, questions: Question[]): Promise<void> {
+  // Update title
+  const { error: lessonError } = await supabase
+    .from("lessons")
+    .update({ title })
+    .eq("id", lessonId);
+
+  if (lessonError) throw new Error("Failed to update lesson: " + lessonError.message);
+
+  // Delete old questions
+  const { error: deleteError } = await supabase
+    .from("questions")
+    .delete()
+    .eq("lesson_id", lessonId);
+
+  if (deleteError) throw new Error("Failed to delete old questions: " + deleteError.message);
+
+  // Insert new questions
+  const questionInserts = questions.map((q) => ({
+    lesson_id: lessonId,
+    question: q.question,
+    correct_answer: q.correctAnswer,
+    wrong_answers: q.wrongAnswers,
+  }));
+
+  const { error: qError } = await supabase
+    .from("questions")
+    .insert(questionInserts);
+
+  if (qError) throw new Error("Failed to insert new questions: " + qError.message);
+}
+
 export async function recordTestLog(userId: string, lessonId: string, score: number, passed: boolean) {
   const { error } = await supabase
     .from("test_logs")

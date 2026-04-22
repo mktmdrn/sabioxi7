@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { CourseStat, deleteLessons } from "@/actions/db";
-import { Search, Filter, ArrowUpDown, CheckCircle, XCircle, PlayCircle, BookOpen, Trash2, Loader2 } from "lucide-react";
+import { Search, Filter, ArrowUpDown, CheckCircle, XCircle, PlayCircle, BookOpen, Trash2, Loader2, AlertTriangle } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function CoursesClient({ stats }: { stats: CourseStat[] }) {

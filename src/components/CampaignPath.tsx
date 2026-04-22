@@ -2,7 +2,7 @@
 
 import { useMemo, useEffect } from "react";
 import Link from "next/link";
-import { Check, Lock, Star, Trophy, GraduationCap, ChevronRight, TreePine, Cloud, Mountain, Ghost, Zap, Flame } from "lucide-react";
+import { Check, Star, Trophy, GraduationCap, TreePine, Cloud, Mountain, Ghost, Zap, Flame } from "lucide-react";
 
 type Node = {
   id: string;
@@ -25,9 +25,14 @@ export default function CampaignPath({
   exams: any[], 
   completedIds: string[] 
 }) {
-  // Scroll to bottom on mount so the user starts at the beginning (Módulo 1)
+  // Scroll to bottom on mount so the user starts at the beginning
   useEffect(() => {
-    window.scrollTo({ top: document.body.scrollHeight, behavior: 'instant' });
+    const scrollBottom = () => {
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'instant' });
+    };
+    // Small timeout to ensure DOM is fully ready
+    const timer = setTimeout(scrollBottom, 100);
+    return () => clearTimeout(timer);
   }, []);
 
   const units = useMemo<Unit[]>(() => {
@@ -74,32 +79,40 @@ export default function CampaignPath({
 
   return (
     <div className="relative w-full overflow-hidden bg-[#f7f7f7] min-h-screen font-sans">
+      {/* Roman Stone Slabs Background Pattern */}
+      <div 
+        className="absolute inset-0 opacity-[0.1] pointer-events-none select-none blur-[0.5px]" 
+        style={{ 
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 10h40v40H10zM60 10h50v20H60zM60 40h50v20H60zM10 60h40v50H10zM60 70h50v40H60z' fill='%234b4b4b' fill-opacity='0.2'/%3E%3C/svg%3E")`,
+          backgroundSize: "60px 60px"
+        }} 
+      />
+      
       {/* Adventure Background Elements */}
-      <div className="absolute inset-0 opacity-[0.03] pointer-events-none select-none" style={{ backgroundImage: "radial-gradient(#4b4b4b 2px, transparent 2px)", backgroundSize: "40px 40px" }} />
       <div className="absolute top-20 left-10 text-duo-gray opacity-10 animate-pulse"><Cloud className="w-40 h-40" /></div>
       <div className="absolute bottom-40 right-10 text-duo-gray opacity-10"><Mountain className="w-60 h-60" /></div>
       <div className="absolute top-1/2 left-1/4 text-duo-green opacity-10"><TreePine className="w-20 h-20" /></div>
 
       {/* Path Content - Reverse Order (Módulo 1 at bottom) */}
-      <div className="flex flex-col-reverse items-center pt-20 pb-40">
+      <div className="flex flex-col-reverse items-center pt-20 pb-40 relative z-10">
         
         {/* Starting Point Illustration */}
         <div className="mb-20 flex flex-col items-center">
           <div className="w-20 h-20 bg-duo-green border-b-8 border-duo-green-dark rounded-3xl flex items-center justify-center animate-bounce shadow-lg">
              <Zap className="w-10 h-10 text-white fill-current" />
           </div>
-          <p className="mt-4 font-black text-duo-green uppercase text-xs tracking-[0.3em]">Comienza tu viaje</p>
+          <p className="mt-4 font-black text-duo-green uppercase text-xs tracking-[0.3em]">Punto de Partida</p>
         </div>
 
         {units.map((unit, unitIdx) => (
           <div key={unitIdx} className="w-full flex flex-col-reverse items-center">
             
-            {/* Unit Header (Appears ABOVE the nodes in reverse flow) */}
-            <div className="w-full max-w-sm bg-white border-2 border-duo-gray border-b-8 p-6 rounded-[2.5rem] my-16 relative group shadow-sm">
+            {/* Unit Header - Must be the LAST child in flex-col-reverse to be at the TOP of the unit */}
+            <div className="w-full max-w-sm bg-white border-2 border-duo-gray border-b-8 p-6 rounded-[2.5rem] mt-10 mb-16 relative group shadow-sm order-last">
               <div className="absolute -top-4 -left-4 w-12 h-12 bg-duo-blue rounded-2xl flex items-center justify-center border-b-4 border-duo-blue-dark rotate-[-10deg]">
                 <span className="text-white font-black">{unitIdx + 1}</span>
               </div>
-              <h4 className="text-duo-foreground font-black text-lg uppercase italic text-center px-4">{unit.subject}</h4>
+              <h4 className="text-duo-foreground font-black text-lg uppercase italic text-center px-4 leading-tight">{unit.subject}</h4>
             </div>
 
             {/* Nodes Path (ZigZag) */}
@@ -168,7 +181,7 @@ export default function CampaignPath({
         ))}
 
         {/* Final Trophy Illustration (at the TOP of the scroll) */}
-        <div className="mt-40 flex flex-col items-center">
+        <div className="mt-40 mb-20 flex flex-col items-center">
           <div className="w-32 h-32 bg-duo-yellow border-b-8 border-[#c89b00] rounded-full flex items-center justify-center relative shadow-2xl">
             <GraduationCap className="w-20 h-20 text-white" />
             <div className="absolute -top-4 -right-4 bg-duo-red text-white p-2 rounded-xl rotate-12 font-black text-xs border-b-4 border-red-700">FINAL</div>
@@ -176,7 +189,7 @@ export default function CampaignPath({
           <h5 className="mt-6 text-duo-foreground font-black text-2xl uppercase tracking-widest text-center italic">
             TÍTULO DE ASIR
           </h5>
-          <p className="text-duo-gray-dark font-black text-sm mt-2">META DEFINITIVA</p>
+          <p className="text-duo-gray-dark font-black text-sm mt-2 uppercase tracking-widest">Graduación</p>
         </div>
       </div>
     </div>

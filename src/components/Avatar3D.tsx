@@ -1,7 +1,5 @@
-"use client";
-
 import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, Environment } from "@react-three/drei";
+import { OrbitControls } from "@react-three/drei";
 import { useRef, useState, useMemo } from "react";
 import * as THREE from "three";
 
@@ -116,7 +114,7 @@ function CharacterBody({ config }: { config: AvatarConfig }) {
               {[[-0.12, 0.15, 0.1], [0, 0.25, 0.15], [0.12, 0.15, 0.1]].map((p, i) => (
                 <mesh key={i} position={[p[0], p[1], p[2]]} rotation={[p[2] * 1.5, 0, 0]}>
                   <coneGeometry args={[0.07, 0.25, 12]} />
-                  <meshPhysicalMaterial {...hairClay} />
+                  <meshStandardMaterial {...hairClay} />
                 </mesh>
               ))}
             </group>
@@ -125,7 +123,7 @@ function CharacterBody({ config }: { config: AvatarConfig }) {
           {config.hair === "long" && (
             <mesh position={[0, -0.15, -0.22]} scale={[1.05, 1.2, 0.7]}>
               <sphereGeometry args={[0.34, 32, 24, 0, Math.PI * 2, Math.PI * 0.15, Math.PI * 0.85]} />
-              <meshPhysicalMaterial {...hairClay} />
+              <meshStandardMaterial {...hairClay} />
             </mesh>
           )}
         </group>
@@ -372,18 +370,22 @@ export default function Avatar3D({
     <div style={{ width: "100%", height: isSmall ? "200px" : "450px" }}>
       <Canvas
         camera={{ position: [0, 0, isSmall ? 3.0 : 2.4], fov: 40 }}
-        gl={{ alpha: true, antialias: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.1 }}
+        gl={{ 
+          alpha: true, 
+          antialias: true, 
+          toneMapping: THREE.ACESFilmicToneMapping, 
+          toneMappingExposure: 1.1,
+          powerPreference: "high-performance"
+        }}
         style={{ background: "transparent" }}
       >
-        {/* Premium lighting setup */}
-        <ambientLight intensity={0.6} />
-        <directionalLight position={[4, 6, 5]} intensity={1.5} color="#ffffff" />
-        <directionalLight position={[-3, 4, -2]} intensity={0.4} color="#a5b4fc" />
-        <directionalLight position={[0, -3, 4]} intensity={0.3} color="#fef3c7" />
-        <hemisphereLight args={["#e0e7ff", "#fef3c7", 0.3]} />
-
-        {/* Environment for reflections (key for the glossy clay look) */}
-        <Environment preset="city" />
+        {/* Enhanced lighting setup (compensating for no Environment) */}
+        <ambientLight intensity={0.9} />
+        <directionalLight position={[4, 6, 5]} intensity={1.8} color="#ffffff" />
+        <directionalLight position={[-3, 4, -2]} intensity={0.8} color="#a5b4fc" />
+        <directionalLight position={[0, -3, 4]} intensity={0.5} color="#fef3c7" />
+        <pointLight position={[0, 2, 3]} intensity={1.2} color="#ffffff" />
+        <hemisphereLight args={["#ffffff", "#cbd5e1", 0.5]} />
 
         <CharacterBody config={config} />
         {!isSmall && (

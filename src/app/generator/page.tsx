@@ -193,9 +193,14 @@ export default function GeneratorPage() {
               <p className="text-duo-yellow font-black text-xs uppercase tracking-[0.2em] mt-1">Gestor de Contenido</p>
             </div>
           </div>
-          <Link href="/dashboard/admin" className="bg-white border-2 border-duo-gray border-b-4 active:border-b-0 active:translate-y-1 px-6 py-3 rounded-2xl text-duo-gray-dark hover:text-duo-foreground transition-all flex items-center gap-2 font-black uppercase text-xs tracking-widest">
-            Volver al Panel Admin
-          </Link>
+          <div className="flex gap-4">
+            <Link href="/generator/advanced" className="bg-duo-blue/10 border-2 border-duo-blue border-b-4 active:border-b-0 active:translate-y-1 px-6 py-3 rounded-2xl text-duo-blue hover:bg-duo-blue hover:text-white transition-all flex items-center gap-2 font-black uppercase text-xs tracking-widest">
+              Advanced Mode 🚀
+            </Link>
+            <Link href="/dashboard/admin" className="bg-white border-2 border-duo-gray border-b-4 active:border-b-0 active:translate-y-1 px-6 py-3 rounded-2xl text-duo-gray-dark hover:text-duo-foreground transition-all flex items-center gap-2 font-black uppercase text-xs tracking-widest">
+              Volver al Panel Admin
+            </Link>
+          </div>
         </header>
 
 

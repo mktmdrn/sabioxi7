@@ -438,7 +438,7 @@ export async function deleteLesson(id: string): Promise<void> {
   if (lError) throw new Error("Failed to delete lesson: " + lError.message);
 }
 
-export type CourseStat = {
+export interface CourseStat {
   id: string;
   course: string;
   subject: string;
@@ -446,12 +446,13 @@ export type CourseStat = {
   attempts: number;
   passed: number;
   failed: number;
-};
+  type: "lesson" | "exam";
+}
 
 export async function getCourseStats(): Promise<CourseStat[]> {
   const { data: lessons, error: lError } = await supabase
     .from("lessons")
-    .select("id, title");
+    .select("id, title, type");
 
   if (lError || !lessons) return [];
 
@@ -478,7 +479,8 @@ export async function getCourseStats(): Promise<CourseStat[]> {
       lessonTitle,
       attempts: 0,
       passed: 0,
-      failed: 0
+      failed: 0,
+      type: lesson.type as any
     };
   });
 

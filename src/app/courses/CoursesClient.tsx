@@ -2,8 +2,9 @@
 
 import { useState, useMemo } from "react";
 import { CourseStat, deleteLessons } from "@/actions/db";
-import { Search, Filter, ArrowUpDown, CheckCircle, XCircle, PlayCircle, BookOpen, Trash2, Loader2, AlertTriangle } from "lucide-react";
+import { Search, Filter, ArrowUpDown, CheckCircle, XCircle, PlayCircle, BookOpen, Trash2, Loader2, AlertTriangle, Play } from "lucide-react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function CoursesClient({ stats }: { stats: CourseStat[] }) {
   const router = useRouter();
@@ -156,15 +157,13 @@ export default function CoursesClient({ stats }: { stats: CourseStat[] }) {
                 </th>
                 <th className="px-6 py-5 text-[10px] font-black text-duo-gray-dark uppercase tracking-widest">Curso / Asignatura</th>
                 <th className="px-6 py-5 text-[10px] font-black text-duo-gray-dark uppercase tracking-widest">Lección / Examen</th>
-                <th className="px-6 py-5 text-center text-[10px] font-black text-duo-gray-dark uppercase tracking-widest">Intentos</th>
                 <th className="px-6 py-5 text-center text-[10px] font-black text-duo-gray-dark uppercase tracking-widest">Aprobados</th>
                 <th className="px-6 py-5 text-center text-[10px] font-black text-duo-gray-dark uppercase tracking-widest">Fallados</th>
-                <th className="px-6 py-5 text-center text-[10px] font-black text-duo-gray-dark uppercase tracking-widest">Ratio Éxito</th>
+                <th className="px-6 py-5 text-right text-[10px] font-black text-duo-gray-dark uppercase tracking-widest">Acción</th>
               </tr>
             </thead>
             <tbody className="divide-y-2 divide-duo-gray/30">
               {filteredStats.length > 0 ? filteredStats.map((stat, i) => {
-                const ratio = stat.attempts > 0 ? (stat.passed / stat.attempts) * 100 : 0;
                 const isSelected = selectedIds.includes(stat.id);
                 return (
                   <tr key={i} className={`hover:bg-duo-gray/5 transition-colors group ${isSelected ? "bg-duo-blue/5" : ""}`}>
@@ -186,12 +185,6 @@ export default function CoursesClient({ stats }: { stats: CourseStat[] }) {
                       <span className="text-sm font-bold text-duo-gray-dark group-hover:text-duo-foreground transition-colors">{stat.lessonTitle}</span>
                     </td>
                     <td className="px-6 py-5 text-center">
-                      <div className="inline-flex items-center gap-1.5 bg-duo-gray/10 px-3 py-1.5 rounded-xl border border-duo-gray/20">
-                        <PlayCircle className="w-4 h-4 text-duo-gray-dark" />
-                        <span className="text-sm font-black">{stat.attempts}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-5 text-center">
                       <div className="inline-flex items-center gap-1.5 bg-duo-green/10 px-3 py-1.5 rounded-xl border border-duo-green/20">
                         <CheckCircle className="w-4 h-4 text-duo-green" />
                         <span className="text-sm font-black text-duo-green">{stat.passed}</span>
@@ -203,24 +196,19 @@ export default function CoursesClient({ stats }: { stats: CourseStat[] }) {
                         <span className="text-sm font-black text-duo-red">{stat.failed}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-5 text-center">
-                      <div className="flex flex-col items-center gap-1.5">
-                        <span className={`text-sm font-black ${ratio >= 70 ? "text-duo-green" : ratio >= 40 ? "text-duo-yellow" : "text-duo-red"}`}>
-                          {ratio.toFixed(1)}%
-                        </span>
-                        <div className="w-20 h-1.5 bg-duo-gray/20 rounded-full overflow-hidden">
-                          <div 
-                            className={`h-full transition-all duration-1000 ${ratio >= 70 ? "bg-duo-green" : ratio >= 40 ? "bg-duo-yellow" : "bg-duo-red"}`}
-                            style={{ width: `${ratio}%` }}
-                          />
-                        </div>
-                      </div>
+                    <td className="px-6 py-5 text-right">
+                      <Link 
+                        href={`/${stat.type === "exam" ? "exam" : "lesson"}/${stat.id}`}
+                        className="inline-flex items-center justify-center w-10 h-10 bg-duo-blue text-white rounded-xl border-b-4 border-duo-blue-dark hover:brightness-110 active:border-b-0 active:translate-y-1 transition-all"
+                      >
+                        <Play className="w-5 h-5 fill-current" />
+                      </Link>
                     </td>
                   </tr>
                 );
               }) : (
                 <tr>
-                  <td colSpan={7} className="px-6 py-20 text-center text-duo-gray-dark font-bold italic">
+                  <td colSpan={6} className="px-6 py-20 text-center text-duo-gray-dark font-bold italic">
                     No se han encontrado lecciones con los filtros seleccionados.
                   </td>
                 </tr>

@@ -292,3 +292,28 @@ export async function addStarsToUserByEmail(email: string, amount: number): Prom
 
   return { success: true, message: `Se han añadido ${amount} estrellas a ${email}` };
 }
+
+export async function getTopFailedLessons(userId: string, limit: number = 3) {
+  const { data, error } = await supabase
+    .from("test_logs")
+    .select("lesson_id, lessons(title)")
+    .eq("user_id", userId)
+    .eq("passed", false);
+
+  if (error || !data) return [];
+
+  // Group and count in JS
+  const counts: Record<string, { id: string, title: string, count: number }> = {};
+  data.forEach((log: any) => {
+    const lid = log.lesson_id;
+    const title = log.lessons?.title || "Lección desconocida";
+    if (!counts[lid]) {
+      counts[lid] = { id: lid, title, count: 0 };
+    }
+    counts[lid].count++;
+  });
+
+  return Object.values(counts)
+    .sort((a, b) => b.count - a.count)
+    .slice(0, limit);
+}

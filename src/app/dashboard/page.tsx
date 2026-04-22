@@ -1,8 +1,8 @@
 import { auth, signOut } from "@/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { LayoutDashboard, User, Mail, Shield, LogOut, ExternalLink, Play, Star, PlusCircle, Sparkles, Swords, Timer, Map as MapIcon, GraduationCap, Zap, ChevronRight } from "lucide-react";
-import { getUserPoints, getLessons, getAvatarConfig, getUserXp, getCompletedLessons } from "@/actions/db";
+import { LayoutDashboard, User, Mail, Shield, LogOut, ExternalLink, Play, Star, PlusCircle, Sparkles, Swords, Timer, Map as MapIcon, GraduationCap, Zap, ChevronRight, AlertTriangle } from "lucide-react";
+import { getUserPoints, getLessons, getAvatarConfig, getUserXp, getCompletedLessons, getTopFailedLessons } from "@/actions/db";
 import { calculateLevel, getRankInfo } from "@/lib/levels";
 import { getChallengesForUser } from "@/actions/arena";
 import MiniAvatar from "@/components/MiniAvatar";
@@ -17,10 +17,11 @@ export default async function DashboardPage({ searchParams }: { searchParams: { 
   
   const { tab = "campaign" } = await searchParams;
 
-  const [lessons, exams, completedIds] = await Promise.all([
+  const [lessons, exams, completedIds, topFailed] = await Promise.all([
     getLessons("lesson"),
     getLessons("exam"),
-    userId ? getCompletedLessons(userId) : Promise.resolve([])
+    userId ? getCompletedLessons(userId) : Promise.resolve([]),
+    userId ? getTopFailedLessons(userId, 3) : Promise.resolve([])
   ]);
 
   const avatarConfig = userId ? await getAvatarConfig(userId) : { color: "blue", hat: "none", accessory: "none", mouth: "neutral", eyes: "neutral", hair: "standard" };
@@ -135,6 +136,36 @@ export default async function DashboardPage({ searchParams }: { searchParams: { 
                 </Link>
               </div>
             </div>
+
+            {/* Top Failed Lessons Section */}
+            {topFailed.length > 0 && (
+              <div className="space-y-6">
+                <h3 className="text-xl font-black text-duo-foreground uppercase italic tracking-tight flex items-center gap-2">
+                  <AlertTriangle className="w-6 h-6 text-duo-red" />
+                  TUS DESAFÍOS (MÁS FALLADOS)
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {topFailed.map((item: any, index: number) => (
+                    <Link key={item.id} href={`/lesson/${item.id}`} className="group">
+                      <div className="bg-white border-2 border-duo-red border-b-8 rounded-[2rem] p-6 hover:bg-duo-red/5 transition-all relative overflow-hidden flex items-center gap-4">
+                        <div className="w-12 h-12 bg-duo-red text-white rounded-xl flex items-center justify-center font-black text-xl border-b-4 border-[#d33131]">
+                          {index + 1}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-black text-duo-foreground uppercase italic truncate text-sm">
+                            {item.title}
+                          </h4>
+                          <p className="text-[10px] font-black text-duo-red uppercase tracking-widest mt-1">
+                            {item.count} FALLOS DETECTADOS
+                          </p>
+                        </div>
+                        <ChevronRight className="w-5 h-5 text-duo-red group-hover:translate-x-1 transition-transform" />
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Combined Catalog Section */}
             <div className="space-y-6">

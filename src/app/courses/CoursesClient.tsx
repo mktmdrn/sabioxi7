@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useMemo } from "react";
 import { CourseStat, deleteLessons } from "@/actions/db";
 import { Search, Filter, ArrowUpDown, CheckCircle, XCircle, PlayCircle, BookOpen, Trash2, Loader2 } from "lucide-react";

@@ -199,10 +199,36 @@ export async function addXpToUser(userId: string, amount: number): Promise<void>
 export async function getAllActivePlayers() {
   const { data, error } = await supabase
     .from("users")
-    .select("id, name, xp, avatar_config, points")
+    .select("id, name, email, xp, avatar_config, points")
     .eq("status", "active")
     .order("xp", { ascending: false });
 
   if (error || !data) return [];
   return data;
+}
+
+export async function addStarsToUserByEmail(email: string, amount: number): Promise<{ success: boolean; message: string }> {
+  // First find user by email
+  const { data: user, error: findError } = await supabase
+    .from("users")
+    .select("id, points")
+    .eq("email", email)
+    .single();
+
+  if (findError || !user) {
+    return { success: false, message: "Usuario no encontrado" };
+  }
+
+  const newPoints = (user.points || 0) + amount;
+
+  const { error: updateError } = await supabase
+    .from("users")
+    .update({ points: newPoints })
+    .eq("id", user.id);
+
+  if (updateError) {
+    return { success: false, message: "Error al actualizar estrellas" };
+  }
+
+  return { success: true, message: `Se han añadido ${amount} estrellas a ${email}` };
 }

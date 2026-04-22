@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { createClient } from "@supabase/supabase-js";
 import { useRouter, usePathname } from "next/navigation";
-import { Bell, Swords, LogOut, LayoutDashboard, Check, X, Star } from "lucide-react";
+import { Bell, Swords, LogOut, LayoutDashboard, Check, X, Star, Plus } from "lucide-react";
 import Link from "next/link";
 import { acceptChallenge, declineChallenge, getChallengesForUser } from "@/actions/arena";
-import { getUserXp, getUserPoints } from "@/actions/db";
+import { getUserXp, getUserPoints, addStarsToUserByEmail } from "@/actions/db";
 import { calculateLevel, getRankInfo } from "@/lib/levels";
 
 const supabase = createClient(
@@ -23,6 +23,12 @@ export function GlobalNav() {
   const [isOpen, setIsOpen] = useState(false);
   const [hasNew, setHasNew] = useState(false);
   const [userData, setUserData] = useState({ level: 0, points: 0, rank: { name: "", emoji: "" } });
+  
+  // Admin Star Management State
+  const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
+  const [adminTargetEmail, setAdminTargetEmail] = useState("");
+  const [adminStarAmount, setAdminStarAmount] = useState(10);
+  const [adminStatus, setAdminStatus] = useState({ type: "", message: "" });
 
   const userId = session?.user?.id;
   const role = (session?.user as any)?.role;
@@ -42,6 +48,23 @@ export function GlobalNav() {
     const level = calculateLevel(xp);
     const rank = getRankInfo(level);
     setUserData({ level, points, rank });
+  };
+
+  const handleAdminAddStars = async () => {
+    if (!adminTargetEmail) return;
+    setAdminStatus({ type: "loading", message: "Procesando..." });
+    const res = await addStarsToUserByEmail(adminTargetEmail, adminStarAmount);
+    if (res.success) {
+      setAdminStatus({ type: "success", message: res.message });
+      fetchChallenges(); // Refresh points
+      setTimeout(() => {
+        setIsAdminModalOpen(false);
+        setAdminStatus({ type: "", message: "" });
+        setAdminTargetEmail("");
+      }, 2000);
+    } else {
+      setAdminStatus({ type: "error", message: res.message });
+    }
   };
 
   useEffect(() => {
@@ -136,9 +159,18 @@ export function GlobalNav() {
               <span className="text-xs sm:text-sm">{userData.rank.emoji}</span>
               <span className="text-indigo-400 font-bold text-[10px] sm:text-sm">Lv.{userData.level}</span>
             </div>
-            <div className="hidden xs:flex items-center gap-1 sm:gap-1.5 bg-amber-500/10 px-2 sm:px-3 py-1 rounded-full border border-amber-500/20">
+            <div className="hidden xs:flex items-center gap-1 sm:gap-1.5 bg-amber-500/10 px-2 sm:px-3 py-1 rounded-full border border-amber-500/20 group relative">
               <Star className="w-3 h-3 sm:w-4 sm:h-4 text-amber-500 fill-amber-500" />
               <span className="text-amber-500 font-bold text-[10px] sm:text-sm">{userData.points}</span>
+              
+              {role === "admin" && (
+                <button 
+                  onClick={() => setIsAdminModalOpen(true)}
+                  className="ml-1 p-0.5 rounded-full bg-amber-500 text-slate-900 hover:scale-110 transition-transform"
+                >
+                  <Plus className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+                </button>
+              )}
             </div>
           </div>
         )}
@@ -213,6 +245,76 @@ export function GlobalNav() {
           <LogOut className="w-4 h-4" /> Salir
         </button>
       </div>
+
+      {/* Admin Star Modal */}
+      {isAdminModalOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-700 w-full max-w-sm rounded-3xl p-6 shadow-2xl animate-in zoom-in-95">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                <Star className="w-5 h-5 text-amber-500 fill-amber-500" /> Cargar Estrellas
+              </h2>
+              <button onClick={() => setIsAdminModalOpen(false)} className="text-slate-500 hover:text-white">
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">Email del Usuario</label>
+                <input 
+                  type="email" 
+                  value={adminTargetEmail}
+                  onChange={(e) => setAdminTargetEmail(e.target.value)}
+                  placeholder="ejemplo@correo.com"
+                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-amber-500/50 transition-all"
+                />
+                <button 
+                  onClick={() => setAdminTargetEmail(session?.user?.email || "")}
+                  className="text-[10px] text-amber-500 font-bold mt-1 ml-1 hover:underline"
+                >
+                  Usar mi email
+                </button>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">Cantidad</label>
+                <div className="flex gap-2">
+                  {[10, 50, 100, 500].map(amt => (
+                    <button 
+                      key={amt}
+                      onClick={() => setAdminStarAmount(amt)}
+                      className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${adminStarAmount === amt ? "bg-amber-500 text-slate-900" : "bg-slate-800 text-slate-400 border border-slate-700"}`}
+                    >
+                      +{amt}
+                    </button>
+                  ))}
+                </div>
+                <input 
+                  type="number" 
+                  value={adminStarAmount}
+                  onChange={(e) => setAdminStarAmount(parseInt(e.target.value) || 0)}
+                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-xl px-4 py-2.5 mt-2 focus:outline-none focus:ring-2 focus:ring-amber-500/50 transition-all"
+                />
+              </div>
+
+              {adminStatus.message && (
+                <div className={`p-3 rounded-xl text-xs font-bold border ${adminStatus.type === "success" ? "bg-green-500/10 border-green-500/20 text-green-400" : adminStatus.type === "error" ? "bg-red-500/10 border-red-500/20 text-red-400" : "bg-blue-500/10 border-blue-500/20 text-blue-400"}`}>
+                  {adminStatus.message}
+                </div>
+              )}
+
+              <button 
+                onClick={handleAdminAddStars}
+                disabled={adminStatus.type === "loading"}
+                className="w-full bg-amber-500 text-slate-900 font-bold py-3 rounded-xl hover:bg-amber-400 transition-all active:scale-95 disabled:opacity-50"
+              >
+                CARGAR ESTRELLAS
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </nav>
   );
 }

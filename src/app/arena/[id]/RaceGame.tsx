@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import dynamic from "next/dynamic";
 import { createClient } from "@supabase/supabase-js";
 import { buyBooster, finishRace } from "@/actions/arena";
-import { Rocket, Star, ArrowLeft, ArrowRight } from "lucide-react";
+import { Rocket, Star, ArrowLeft, ArrowRight, Check } from "lucide-react";
 import Link from "next/link";
 
 const RaceScene = dynamic(() => import("@/components/RaceScene"), { ssr: false });

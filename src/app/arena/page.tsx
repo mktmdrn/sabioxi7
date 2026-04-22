@@ -12,6 +12,8 @@ export default async function ArenaPage() {
 
   const userId = session.user.id;
   const players = await getAllActivePlayers();
+  // Sort players by XP for the ranking
+  players.sort((a: any, b: any) => (b.xp || 0) - (a.xp || 0));
   const challenges = await getChallengesForUser(userId);
   const myXp = await getUserXp(userId);
   const myLevel = calculateLevel(myXp);
@@ -157,7 +159,7 @@ export default async function ArenaPage() {
                     <div className="flex items-center gap-3">
                       <span className="text-2xl">{won ? "🏆" : draw ? "🤝" : "😢"}</span>
                       <div>
-                        <p className="font-bold text-white">vs {opponent?.name}</p>
+                        <p className="font-bold text-white">vs {opponent?.name || "Jugador Desconocido"}</p>
                         <p className="text-xs text-slate-400">
                           {c.challenger_score} vs {c.challenged_score}
                         </p>
@@ -173,49 +175,71 @@ export default async function ArenaPage() {
           </div>
         )}
 
-        {/* Player list */}
+        {/* Public Ranking */}
         <div>
           <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
-            <Shield className="w-5 h-5 text-blue-500" />
-            Jugadores
+            <Trophy className="w-5 h-5 text-amber-500" />
+            Ranking Público
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {players.filter((p: any) => p.id !== userId).map((player: any) => {
+          <div className="space-y-3">
+            {players.map((player: any, index: number) => {
               const pLevel = calculateLevel(player.xp || 0);
               const pRank = getRankInfo(pLevel);
+              const isMe = player.id === userId;
               const alreadyChallenged = myPending.some(
                 (c: any) => (c.challenged as any)?.id === player.id
               );
+              
+              // Styling for top 3
+              let rankStyle = "bg-slate-800 text-slate-400";
+              if (index === 0) rankStyle = "bg-amber-500 text-white border-2 border-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.5)]";
+              else if (index === 1) rankStyle = "bg-slate-300 text-slate-800 border-2 border-white shadow-[0_0_15px_rgba(203,213,225,0.5)]";
+              else if (index === 2) rankStyle = "bg-amber-700 text-white border-2 border-amber-600 shadow-[0_0_15px_rgba(180,83,9,0.5)]";
+
               return (
-                <div key={player.id} className="bg-slate-900 border border-slate-800 rounded-2xl p-5 hover:border-slate-700 transition-all">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center text-2xl">
+                <div key={player.id} className={`flex items-center justify-between rounded-2xl p-4 border transition-all ${isMe ? "bg-blue-900/20 border-blue-500/50" : "bg-slate-900 border-slate-800 hover:border-slate-700"}`}>
+                  <div className="flex items-center gap-4">
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg ${rankStyle}`}>
+                      #{index + 1}
+                    </div>
+                    <div className="w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center text-2xl relative">
                       {pRank.emoji}
+                      {isMe && <span className="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 rounded-full border-2 border-slate-900"></span>}
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-bold text-white truncate">{player.name}</p>
-                      <p className="text-xs text-slate-400">Lv.{pLevel} · {pRank.name}</p>
-                    </div>
-                    <div className="flex items-center gap-1 bg-amber-500/10 px-2 py-1 rounded-full">
-                      <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
-                      <span className="text-amber-500 font-bold text-xs">{player.points || 0}</span>
+                    <div>
+                      <p className="font-bold text-white flex items-center gap-2">
+                        {player.name}
+                        {isMe && <span className="text-xs bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-md">Tú</span>}
+                      </p>
+                      <p className="text-xs text-slate-400">Lv.{pLevel} · {pRank.name} · {player.xp || 0} XP</p>
                     </div>
                   </div>
-                  {alreadyChallenged ? (
-                    <div className="w-full py-2 text-center text-sm font-bold text-amber-500 bg-amber-500/10 rounded-xl">
-                      ⏳ Reto enviado
+                  <div className="flex items-center gap-4">
+                    <div className="hidden sm:flex items-center gap-1 bg-amber-500/10 px-3 py-1.5 rounded-full">
+                      <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+                      <span className="text-amber-500 font-bold text-sm">{player.points || 0}</span>
                     </div>
-                  ) : (
-                    <form action={async () => {
-                      "use server";
-                      await createChallenge(userId, player.id);
-                    }}>
-                      <button className="w-full bg-red-500 text-white border-b-4 border-red-600 active:border-b-0 active:translate-y-[4px] py-2.5 rounded-xl font-bold text-sm hover:bg-red-400 transition-all flex items-center justify-center gap-2">
-                        <Swords className="w-4 h-4" />
-                        Retar
-                      </button>
-                    </form>
-                  )}
+                    
+                    {!isMe && (
+                      <div className="w-28">
+                        {alreadyChallenged ? (
+                          <div className="w-full py-2 text-center text-sm font-bold text-amber-500 bg-amber-500/10 rounded-xl">
+                            ⏳ Pendiente
+                          </div>
+                        ) : (
+                          <form action={async () => {
+                            "use server";
+                            await createChallenge(userId, player.id);
+                          }}>
+                            <button className="w-full bg-red-500 text-white border-b-4 border-red-600 active:border-b-0 active:translate-y-[4px] py-2 rounded-xl font-bold text-sm hover:bg-red-400 transition-all flex items-center justify-center gap-2">
+                              <Swords className="w-4 h-4" />
+                              Retar
+                            </button>
+                          </form>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
               );
             })}

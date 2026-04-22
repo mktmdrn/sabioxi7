@@ -123,6 +123,14 @@ export async function submitScore(challengeId: string, userId: string, score: nu
 }
 
 export async function getChallengesForUser(userId: string) {
+  // Auto-cancel pending challenges older than 2 minutes
+  const twoMinutesAgo = Date.now() - 120000;
+  await supabase
+    .from("challenges")
+    .delete()
+    .eq("status", "pending")
+    .lt("created_at", twoMinutesAgo);
+
   const { data, error } = await supabase
     .from("challenges")
     .select(`

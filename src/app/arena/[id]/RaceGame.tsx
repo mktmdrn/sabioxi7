@@ -433,8 +433,8 @@ export default function RaceGame({
         )}
       </div>
 
-      {/* Controls Overlay - Fixed at bottom */}
-      <div className="absolute bottom-0 left-0 right-0 z-40 p-6 sm:p-10 pointer-events-none">
+      {/* Controls Overlay - Floating higher */}
+      <div className="absolute bottom-[100px] left-0 right-0 z-40 pointer-events-none">
         {phase === "racing" && (
           <div className="flex justify-center gap-6 sm:gap-10 max-w-2xl mx-auto w-full pointer-events-auto">
             <button

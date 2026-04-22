@@ -128,69 +128,71 @@ export default function LessonClient({ lesson, userId }: { lesson: Lesson; userI
   }
 
   return (
-    <div className="h-screen h-[100dvh] bg-white text-duo-foreground flex flex-col font-sans overflow-hidden">
+    <div className="fixed inset-0 z-[100] bg-white text-duo-foreground flex flex-col font-sans overflow-hidden">
       {/* Header */}
-      <header className="p-3 md:p-4 flex items-center justify-between bg-white border-b-2 border-duo-gray shrink-0">
-        <button onClick={() => router.push("/dashboard")} className="text-duo-gray-dark hover:text-duo-foreground transition-colors">
-          <X className="w-6 h-6 md:w-8 md:h-8" />
+      <header className="p-3 md:p-6 flex items-center justify-between bg-white border-b-2 border-duo-gray shrink-0">
+        <button onClick={() => router.push("/dashboard")} className="text-duo-gray-dark hover:text-duo-foreground transition-colors p-1">
+          <X className="w-7 h-7 md:w-9 md:h-9" />
         </button>
         
         {/* Progress Bar */}
-        <div className="flex-1 mx-4 md:mx-6 h-3 md:h-4 bg-duo-gray rounded-full overflow-hidden">
+        <div className="flex-1 mx-4 md:mx-10 h-3 md:h-5 bg-duo-gray rounded-full overflow-hidden">
           <div 
-            className="h-full bg-duo-green transition-all duration-300 relative" 
+            className="h-full bg-duo-green transition-all duration-500 relative" 
             style={{ width: `${progressPercent}%` }}
           >
-            <div className="absolute top-1 left-1 right-1 h-0.5 md:h-1 bg-white/30 rounded-full" />
+            <div className="absolute top-1 left-1 right-1 h-0.5 md:h-1.5 bg-white/30 rounded-full" />
           </div>
         </div>
 
-        <div className="flex items-center gap-2 bg-duo-yellow/10 px-3 py-1 md:px-4 md:py-2 rounded-xl border border-duo-yellow/20">
-          <Star className="w-4 h-4 md:w-5 md:h-5 text-duo-yellow fill-current" />
-          <span className="font-black text-duo-yellow text-sm md:text-base">{score}</span>
+        <div className="flex items-center gap-2 bg-duo-yellow/10 px-3 py-1.5 md:px-5 md:py-2.5 rounded-2xl border-2 border-duo-yellow/20 shrink-0">
+          <Star className="w-4 h-4 md:w-6 md:h-6 text-duo-yellow fill-current" />
+          <span className="font-black text-duo-yellow text-sm md:text-xl tabular-nums">{score}</span>
         </div>
       </header>
 
-      {/* Question */}
-      <main className="flex-1 overflow-y-auto p-4 md:p-8 flex flex-col items-center justify-center min-h-0">
-        <div className="max-w-2xl w-full space-y-6 md:space-y-10 py-4">
-          <h2 className="text-xl md:text-3xl font-black text-duo-foreground text-center italic leading-tight">
-            {currentQ.question}
-          </h2>
+      {/* Question Area */}
+      <main className="flex-1 flex flex-col items-center justify-center p-4 md:p-10 min-h-0">
+        <div className="max-w-3xl w-full flex flex-col h-full max-h-full">
+          <div className="flex-1 flex flex-col justify-center py-4 md:py-10 space-y-6 md:space-y-12">
+            <h2 className="text-xl sm:text-2xl md:text-4xl font-black text-duo-foreground text-center italic leading-tight px-2">
+              {currentQ.question}
+            </h2>
 
-          <div className="grid grid-cols-1 gap-2 md:gap-3">
-            {shuffledOptions.map((option, idx) => {
-              const isSelected = selectedOption === option;
-              const isCorrect = status === "correct" && isSelected;
-              const isWrong = status === "incorrect" && isSelected;
+            <div className="grid grid-cols-1 gap-2.5 md:gap-4 w-full max-w-2xl mx-auto overflow-y-auto pr-1 custom-scrollbar">
+              {shuffledOptions.map((option, idx) => {
+                const isSelected = selectedOption === option;
+                const isCorrect = status === "correct" && isSelected;
+                const isWrong = status === "incorrect" && isSelected;
 
-              return (
-                <button
-                  key={idx}
-                  onClick={() => handleOptionSelect(option)}
-                  disabled={status !== "idle"}
-                  className={`
-                    group p-4 md:p-5 rounded-2xl text-left font-black text-base md:text-lg border-2 border-b-4 md:border-b-8 transition-all
-                    ${status === "idle" 
-                      ? isSelected 
-                        ? "bg-duo-blue/10 border-duo-blue text-duo-blue translate-y-1 md:translate-y-2 border-b-0" 
-                        : "bg-white border-duo-gray text-duo-foreground hover:bg-[#f7f7f7]"
-                      : isCorrect
-                        ? "bg-duo-green/10 border-duo-green text-duo-green translate-y-1 md:translate-y-2 border-b-0"
-                        : isWrong
-                          ? "bg-duo-red/10 border-duo-red text-duo-red translate-y-1 md:translate-y-2 border-b-0"
-                          : "bg-white border-duo-gray text-duo-foreground opacity-50"}
-                  `}
-                >
-                  <div className="flex items-center gap-3 md:gap-4">
-                    <span className={`w-7 h-7 md:w-8 md:h-8 rounded-lg flex items-center justify-center shrink-0 border-2 font-black text-[10px] md:text-xs ${isSelected ? "bg-duo-blue border-duo-blue text-white" : "bg-white border-duo-gray text-duo-gray-dark"}`}>
-                      {idx + 1}
-                    </span>
-                    <span className="leading-snug">{option}</span>
-                  </div>
-                </button>
-              );
-            })}
+                return (
+                  <button
+                    key={idx}
+                    onClick={() => handleOptionSelect(option)}
+                    disabled={status !== "idle"}
+                    className={`
+                      group w-full p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] text-left font-black text-base sm:text-lg md:text-2xl border-2 border-b-4 md:border-b-8 transition-all
+                      ${status === "idle" 
+                        ? isSelected 
+                          ? "bg-duo-blue/10 border-duo-blue text-duo-blue translate-y-1 md:translate-y-2 border-b-0 shadow-inner" 
+                          : "bg-white border-duo-gray text-duo-foreground hover:bg-[#f7f7f7] hover:border-duo-gray-dark active:translate-y-1 active:border-b-2"
+                        : isCorrect
+                          ? "bg-duo-green/10 border-duo-green text-duo-green translate-y-1 md:translate-y-2 border-b-0 shadow-inner"
+                          : isWrong
+                            ? "bg-duo-red/10 border-duo-red text-duo-red translate-y-1 md:translate-y-2 border-b-0 shadow-inner"
+                            : "bg-white border-duo-gray text-duo-foreground opacity-30"}
+                    `}
+                  >
+                    <div className="flex items-center gap-4 md:gap-6">
+                      <span className={`w-8 h-8 md:w-10 md:h-10 rounded-xl flex items-center justify-center shrink-0 border-2 font-black text-xs md:text-sm shadow-sm ${isSelected ? "bg-duo-blue border-duo-blue text-white" : "bg-white border-duo-gray text-duo-gray-dark"}`}>
+                        {idx + 1}
+                      </span>
+                      <span className="leading-tight break-words">{option}</span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
       </main>

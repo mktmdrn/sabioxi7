@@ -142,56 +142,58 @@ export default function ExamClient({ exam, userId }: { exam: Lesson; userId: str
   }
 
   return (
-    <div className="h-screen h-[100dvh] bg-white text-duo-foreground flex flex-col font-sans overflow-hidden">
+    <div className="fixed inset-0 z-[100] bg-white text-duo-foreground flex flex-col font-sans overflow-hidden">
       {/* Header */}
-      <header className="p-3 md:p-4 flex items-center justify-between bg-white border-b-2 border-duo-gray shrink-0">
-        <div className="flex items-center gap-3 md:gap-4">
-          <button onClick={() => router.push("/dashboard")} className="text-duo-gray-dark hover:text-duo-foreground transition-colors">
-            <X className="w-6 h-6 md:w-8 md:h-8" />
+      <header className="p-3 md:p-6 flex items-center justify-between bg-white border-b-2 border-duo-gray shrink-0">
+        <div className="flex items-center gap-3 md:gap-5">
+          <button onClick={() => router.push("/dashboard")} className="text-duo-gray-dark hover:text-duo-foreground transition-colors p-1">
+            <X className="w-7 h-7 md:w-9 md:h-9" />
           </button>
-          <div className="hidden sm:block">
+          <div className="hidden md:block">
             <p className="text-[10px] font-black text-duo-yellow uppercase tracking-widest">Examen de Certificación</p>
             <h1 className="text-sm font-black italic">{exam.title.replace("[EXAMEN FINAL] ", "")}</h1>
           </div>
         </div>
 
-        <div className={`flex items-center gap-2 px-4 py-1 md:px-6 md:py-2 rounded-2xl border-2 border-b-4 transition-all ${timeLeft < 300 ? "bg-duo-red/10 border-duo-red text-duo-red animate-pulse" : "bg-duo-gray border-duo-gray-dark text-duo-foreground"}`}>
-          <Timer className="w-4 h-4 md:w-5 md:h-5" />
-          <span className="text-base md:text-xl font-black tabular-nums">{formatTime(timeLeft)}</span>
+        <div className={`flex items-center gap-2 px-4 py-2 md:px-8 md:py-3 rounded-2xl border-2 border-b-4 transition-all ${timeLeft < 300 ? "bg-duo-red/10 border-duo-red text-duo-red animate-pulse shadow-lg shadow-duo-red/20" : "bg-duo-gray border-duo-gray-dark text-duo-foreground shadow-sm"}`}>
+          <Timer className="w-5 h-5 md:w-6 md:h-6" />
+          <span className="text-lg md:text-2xl font-black tabular-nums">{formatTime(timeLeft)}</span>
         </div>
 
         <div className="text-right shrink-0">
           <p className="text-[8px] md:text-[10px] font-black text-duo-gray-dark uppercase tracking-widest">Pregunta</p>
-          <p className="text-xs md:text-sm font-black">{currentIndex + 1} / {totalQuestions}</p>
+          <p className="text-xs md:text-lg font-black">{currentIndex + 1} de {totalQuestions}</p>
         </div>
       </header>
 
-      {/* Question */}
-      <main className="flex-1 overflow-y-auto p-4 md:p-8 flex flex-col items-center justify-center min-h-0">
-        <div className="max-w-2xl w-full space-y-6 md:space-y-10 py-4">
-          <h2 className="text-xl md:text-3xl font-black text-center italic leading-tight">
-            {currentQ.question}
-          </h2>
+      {/* Question Area */}
+      <main className="flex-1 flex flex-col items-center justify-center p-4 md:p-10 min-h-0">
+        <div className="max-w-4xl w-full flex flex-col h-full max-h-full">
+          <div className="flex-1 flex flex-col justify-center py-4 md:py-10 space-y-8 md:space-y-12">
+            <h2 className="text-xl sm:text-2xl md:text-4xl font-black text-center italic leading-tight px-2">
+              {currentQ.question}
+            </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-            {shuffledOptions.map((option, idx) => (
-              <button
-                key={idx}
-                onClick={() => handleOptionClick(option)}
-                className={`p-4 md:p-6 rounded-3xl text-left font-black text-base md:text-lg border-2 border-b-4 md:border-b-8 transition-all ${
-                  selectedOption === option 
-                    ? "bg-duo-blue/10 border-duo-blue text-duo-blue translate-y-1 md:translate-y-2 border-b-0" 
-                    : "bg-white border-duo-gray text-duo-foreground hover:bg-[#f7f7f7]"
-                }`}
-              >
-                <div className="flex items-start gap-3">
-                  <span className={`w-7 h-7 md:w-8 md:h-8 rounded-lg flex items-center justify-center shrink-0 border-2 text-[10px] md:text-xs ${selectedOption === option ? "bg-duo-blue border-duo-blue text-white" : "bg-white border-duo-gray text-duo-gray-dark"}`}>
-                    {String.fromCharCode(65 + idx)}
-                  </span>
-                  <span className="leading-snug">{option}</span>
-                </div>
-              </button>
-            ))}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-5 w-full overflow-y-auto pr-1 custom-scrollbar">
+              {shuffledOptions.map((option, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => handleOptionClick(option)}
+                  className={`p-5 md:p-8 rounded-[1.5rem] md:rounded-[2.5rem] text-left font-black text-base sm:text-lg md:text-xl border-2 border-b-4 md:border-b-8 transition-all ${
+                    selectedOption === option 
+                      ? "bg-duo-blue/10 border-duo-blue text-duo-blue translate-y-1 md:translate-y-2 border-b-0 shadow-inner" 
+                      : "bg-white border-duo-gray text-duo-foreground hover:bg-[#f7f7f7] hover:border-duo-gray-dark active:translate-y-1 active:border-b-2"
+                  }`}
+                >
+                  <div className="flex items-start gap-4">
+                    <span className={`w-8 h-8 md:w-10 md:h-10 rounded-xl flex items-center justify-center shrink-0 border-2 font-black text-xs md:text-sm shadow-sm ${selectedOption === option ? "bg-duo-blue border-duo-blue text-white" : "bg-white border-duo-gray text-duo-gray-dark"}`}>
+                      {String.fromCharCode(65 + idx)}
+                    </span>
+                    <span className="leading-tight break-words pt-1">{option}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </main>

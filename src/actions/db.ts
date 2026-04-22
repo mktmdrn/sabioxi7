@@ -550,13 +550,20 @@ export interface MilestoneNode {
 }
 
 export async function getAdventures(): Promise<Adventure[]> {
-  const { data, error } = await supabase
-    .from("adventures")
-    .select("*")
-    .order("created_at", { ascending: false });
+  try {
+    const { data, error } = await supabase
+      .from("adventures")
+      .select("*")
+      .order("created_at", { ascending: false });
 
-  if (error) throw error;
-  return data || [];
+    if (error) {
+      console.warn("Table 'adventures' might not exist yet:", error.message);
+      return [];
+    }
+    return data || [];
+  } catch (err) {
+    return [];
+  }
 }
 
 export async function getAdventureDetail(id: string): Promise<Adventure & { milestones: Milestone[] }> {

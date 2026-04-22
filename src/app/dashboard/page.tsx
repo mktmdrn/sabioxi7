@@ -54,8 +54,8 @@ export default async function DashboardPage({ searchParams }: { searchParams: { 
                   <h2 className="text-3xl md:text-5xl font-black text-white mb-4 uppercase tracking-tight italic">
                     ¡HOLA, {session.user?.name?.split(' ')[0].toUpperCase()}! 👋
                   </h2>
-                  <p className="text-white text-lg md:text-2xl font-bold opacity-95 max-w-xl">
-                    Continúa tu formación y domina el sector IT. Tienes el rango de <span className="text-duo-yellow italic">{rank.name}</span>.
+                  <p className="text-white text-lg md:text-2xl font-bold opacity-95 max-w-xl leading-snug">
+                    La mejor aplicación para aprender y jugar a la vez. Tienes el rango de <span className="text-duo-yellow italic">{rank.name}</span>.
                   </p>
                   
                   <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">

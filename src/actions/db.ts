@@ -599,19 +599,27 @@ export async function getAdventureDetail(id: string): Promise<Adventure & { mile
 }
 
 export async function upsertAdventure(adventure: Partial<Adventure>): Promise<Adventure> {
-  // Strip non-DB fields like 'milestones' which might be present in the state
-  const { id, name, description, is_published } = adventure;
-  const dbData: any = { name, description, is_published };
-  if (id) dbData.id = id;
+  try {
+    // Strip non-DB fields like 'milestones' which might be present in the state
+    const { id, name, description, is_published } = adventure;
+    const dbData: any = { name, description, is_published };
+    if (id && id.length > 10) dbData.id = id; // Only include if it looks like a UUID
 
-  const { data, error } = await supabase
-    .from("adventures")
-    .upsert(dbData)
-    .select()
-    .single();
+    const { data, error } = await supabase
+      .from("adventures")
+      .upsert(dbData)
+      .select()
+      .single();
 
-  if (error) throw error;
-  return data;
+    if (error) {
+      console.error("Error in upsertAdventure:", error);
+      throw error;
+    }
+    return data;
+  } catch (err: any) {
+    console.error("Crash in upsertAdventure:", err);
+    throw new Error(err.message || "Error al guardar aventura");
+  }
 }
 
 export async function deleteAdventure(id: string): Promise<void> {
@@ -620,32 +628,46 @@ export async function deleteAdventure(id: string): Promise<void> {
 }
 
 export async function saveMilestones(adventureId: string, milestones: any[]): Promise<void> {
-  const { error: delError } = await supabase.from("milestones").delete().eq("adventure_id", adventureId);
-  if (delError) throw delError;
-
-  for (const m of milestones) {
-    const { data: newMilestone, error: mError } = await supabase
-      .from("milestones")
-      .insert({
-        adventure_id: adventureId,
-        name: m.name,
-        order: m.order
-      })
-      .select()
-      .single();
-
-    if (mError) throw mError;
-
-    if (m.nodes && m.nodes.length > 0) {
-      const nodeInserts = m.nodes.map((n: any, idx: number) => ({
-        milestone_id: newMilestone.id,
-        node_id: n.node_id,
-        type: n.type,
-        order: idx
-      }));
-
-      const { error: nError } = await supabase.from("milestone_nodes").insert(nodeInserts);
-      if (nError) throw nError;
+  try {
+    const { error: delError } = await supabase.from("milestones").delete().eq("adventure_id", adventureId);
+    if (delError) {
+      console.error("Error deleting old milestones:", delError);
+      throw delError;
     }
+
+    for (const m of milestones) {
+      const { data: newMilestone, error: mError } = await supabase
+        .from("milestones")
+        .insert({
+          adventure_id: adventureId,
+          name: m.name,
+          order: m.order || 0
+        })
+        .select()
+        .single();
+
+      if (mError) {
+        console.error("Error creating milestone:", mError);
+        throw mError;
+      }
+
+      if (m.nodes && m.nodes.length > 0) {
+        const nodeInserts = m.nodes.map((n: any, idx: number) => ({
+          milestone_id: newMilestone.id,
+          node_id: n.node_id,
+          type: n.type,
+          order: idx
+        }));
+
+        const { error: nError } = await supabase.from("milestone_nodes").insert(nodeInserts);
+        if (nError) {
+          console.error("Error creating nodes:", nError);
+          throw nError;
+        }
+      }
+    }
+  } catch (err: any) {
+    console.error("Crash in saveMilestones:", err);
+    throw new Error(err.message || "Error al guardar hitos");
   }
 }

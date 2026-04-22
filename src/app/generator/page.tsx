@@ -109,11 +109,14 @@ export default function GeneratorPage() {
 
   const handleDelete = async (id: string) => {
     if (!confirm("¿Seguro que quieres borrar esta lección?")) return;
+    setIsSubmitting(true);
     try {
       await deleteLesson(id);
       await fetchAll();
     } catch (err) {
       alert("Error al borrar lección");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -303,14 +306,18 @@ export default function GeneratorPage() {
                         <td className="px-8 py-5 font-black text-duo-foreground uppercase italic text-sm">{title}</td>
                         <td className="px-8 py-5 text-right space-x-2">
                           <button 
-                            onClick={() => handleEdit(l)}
-                            className="p-3 bg-white border-2 border-duo-gray border-b-4 rounded-xl text-duo-blue hover:bg-duo-blue hover:text-white transition-all active:translate-y-1 active:border-b-0"
+                            type="button"
+                            onClick={(e) => { e.preventDefault(); handleEdit(l); }}
+                            disabled={isSubmitting}
+                            className="p-3 bg-white border-2 border-duo-gray border-b-4 rounded-xl text-duo-blue hover:bg-duo-blue hover:text-white transition-all active:translate-y-1 active:border-b-0 disabled:opacity-50"
                           >
                             <Edit3 className="w-5 h-5" />
                           </button>
                           <button 
-                            onClick={() => handleDelete(l.id)}
-                            className="p-3 bg-white border-2 border-duo-gray border-b-4 rounded-xl text-duo-red hover:bg-duo-red hover:text-white transition-all active:translate-y-1 active:border-b-0"
+                            type="button"
+                            onClick={(e) => { e.preventDefault(); handleDelete(l.id); }}
+                            disabled={isSubmitting}
+                            className="p-3 bg-white border-2 border-duo-gray border-b-4 rounded-xl text-duo-red hover:bg-duo-red hover:text-white transition-all active:translate-y-1 active:border-b-0 disabled:opacity-50"
                           >
                             <Trash2 className="w-5 h-5" />
                           </button>

@@ -166,11 +166,25 @@ export function GlobalNav() {
                     <span className="text-[11px] font-black uppercase tracking-wider">Panel Principal</span>
                   </Link>
                   <Link 
+                    href="/dashboard/admin#users-table" 
+                    className="flex items-center gap-3 px-4 py-2.5 hover:bg-amber-50 text-duo-gray-dark hover:text-amber-600 transition-colors"
+                  >
+                    <Users className="w-4 h-4" />
+                    <span className="text-[11px] font-black uppercase tracking-wider">Gestión Usuarios</span>
+                  </Link>
+                  <Link 
                     href="/dashboard/admin/stars" 
                     className="flex items-center gap-3 px-4 py-2.5 hover:bg-amber-50 text-duo-gray-dark hover:text-amber-600 transition-colors"
                   >
                     <Star className="w-4 h-4" />
                     <span className="text-[11px] font-black uppercase tracking-wider">Gestión Estrellas</span>
+                  </Link>
+                  <Link 
+                    href="/generator" 
+                    className="flex items-center gap-3 px-4 py-2.5 hover:bg-amber-50 text-duo-gray-dark hover:text-amber-600 transition-colors"
+                  >
+                    <BookOpen className="w-4 h-4" />
+                    <span className="text-[11px] font-black uppercase tracking-wider">Gestión Cursos</span>
                   </Link>
                   <Link 
                     href="/dashboard/admin/activity" 

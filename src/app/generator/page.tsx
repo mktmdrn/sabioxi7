@@ -29,6 +29,7 @@ export default function GeneratorPage() {
   const [filterSubject, setFilterSubject] = useState<string | null>(null);
   
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteMode, setDeleteMode] = useState<"single" | "bulk">("single");
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
 
   const [selectedCourse, setSelectedCourse] = useState("");
@@ -111,37 +112,33 @@ export default function GeneratorPage() {
     setView("form");
   };
 
+  const handleDeleteClick = (id: string) => {
+    setItemToDelete(id);
+    setDeleteMode("single");
+    setShowDeleteModal(true);
+  };
+
+  const handleBulkDeleteClick = () => {
+    if (selectedIds.length === 0) return;
+    setDeleteMode("bulk");
+    setShowDeleteModal(true);
+  };
+
   const confirmDelete = async () => {
-    if (!itemToDelete) return;
     setIsSubmitting(true);
     try {
-      await deleteLesson(itemToDelete);
+      if (deleteMode === "single" && itemToDelete) {
+        await deleteLesson(itemToDelete);
+      } else if (deleteMode === "bulk" && selectedIds.length > 0) {
+        await deleteLessons(selectedIds);
+      }
+      
+      setSelectedIds([]);
       await fetchAll();
       setShowDeleteModal(false);
       setItemToDelete(null);
     } catch (err) {
-      alert("Error al borrar lección");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleDeleteClick = (id: string) => {
-    setItemToDelete(id);
-    setShowDeleteModal(true);
-  };
-
-  const handleBulkDelete = async () => {
-    if (selectedIds.length === 0) return;
-    if (!confirm(`¿Estás seguro de que deseas eliminar ${selectedIds.length} lecciones seleccionadas? Esta acción no se puede deshacer.`)) return;
-
-    setIsSubmitting(true);
-    try {
-      await deleteLessons(selectedIds);
-      setSelectedIds([]);
-      await fetchAll();
-    } catch (err) {
-      alert("Error al borrar lecciones");
+      alert("Error al borrar contenido");
     } finally {
       setIsSubmitting(false);
     }
@@ -298,7 +295,7 @@ export default function GeneratorPage() {
               <div className="flex gap-4 w-full md:w-auto">
                 {selectedIds.length > 0 && (
                   <button
-                    onClick={handleBulkDelete}
+                    onClick={handleBulkDeleteClick}
                     disabled={isSubmitting}
                     className="flex-1 md:flex-none bg-duo-red text-white border-b-8 border-duo-red-dark px-8 py-4 rounded-2xl font-black text-sm uppercase italic tracking-tighter hover:brightness-110 active:translate-y-2 transition-all flex items-center gap-2 shadow-lg disabled:opacity-50"
                   >
@@ -398,7 +395,7 @@ export default function GeneratorPage() {
                   })}
                   {filteredLessons.length === 0 && (
                     <tr>
-                      <td colSpan={4} className="px-8 py-20 text-center font-black text-duo-gray-dark uppercase tracking-widest opacity-30 italic">
+                      <td colSpan={5} className="px-8 py-20 text-center font-black text-duo-gray-dark uppercase tracking-widest opacity-30 italic">
                         No se encontraron resultados
                       </td>
                     </tr>
@@ -504,7 +501,9 @@ export default function GeneratorPage() {
               ¿Confirmar Borrado?
             </h3>
             <p className="text-duo-gray-dark font-bold text-center leading-relaxed mb-8">
-              Esta acción es irreversible y eliminará también todo el progreso de los alumnos en esta lección.
+              {deleteMode === "single" 
+                ? "Esta acción es irreversible y eliminará también todo el progreso de los alumnos en esta lección."
+                : `Estás a punto de eliminar ${selectedIds.length} lecciones. Esta acción es irreversible y afectará a todos los alumnos.`}
             </p>
             <div className="flex gap-4">
               <button 

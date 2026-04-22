@@ -14,6 +14,7 @@ export default function CoursesClient({ stats }: { stats: CourseStat[] }) {
   // Selection state
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const courses = useMemo(() => Array.from(new Set(stats.map(s => s.course))), [stats]);
   const subjects = useMemo(() => {
@@ -44,14 +45,17 @@ export default function CoursesClient({ stats }: { stats: CourseStat[] }) {
     );
   };
 
-  const handleDeleteSelected = async () => {
+  const handleDeleteSelectedClick = () => {
     if (selectedIds.length === 0) return;
-    if (!confirm(`¿Estás seguro de que deseas eliminar ${selectedIds.length} lecciones seleccionadas? Esta acción no se puede deshacer.`)) return;
+    setShowDeleteModal(true);
+  };
 
+  const confirmDelete = async () => {
     setIsDeleting(true);
     try {
       await deleteLessons(selectedIds);
       setSelectedIds([]);
+      setShowDeleteModal(false);
       router.refresh();
     } catch (error) {
       console.error("Error deleting lessons:", error);
@@ -78,7 +82,7 @@ export default function CoursesClient({ stats }: { stats: CourseStat[] }) {
           
           {selectedIds.length > 0 && (
             <button
-              onClick={handleDeleteSelected}
+              onClick={handleDeleteSelectedClick}
               disabled={isDeleting}
               className="bg-duo-red text-white border-b-8 border-[#d33131] active:border-b-0 active:translate-y-2 px-8 py-4 rounded-2xl font-black text-lg hover:brightness-110 transition-all flex items-center justify-center gap-3 shadow-lg disabled:opacity-50"
             >
@@ -225,6 +229,38 @@ export default function CoursesClient({ stats }: { stats: CourseStat[] }) {
           </table>
         </div>
       </div>
+
+      {/* Custom Delete Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-duo-foreground/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white border-2 border-duo-gray border-b-8 rounded-[2.5rem] p-8 max-w-md w-full shadow-2xl animate-in zoom-in-95 duration-200">
+            <div className="w-20 h-20 bg-duo-red/10 rounded-3xl flex items-center justify-center mx-auto mb-6 border-2 border-duo-red/20">
+              <AlertTriangle className="w-10 h-10 text-duo-red" />
+            </div>
+            <h3 className="text-2xl font-black text-duo-foreground text-center uppercase italic tracking-tighter mb-4">
+              ¿Confirmar Borrado?
+            </h3>
+            <p className="text-duo-gray-dark font-bold text-center leading-relaxed mb-8">
+              Estás a punto de eliminar {selectedIds.length} lecciones. Esta acción es irreversible y afectará a todos los alumnos.
+            </p>
+            <div className="flex gap-4">
+              <button 
+                onClick={() => setShowDeleteModal(false)}
+                className="flex-1 bg-[#f7f7f7] border-2 border-duo-gray border-b-4 active:border-b-0 active:translate-y-1 py-4 rounded-2xl text-duo-gray-dark font-black uppercase text-xs tracking-widest transition-all"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={confirmDelete}
+                disabled={isDeleting}
+                className="flex-1 bg-duo-red text-white border-b-8 border-duo-red-dark py-4 rounded-2xl font-black uppercase italic tracking-widest hover:brightness-110 active:translate-y-2 transition-all disabled:opacity-50"
+              >
+                {isDeleting ? "Borrando..." : "Sí, Borrar"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

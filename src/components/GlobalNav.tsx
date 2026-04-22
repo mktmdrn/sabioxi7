@@ -24,18 +24,11 @@ export function GlobalNav() {
   const [hasNew, setHasNew] = useState(false);
   const [userData, setUserData] = useState({ level: 0, points: 0, rank: { name: "", emoji: "" } });
 
-  // Hidden on login/register pages
-  if (pathname === "/login" || pathname === "/register" || pathname === "/") {
-    return null;
-  }
-
-  // If no session, don't render
-  if (!session?.user?.id) return null;
-
-  const userId = session.user.id;
-  const role = (session.user as any).role;
+  const userId = session?.user?.id;
+  const role = (session?.user as any)?.role;
 
   const fetchChallenges = async () => {
+    if (!userId) return;
     const all = await getChallengesForUser(userId);
     // Filter only those pending WHERE I AM THE CHALLENGED ONE
     const pendingForMe = all.filter(
@@ -52,6 +45,7 @@ export function GlobalNav() {
   };
 
   useEffect(() => {
+    if (!userId) return;
     // Initial fetch
     fetchChallenges();
 
@@ -97,6 +91,14 @@ export function GlobalNav() {
   const handleDecline = async (id: string) => {
     await declineChallenge(id);
   };
+
+  // Hidden on login/register pages
+  if (pathname === "/login" || pathname === "/register" || pathname === "/") {
+    return null;
+  }
+
+  // If no session, don't render
+  if (!userId) return null;
 
   return (
     <nav className="fixed top-0 left-0 right-0 h-16 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 z-50 flex items-center justify-between px-4 sm:px-6">

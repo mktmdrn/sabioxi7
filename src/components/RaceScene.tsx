@@ -127,13 +127,22 @@ function Track() {
 }
 
 function CameraRig({ p1Pos, p2Pos }: { p1Pos: number; p2Pos: number }) {
+  const smoothedTargetX = useRef(0);
+
   useFrame((state) => {
     const maxPos = Math.max(p1Pos, p2Pos);
-    const targetX = Math.max(maxPos, 3);
-    state.camera.position.x = THREE.MathUtils.lerp(state.camera.position.x, targetX - 2, 0.05);
-    state.camera.position.y = THREE.MathUtils.lerp(state.camera.position.y, 2.2, 0.05);
-    state.camera.position.z = THREE.MathUtils.lerp(state.camera.position.z, 6, 0.05);
-    state.camera.lookAt(targetX + 1, 1.2, 0);
+    const realTargetX = Math.max(maxPos, 3);
+    
+    // Smooth the target coordinate itself
+    smoothedTargetX.current = THREE.MathUtils.lerp(smoothedTargetX.current, realTargetX, 0.08);
+    
+    // Position the camera relative to the smoothed target
+    state.camera.position.x = THREE.MathUtils.lerp(state.camera.position.x, smoothedTargetX.current - 2.5, 0.05);
+    state.camera.position.y = THREE.MathUtils.lerp(state.camera.position.y, 2.5, 0.05);
+    state.camera.position.z = THREE.MathUtils.lerp(state.camera.position.z, 6.5, 0.05);
+    
+    // Look at a point ahead of the smoothed target
+    state.camera.lookAt(smoothedTargetX.current + 1.5, 1.2, 0);
   });
   return null;
 }

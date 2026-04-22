@@ -79,20 +79,15 @@ export default function RunningAvatar({
           <meshPhysicalMaterial {...clayMat(SKIN, 0.45, 0.2)} />
         </mesh>
 
-        {/* HEAD (Big & Round like Avatar3D) */}
+        {/* HEAD (Clean Sphere) */}
         <group position={[0, 0.32, 0]}>
-          <mesh scale={[1, 1.1, 0.95]}>
+          <mesh scale={[1, 1, 1]}>
             <sphereGeometry args={[0.38, 24, 24]} />
             <meshPhysicalMaterial {...clayMat(SKIN, 0.4, 0.3)} />
           </mesh>
           {/* Hair Cap */}
-          <mesh position={[0, 0.12, -0.02]} scale={[1.08, 0.85, 1.05]}>
+          <mesh position={[0, 0.1, -0.02]} scale={[1.08, 0.8, 1.05]}>
             <sphereGeometry args={[0.39, 24, 12, 0, Math.PI * 2, 0, Math.PI * 0.55]} />
-            <meshPhysicalMaterial {...clayMat(HAIR, 0.5, 0.5)} />
-          </mesh>
-          {/* Bangs */}
-          <mesh position={[0, 0.22, 0.24]} rotation={[0.45, 0, 0]} scale={[1.1, 0.3, 0.5]}>
-            <sphereGeometry args={[0.2, 12, 8, 0, Math.PI * 2, 0, Math.PI * 0.5]} />
             <meshPhysicalMaterial {...clayMat(HAIR, 0.5, 0.5)} />
           </mesh>
           {/* Eyes (Simple Dots) */}

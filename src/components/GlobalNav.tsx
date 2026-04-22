@@ -124,26 +124,26 @@ export function GlobalNav() {
   if (!userId) return null;
 
   return (
-    <nav className="fixed top-0 left-0 right-0 h-16 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 z-50 flex items-center justify-between px-4 sm:px-6">
+    <nav className="fixed top-0 left-0 right-0 h-16 bg-white/90 backdrop-blur-md border-b-2 border-duo-gray z-50 flex items-center justify-between px-4 sm:px-6 shadow-sm">
       {/* Logo / Links */}
       <div className="flex items-center gap-6">
-        <Link href="/dashboard" className="text-white font-bold text-lg flex items-center gap-2">
-          <span className="text-amber-500 text-xl">⚡</span>
+        <Link href="/dashboard" className="text-duo-foreground font-black text-lg flex items-center gap-2 italic uppercase tracking-tighter hover:scale-105 transition-transform">
+          <span className="text-duo-yellow text-2xl drop-shadow-sm">⚡</span>
           <span className="hidden xs:inline">SABIOXI</span>
         </Link>
         <div className="hidden md:flex items-center gap-4">
-          <Link href="/dashboard" className={`text-sm font-medium transition-colors ${pathname === "/dashboard" ? "text-white" : "text-slate-400 hover:text-white"}`}>
-            <LayoutDashboard className="w-4 h-4 inline mr-1" /> Panel
+          <Link href="/dashboard" className={`text-xs font-black uppercase tracking-widest transition-all px-3 py-2 rounded-xl ${pathname === "/dashboard" ? "text-duo-blue bg-duo-blue/5" : "text-duo-gray-dark hover:text-duo-blue hover:bg-duo-blue/5"}`}>
+            <LayoutDashboard className="w-4 h-4 inline mr-1.5" /> Panel
           </Link>
-          <Link href="/arena" className={`text-sm font-medium transition-colors ${pathname.startsWith("/arena") ? "text-white" : "text-slate-400 hover:text-white"}`}>
-            <Swords className="w-4 h-4 inline mr-1" /> Arena
+          <Link href="/arena" className={`text-xs font-black uppercase tracking-widest transition-all px-3 py-2 rounded-xl ${pathname.startsWith("/arena") ? "text-duo-red bg-duo-red/5" : "text-duo-gray-dark hover:text-duo-red hover:bg-duo-red/5"}`}>
+            <Swords className="w-4 h-4 inline mr-1.5" /> Arena
           </Link>
           {role === "admin" && (
             <>
-              <Link href="/dashboard/admin" className={`text-sm font-medium transition-colors ${pathname === "/dashboard/admin" ? "text-amber-500" : "text-slate-400 hover:text-amber-500"}`}>
+              <Link href="/dashboard/admin" className={`text-xs font-black uppercase tracking-widest transition-all px-3 py-2 rounded-xl ${pathname === "/dashboard/admin" ? "text-amber-500 bg-amber-500/5" : "text-duo-gray-dark hover:text-amber-500 hover:bg-amber-500/5"}`}>
                 Admin
               </Link>
-              <Link href="/arena/practice" className={`text-sm font-medium transition-colors ${pathname === "/arena/practice" ? "text-indigo-400" : "text-slate-400 hover:text-indigo-400"}`}>
+              <Link href="/arena/practice" className={`text-xs font-black uppercase tracking-widest transition-all px-3 py-2 rounded-xl ${pathname === "/arena/practice" ? "text-indigo-400 bg-indigo-400/5" : "text-duo-gray-dark hover:text-indigo-400 hover:bg-indigo-400/5"}`}>
                 Practice
               </Link>
             </>
@@ -155,20 +155,20 @@ export function GlobalNav() {
       <div className="flex items-center gap-2 sm:gap-4">
         {userData.level > 0 && (
           <div className="flex items-center gap-2 sm:gap-3 mr-1 sm:mr-2">
-            <div className="flex items-center gap-1 sm:gap-1.5 bg-indigo-500/10 px-2 sm:px-3 py-1 rounded-full border border-indigo-500/20">
+            <div className="flex items-center gap-1 sm:gap-1.5 bg-indigo-500/10 px-3 py-1.5 rounded-2xl border-2 border-indigo-500/20 shadow-sm">
               <span className="text-xs sm:text-sm">{userData.rank.emoji}</span>
-              <span className="text-indigo-400 font-bold text-[10px] sm:text-sm">Lv.{userData.level}</span>
+              <span className="text-indigo-500 font-black text-[10px] sm:text-sm">LV.{userData.level}</span>
             </div>
-            <div className="hidden xs:flex items-center gap-1 sm:gap-1.5 bg-amber-500/10 px-2 sm:px-3 py-1 rounded-full border border-amber-500/20 group relative">
-              <Star className="w-3 h-3 sm:w-4 sm:h-4 text-amber-500 fill-amber-500" />
-              <span className="text-amber-500 font-bold text-[10px] sm:text-sm">{userData.points}</span>
+            <div className="hidden xs:flex items-center gap-1 sm:gap-1.5 bg-amber-500/10 px-3 py-1.5 rounded-2xl border-2 border-amber-500/20 group relative shadow-sm">
+              <Star className="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 text-amber-500 fill-amber-500" />
+              <span className="text-amber-500 font-black text-[10px] sm:text-sm">{userData.points}</span>
               
               {role === "admin" && (
                 <button 
-                  onClick={() => setIsAdminModalOpen(true)}
-                  className="ml-1 p-0.5 rounded-full bg-amber-500 text-slate-900 hover:scale-110 transition-transform"
+                   onClick={() => setIsAdminModalOpen(true)}
+                   className="ml-1.5 p-1 rounded-full bg-amber-500 text-white hover:scale-110 transition-transform shadow-md"
                 >
-                  <Plus className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+                  <Plus className="w-2.5 h-2.5" />
                 </button>
               )}
             </div>
@@ -182,42 +182,44 @@ export function GlobalNav() {
               setIsOpen(!isOpen);
               if (hasNew) setHasNew(false);
             }}
-            className="p-2 rounded-full bg-slate-800 hover:bg-slate-700 transition-colors relative"
+            className={`p-2.5 rounded-2xl transition-all relative border-2 ${hasNew ? "bg-duo-red border-duo-red text-white animate-bounce" : "bg-[#f7f7f7] border-duo-gray text-duo-gray-dark hover:bg-white hover:border-duo-gray-dark"}`}
           >
-            <Bell className={`w-4 h-4 sm:w-5 sm:h-5 ${hasNew ? "text-white animate-bounce" : "text-slate-300"}`} />
+            <Bell className="w-5 h-5" />
             {pendingChallenges.length > 0 && (
-              <span className="absolute -top-1 -right-1 w-4 h-4 sm:w-5 sm:h-5 bg-red-500 text-white text-[9px] sm:text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-slate-900">
+              <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-duo-red text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-white shadow-sm">
                 {pendingChallenges.length}
               </span>
             )}
           </button>
 
           {isOpen && (
-            <div className="absolute right-[-60px] sm:right-0 mt-2 w-[280px] sm:w-80 bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden animate-in slide-in-from-top-2">
-              <div className="p-3 border-b border-slate-700 bg-slate-900">
-                <h3 className="text-white font-bold text-sm">Retos Pendientes</h3>
+            <div className="absolute right-[-60px] sm:right-0 mt-3 w-[300px] sm:w-80 bg-white border-2 border-duo-gray rounded-[2rem] shadow-2xl overflow-hidden animate-in slide-in-from-top-2 z-[60] border-b-8">
+              <div className="p-5 border-b-2 border-duo-gray bg-[#f7f7f7]">
+                <h3 className="text-duo-foreground font-black text-sm uppercase italic tracking-tight flex items-center gap-2">
+                  <Swords className="w-4 h-4 text-duo-red" /> Retos Pendientes
+                </h3>
               </div>
               <div className="max-h-[60vh] overflow-y-auto">
                 {pendingChallenges.length === 0 ? (
-                  <p className="p-4 text-sm text-slate-400 text-center">No tienes retos pendientes.</p>
+                  <p className="p-8 text-sm text-duo-gray-dark text-center font-bold italic">No tienes retos pendientes en este momento.</p>
                 ) : (
                   pendingChallenges.map((c) => (
-                    <div key={c.id} className="p-3 border-b border-slate-700/50 hover:bg-slate-700/30 transition-colors">
-                      <p className="text-sm text-white mb-2">
-                        <span className="font-bold text-amber-400">{c.challenger?.name}</span> te ha retado.
+                    <div key={c.id} className="p-5 border-b-2 border-duo-gray/50 hover:bg-[#f7f7f7] transition-colors">
+                      <p className="text-sm text-duo-foreground mb-4 font-bold leading-relaxed">
+                        <span className="font-black text-amber-500 uppercase italic tracking-tighter">{c.challenger?.name}</span> te ha retado a un duelo a muerte.
                       </p>
-                      <div className="flex gap-2">
+                      <div className="flex gap-3">
                         <button 
                           onClick={() => handleAccept(c.id)}
-                          className="flex-1 bg-green-500 text-white py-1.5 rounded-lg text-xs font-bold hover:bg-green-400 transition-all flex items-center justify-center gap-1"
+                          className="flex-1 bg-duo-green text-white py-2.5 rounded-2xl text-xs font-black uppercase tracking-widest hover:brightness-110 transition-all border-b-4 border-duo-green-dark active:border-b-0 active:translate-y-1 shadow-sm"
                         >
-                          <Check className="w-3 h-3" /> Aceptar
+                          Aceptar
                         </button>
                         <button 
                           onClick={() => handleDecline(c.id)}
-                          className="flex-1 bg-slate-700 text-slate-300 py-1.5 rounded-lg text-xs font-bold hover:bg-slate-600 transition-all flex items-center justify-center gap-1"
+                          className="flex-1 bg-white text-duo-gray-dark py-2.5 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-duo-gray/5 transition-all border-2 border-duo-gray border-b-4 active:border-b-0 active:translate-y-1"
                         >
-                          <X className="w-3 h-3" /> Rechazar
+                          Pasar
                         </button>
                       </div>
                     </div>
@@ -228,63 +230,53 @@ export function GlobalNav() {
           )}
         </div>
 
-        {/* Mobile Menu Button */}
-        <div className="md:hidden">
-          <button 
-            onClick={() => signOut({ callbackUrl: "/login" })}
-            className="p-2 rounded-full bg-slate-800 text-slate-400 hover:text-red-400 transition-colors"
-          >
-            <LogOut className="w-4 h-4 sm:w-5 sm:h-5" />
-          </button>
-        </div>
-
         <button 
           onClick={() => signOut({ callbackUrl: "/login" })}
-          className="hidden md:flex items-center gap-2 text-sm font-medium text-slate-400 hover:text-red-400 transition-colors"
+          className="p-2.5 rounded-2xl bg-white border-2 border-duo-gray text-duo-gray-dark hover:text-duo-red hover:border-duo-red transition-all shadow-sm"
         >
-          <LogOut className="w-4 h-4" /> Salir
+          <LogOut className="w-5 h-5" />
         </button>
       </div>
 
       {/* Admin Star Modal */}
       {isAdminModalOpen && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-700 w-full max-w-sm rounded-3xl p-6 shadow-2xl animate-in zoom-in-95">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <Star className="w-5 h-5 text-amber-500 fill-amber-500" /> Cargar Estrellas
+        <div className="fixed inset-0 bg-duo-foreground/40 backdrop-blur-md z-[100] flex items-center justify-center p-4 animate-in fade-in duration-300">
+          <div className="bg-white border-2 border-duo-gray border-b-8 w-full max-w-sm rounded-[2.5rem] p-8 shadow-2xl animate-in zoom-in-95 duration-300">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-2xl font-black text-duo-foreground flex items-center gap-3 uppercase italic tracking-tight leading-none">
+                <Star className="w-6 h-6 text-amber-500 fill-amber-500" /> Cargar Estrellas
               </h2>
-              <button onClick={() => setIsAdminModalOpen(false)} className="text-slate-500 hover:text-white">
+              <button onClick={() => setIsAdminModalOpen(false)} className="text-duo-gray-dark hover:text-duo-foreground p-1 transition-colors">
                 <X className="w-6 h-6" />
               </button>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-6">
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">Email del Usuario</label>
+                <label className="block text-[10px] font-black text-duo-gray-dark uppercase tracking-[0.2em] mb-3 ml-2">Email del Alumno</label>
                 <input 
                   type="email" 
                   value={adminTargetEmail}
                   onChange={(e) => setAdminTargetEmail(e.target.value)}
                   placeholder="ejemplo@correo.com"
-                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-amber-500/50 transition-all"
+                  className="w-full bg-[#f7f7f7] border-2 border-duo-gray text-duo-foreground rounded-2xl px-5 py-3.5 font-bold focus:outline-none focus:border-duo-blue transition-all"
                 />
                 <button 
                   onClick={() => setAdminTargetEmail(session?.user?.email || "")}
-                  className="text-[10px] text-amber-500 font-bold mt-1 ml-1 hover:underline"
+                  className="text-[10px] text-duo-blue font-black uppercase tracking-widest mt-2 ml-2 hover:underline"
                 >
                   Usar mi email
                 </button>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">Cantidad</label>
-                <div className="flex gap-2">
+                <label className="block text-[10px] font-black text-duo-gray-dark uppercase tracking-[0.2em] mb-3 ml-2">Cantidad a Otorga</label>
+                <div className="grid grid-cols-4 gap-2 mb-3">
                   {[10, 50, 100, 500].map(amt => (
                     <button 
                       key={amt}
                       onClick={() => setAdminStarAmount(amt)}
-                      className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${adminStarAmount === amt ? "bg-amber-500 text-slate-900" : "bg-slate-800 text-slate-400 border border-slate-700"}`}
+                      className={`py-2 rounded-xl text-[10px] font-black transition-all border-2 ${adminStarAmount === amt ? "bg-amber-500 border-amber-500 text-white shadow-lg shadow-amber-500/20" : "bg-[#f7f7f7] text-duo-gray-dark border-duo-gray hover:bg-white"}`}
                     >
                       +{amt}
                     </button>
@@ -294,12 +286,12 @@ export function GlobalNav() {
                   type="number" 
                   value={adminStarAmount}
                   onChange={(e) => setAdminStarAmount(parseInt(e.target.value) || 0)}
-                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-xl px-4 py-2.5 mt-2 focus:outline-none focus:ring-2 focus:ring-amber-500/50 transition-all"
+                  className="w-full bg-[#f7f7f7] border-2 border-duo-gray text-duo-foreground rounded-2xl px-5 py-3.5 font-bold focus:outline-none focus:border-duo-blue transition-all"
                 />
               </div>
 
               {adminStatus.message && (
-                <div className={`p-3 rounded-xl text-xs font-bold border ${adminStatus.type === "success" ? "bg-green-500/10 border-green-500/20 text-green-400" : adminStatus.type === "error" ? "bg-red-500/10 border-red-500/20 text-red-400" : "bg-blue-500/10 border-blue-500/20 text-blue-400"}`}>
+                <div className={`p-4 rounded-2xl text-xs font-black uppercase tracking-widest border-2 animate-in slide-in-from-bottom-2 ${adminStatus.type === "success" ? "bg-duo-green/10 border-duo-green/20 text-duo-green" : adminStatus.type === "error" ? "bg-duo-red/10 border-duo-red/20 text-duo-red" : "bg-duo-blue/10 border-duo-blue/20 text-duo-blue"}`}>
                   {adminStatus.message}
                 </div>
               )}
@@ -307,9 +299,9 @@ export function GlobalNav() {
               <button 
                 onClick={handleAdminAddStars}
                 disabled={adminStatus.type === "loading"}
-                className="w-full bg-amber-500 text-slate-900 font-bold py-3 rounded-xl hover:bg-amber-400 transition-all active:scale-95 disabled:opacity-50"
+                className="w-full bg-duo-green text-white font-black py-4 rounded-2xl hover:brightness-110 transition-all border-b-8 border-duo-green-dark active:border-b-0 active:translate-y-2 text-xl uppercase italic tracking-tighter disabled:opacity-50"
               >
-                CARGAR ESTRELLAS
+                {adminStatus.type === "loading" ? "PROCESANDO..." : "CARGAR ESTRELLAS"}
               </button>
             </div>
           </div>

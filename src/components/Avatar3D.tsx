@@ -86,74 +86,30 @@ function CharacterBody({ config }: { config: AvatarConfig }) {
 
       {/* ══════ HEAD ══════ */}
       <group position={[0, 0.32, 0]}>
-        {/* Main skull – big & round */}
-        <mesh scale={[1, 1.1, 0.95]}>
-          <sphereGeometry args={[0.38, 48, 48]} />
+        {/* Main skull – clean sphere */}
+        <mesh scale={[1, 1, 1]}>
+          <sphereGeometry args={[0.38, 64, 64]} />
           <meshPhysicalMaterial {...skinClay} />
         </mesh>
-        {/* Lower face / jaw */}
-        <mesh position={[0, -0.15, 0.06]} scale={[0.88, 0.55, 0.82]}>
-          <sphereGeometry args={[0.34, 32, 32]} />
-          <meshPhysicalMaterial {...skinClay} />
-        </mesh>
-        {/* Chin */}
-        <mesh position={[0, -0.28, 0.14]} scale={[0.38, 0.22, 0.28]}>
-          <sphereGeometry args={[0.25, 24, 24]} />
-          <meshPhysicalMaterial {...skinClay} />
-        </mesh>
-        {/* Cheeks */}
-        {[-1, 1].map((s) => (
-          <mesh key={s} position={[s * 0.24, -0.04, 0.2]} scale={[0.6, 0.55, 0.45]}>
-            <sphereGeometry args={[0.14, 24, 24]} />
-            <meshPhysicalMaterial {...skinClay} />
-          </mesh>
-        ))}
 
-        {/* ── EARS (big & prominent like reference) ── */}
+        {/* ── EARS ── */}
         {[-1, 1].map((s) => (
           <group key={`ear${s}`} position={[s * 0.38, 0.0, -0.02]}>
             <mesh scale={[0.35, 0.5, 0.55]} rotation={[0, s * 0.25, 0]}>
               <sphereGeometry args={[0.18, 24, 24]} />
               <meshPhysicalMaterial {...skinClay} />
             </mesh>
-            {/* Inner ear shadow */}
-            <mesh position={[s * 0.01, 0, 0.03]} scale={[0.2, 0.32, 0.3]} rotation={[0, s * 0.25, 0]}>
-              <sphereGeometry args={[0.14, 16, 16]} />
-              <meshPhysicalMaterial {...useClay(SKIN_SHADOW, { roughness: 0.5 })} />
-            </mesh>
           </group>
         ))}
 
-        {/* ── HAIR (smooth volumetric cap) ── */}
+        {/* ── HAIR (simple cap) ── */}
         <group>
           {/* Hair base dome */}
-          <mesh position={[0, 0.12, -0.04]} scale={[1.08, config.hair === "short" ? 0.7 : 0.88, 1.08]}>
+          <mesh position={[0, 0.1, -0.04]} scale={[1.08, 0.8, 1.08]}>
             <sphereGeometry args={[0.39, 48, 32, 0, Math.PI * 2, 0, Math.PI * 0.55]} />
             <meshPhysicalMaterial {...hairClay} />
           </mesh>
-          {/* Top volume */}
-          <mesh position={[0, 0.38, 0.02]} scale={[0.85, 0.38, 0.95]} rotation={[0.15, 0, 0]}>
-            <sphereGeometry args={[0.25, 32, 24]} />
-            <meshPhysicalMaterial {...hairClay} />
-          </mesh>
-          {/* Front sweep / bangs */}
-          <mesh position={[0, 0.24, 0.26]} rotation={[0.5, 0, 0]} scale={[1.05, 0.28, 0.45]}>
-            <capsuleGeometry args={[0.22, 0.08, 16, 32]} />
-            <meshPhysicalMaterial {...hairClay} />
-          </mesh>
-          {/* Side volumes */}
-          {[-1, 1].map((s) => (
-            <mesh key={`side${s}`} position={[s * 0.34, 0.05, -0.02]} scale={[0.35, 0.7, 0.7]} rotation={[0, 0, s * 0.08]}>
-              <capsuleGeometry args={[0.12, 0.18, 12, 16]} />
-              <meshPhysicalMaterial {...hairClay} />
-            </mesh>
-          ))}
-          {/* Back hair volume */}
-          <mesh position={[0, 0.02, -0.28]} scale={[0.95, 0.85, 0.5]}>
-            <sphereGeometry args={[0.38, 32, 24]} />
-            <meshPhysicalMaterial {...hairClay} />
-          </mesh>
-
+          
           {/* Spike variant */}
           {config.hair === "spike" && (
             <group position={[0, 0.4, 0]}>
@@ -165,9 +121,9 @@ function CharacterBody({ config }: { config: AvatarConfig }) {
               ))}
             </group>
           )}
-          {/* Long variant */}
+          {/* Long variant (simplified) */}
           {config.hair === "long" && (
-            <mesh position={[0, -0.15, -0.22]} scale={[1.05, 1.5, 0.7]}>
+            <mesh position={[0, -0.15, -0.22]} scale={[1.05, 1.2, 0.7]}>
               <sphereGeometry args={[0.34, 32, 24, 0, Math.PI * 2, Math.PI * 0.15, Math.PI * 0.85]} />
               <meshPhysicalMaterial {...hairClay} />
             </mesh>

@@ -23,7 +23,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: { 
     userId ? getCompletedLessons(userId) : Promise.resolve([])
   ]);
 
-  const avatarConfig = userId ? await getAvatarConfig(userId) : { color: "blue", hat: "none", accessory: "none" };
+  const avatarConfig = userId ? await getAvatarConfig(userId) : { color: "blue", hat: "none", accessory: "none", mouth: "neutral", eyes: "neutral", hair: "standard" };
   const xp = userId ? await getUserXp(userId) : 0;
   const level = calculateLevel(xp);
   const rank = getRankInfo(level);

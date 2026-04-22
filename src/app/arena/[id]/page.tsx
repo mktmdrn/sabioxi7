@@ -15,7 +15,7 @@ export default async function ChallengePage({ params }: { params: { id: string }
 
   if (!challenge) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
+      <div className="h-[100dvh] bg-slate-950 flex items-center justify-center p-4">
         <div className="text-center space-y-4">
           <p className="text-4xl">❌</p>
           <h1 className="text-2xl font-bold text-white">Reto no encontrado</h1>
@@ -47,7 +47,7 @@ export default async function ChallengePage({ params }: { params: { id: string }
     const draw = challenge.winner_id === null;
 
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
+      <div className="h-[100dvh] bg-slate-950 flex items-center justify-center p-4">
         <div className="max-w-md w-full text-center space-y-8">
           <div className="text-7xl">{won ? "🏆" : draw ? "🤝" : "😢"}</div>
           <h1 className="text-4xl font-extrabold text-white">
@@ -89,7 +89,7 @@ export default async function ChallengePage({ params }: { params: { id: string }
 
   // Pending or other status
   return (
-    <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
+    <div className="h-[100dvh] bg-slate-950 flex items-center justify-center p-4">
       <div className="max-w-md w-full text-center space-y-6">
         <p className="text-4xl">⚔️</p>
         <h1 className="text-2xl font-bold text-white">Reto pendiente</h1>

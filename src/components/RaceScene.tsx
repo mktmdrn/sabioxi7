@@ -158,7 +158,7 @@ export default function RaceScene({
   player2Boosting: boolean;
 }) {
   return (
-    <div style={{ width: "100%", height: "100%" }}>
+    <div className="absolute inset-0">
       <Canvas
         camera={{ position: [3, 1.5, 5.5], fov: 50 }}
         gl={{ antialias: true }}

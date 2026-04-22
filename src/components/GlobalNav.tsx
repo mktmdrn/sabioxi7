@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { createClient } from "@supabase/supabase-js";
 import { useRouter, usePathname } from "next/navigation";
-import { Bell, Swords, LogOut, LayoutDashboard, Check, X, Star, Plus, ChevronDown, Shield, Zap, Activity } from "lucide-react";
+import { Bell, Swords, LogOut, LayoutDashboard, Check, X, Star, Plus, ChevronDown, Shield, Zap, Activity, Users, BookOpen } from "lucide-react";
 import Link from "next/link";
 import { acceptChallenge, declineChallenge, getChallengesForUser } from "@/actions/arena";
 import { getUserXp, getUserPoints, addStarsToUserByEmail } from "@/actions/db";

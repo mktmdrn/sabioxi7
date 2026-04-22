@@ -396,6 +396,22 @@ export async function syncLessonWithQuestions(title: string, newQuestions: Quest
   }
 }
 
+export async function bulkSyncLessons(blocks: { title: string; questions: Question[] }[]): Promise<{ success: number; errors: string[] }> {
+  let successCount = 0;
+  const errors: string[] = [];
+
+  for (const block of blocks) {
+    try {
+      await syncLessonWithQuestions(block.title, block.questions);
+      successCount++;
+    } catch (err) {
+      errors.push(`Error en "${block.title}": ${(err as Error).message}`);
+    }
+  }
+
+  return { success: successCount, errors };
+}
+
 export async function deleteLesson(id: string): Promise<void> {
   // Delete test logs first (FK constraint)
   const { error: logError } = await supabase

@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { syncLessonWithQuestions, deleteLessonsByCourse, Question } from "@/actions/db";
-import { LayoutDashboard, CheckCircle, AlertTriangle, Play, FileText, ChevronLeft } from "lucide-react";
+import { syncLessonWithQuestions, bulkSyncLessons, deleteLessonsByCourse, Question } from "@/actions/db";
+import { LayoutDashboard, CheckCircle, AlertTriangle, Play, FileText, ChevronLeft, Loader2, Trash2 } from "lucide-react";
 import Link from "next/link";
 
 export default function AdvancedGeneratorPage() {
@@ -14,19 +14,7 @@ export default function AdvancedGeneratorPage() {
   const [input, setInput] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [results, setResults] = useState<{success: number, errors: string[]} | null>(null);
-
-  const handleDeleteCourse = async () => {
-    if (!confirm("¿Seguro que quieres borrar todas las lecciones de UOC - ADE?")) return;
-    setIsSubmitting(true);
-    try {
-      const res = await deleteLessonsByCourse("UOC - ADE");
-      alert(`Se han borrado ${res.count} lecciones.`);
-    } catch (err) {
-      alert("Error al borrar el curso.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -35,6 +23,19 @@ export default function AdvancedGeneratorPage() {
       router.push("/dashboard");
     }
   }, [status, session, router]);
+
+  const confirmDelete = async () => {
+    setIsSubmitting(true);
+    try {
+      const res = await deleteLessonsByCourse("UOC - ADE");
+      alert(`Se han borrado ${res.count} lecciones.`);
+      setShowDeleteModal(false);
+    } catch (err) {
+      alert("Error al borrar el curso.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   if (status === "loading") {
     return <div className="min-h-screen bg-[#f7f7f7] flex items-center justify-center font-black text-duo-blue uppercase tracking-widest animate-pulse">Cargando Panel...</div>;
@@ -66,22 +67,31 @@ export default function AdvancedGeneratorPage() {
       return;
     }
 
-    // Process each block with sync (merge) behavior
-    for (const block of blocks) {
+    // Prepare blocks for bulk sync
+    const blocksToSync = blocks.map(block => {
       const [course, subject, title, qText, correct, w1, w2, w3] = block;
-      const fullTitle = `[${course}] [${subject}] ${title}`;
-      const questions: Question[] = [{
-        question: qText,
-        correctAnswer: correct,
-        wrongAnswers: [w1, w2, w3]
-      }];
+      return {
+        title: `[${course}] [${subject}] ${title}`,
+        questions: [{
+          question: qText,
+          correctAnswer: correct,
+          wrongAnswers: [w1, w2, w3]
+        }]
+      };
+    });
 
-      try {
-        await syncLessonWithQuestions(fullTitle, questions);
-        successCount++;
-      } catch (err) {
-        errors.push(`Error al guardar "${title}": ${(err as Error).message}`);
-      }
+    try {
+      const res = await bulkSyncLessons(blocksToSync);
+      setResults({ 
+        success: res.success, 
+        errors: [...errors, ...res.errors] 
+      });
+      if (res.success > 0) setInput("");
+    } catch (err) {
+      setResults({ 
+        success: 0, 
+        errors: [...errors, `Error crítico de red: ${(err as Error).message}`] 
+      });
     }
 
     setResults({ success: successCount, errors });
@@ -91,7 +101,7 @@ export default function AdvancedGeneratorPage() {
 
   return (
     <div className="min-h-screen bg-[#f7f7f7] text-duo-foreground p-6 md:p-10 font-sans">
-      <div className="max-w-5xl mx-auto space-y-8">
+      <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in duration-500">
          <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 bg-duo-blue rounded-[1.25rem] flex items-center justify-center border-b-8 border-duo-blue-dark shadow-lg shadow-duo-blue/20">
@@ -111,7 +121,7 @@ export default function AdvancedGeneratorPage() {
 
         <main className="grid grid-cols-1 lg:grid-cols-3 gap-10">
           <div className="lg:col-span-2 space-y-6">
-             <div className="bg-white border-2 border-duo-gray border-b-8 rounded-[2.5rem] p-8">
+             <div className="bg-white border-2 border-duo-gray border-b-8 rounded-[2.5rem] p-8 shadow-sm">
                 <h2 className="text-xl font-black mb-6 uppercase italic flex items-center gap-3 text-duo-blue">
                   <div className="w-2 h-6 bg-duo-blue rounded-full" />
                   ENTRADA DE DATOS (8 LÍNEAS POR BLOQUE)
@@ -129,18 +139,18 @@ export default function AdvancedGeneratorPage() {
                     disabled={isSubmitting || !input.trim()}
                     className="bg-duo-green text-white border-b-8 border-duo-green-dark px-12 py-5 rounded-[2.5rem] font-black text-xl uppercase italic tracking-tighter hover:brightness-110 active:translate-y-2 transition-all disabled:opacity-50 flex items-center gap-3 shadow-lg shadow-duo-green/20"
                   >
-                    {isSubmitting ? "PROCESANDO..." : "CARGAR TODO 🚀"}
+                    {isSubmitting ? <Loader2 className="w-6 h-6 animate-spin" /> : "CARGAR TODO 🚀"}
                   </button>
                 </div>
              </div>
 
              {results && (
-               <div className={`p-8 rounded-[2.5rem] border-2 border-b-8 transition-all animate-in slide-in-from-bottom-4 ${results.errors.length > 0 ? "bg-duo-red/5 border-duo-red" : "bg-duo-green/5 border-duo-green"}`}>
+                <div className={`p-8 rounded-[2.5rem] border-2 border-b-8 transition-all animate-in slide-in-from-bottom-4 ${results.errors.length > 0 ? "bg-duo-red/5 border-duo-red" : "bg-duo-green/5 border-duo-green"}`}>
                   <h3 className="font-black uppercase italic text-lg flex items-center gap-3 mb-4">
                     {results.errors.length > 0 ? <AlertTriangle className="text-duo-red" /> : <CheckCircle className="text-duo-green" />}
                     RESULTADO DE LA CARGA
                   </h3>
-                  <p className="font-bold text-duo-foreground">Lecciones creadas: <span className="text-duo-green font-black">{results.success}</span></p>
+                  <p className="font-bold text-duo-foreground">Lecciones creadas/actualizadas: <span className="text-duo-green font-black">{results.success}</span></p>
                   {results.errors.length > 0 && (
                     <div className="mt-4 space-y-2">
                       <p className="text-xs font-black text-duo-red uppercase tracking-widest">Errores Detectados:</p>
@@ -154,7 +164,7 @@ export default function AdvancedGeneratorPage() {
           </div>
 
           <div className="space-y-6">
-            <div className="bg-white border-2 border-duo-gray border-b-8 rounded-[2rem] p-6">
+            <div className="bg-white border-2 border-duo-gray border-b-8 rounded-[2rem] p-6 shadow-sm">
               <h3 className="font-black uppercase italic text-sm mb-4 text-duo-gray-dark flex items-center gap-2">
                 <Play className="w-4 h-4 fill-current text-duo-blue" />
                 TEMPLATE ESTRUCTURA
@@ -178,7 +188,7 @@ export default function AdvancedGeneratorPage() {
                 💡 CONSEJO PRO
               </h3>
               <p className="text-xs font-bold text-duo-blue/70 leading-relaxed">
-                Este generador crea una lección por cada bloque. Si necesitas añadir varias preguntas a la misma lección, usa el generador estándar.
+                Este generador crea una lección por cada bloque. Si el título ya existe, añade la pregunta a esa lección.
               </p>
             </div>
 
@@ -190,7 +200,7 @@ export default function AdvancedGeneratorPage() {
                 Borra todas las lecciones del curso "UOC - ADE" para empezar de cero.
               </p>
               <button
-                onClick={handleDeleteCourse}
+                onClick={() => setShowDeleteModal(true)}
                 disabled={isSubmitting}
                 className="w-full bg-white border-2 border-duo-red border-b-4 active:border-b-0 active:translate-y-1 py-3 rounded-xl text-duo-red font-black uppercase text-[10px] tracking-widest hover:bg-duo-red hover:text-white transition-all disabled:opacity-50"
               >
@@ -200,6 +210,38 @@ export default function AdvancedGeneratorPage() {
           </div>
         </main>
       </div>
+
+      {/* Custom Delete Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-duo-foreground/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white border-2 border-duo-gray border-b-8 rounded-[2.5rem] p-8 max-w-md w-full shadow-2xl animate-in zoom-in-95 duration-200">
+            <div className="w-20 h-20 bg-duo-red/10 rounded-3xl flex items-center justify-center mx-auto mb-6 border-2 border-duo-red/20">
+              <AlertTriangle className="w-10 h-10 text-duo-red" />
+            </div>
+            <h3 className="text-2xl font-black text-duo-foreground text-center uppercase italic tracking-tighter mb-4">
+              ¿Confirmar Borrado?
+            </h3>
+            <p className="text-duo-gray-dark font-bold text-center leading-relaxed mb-8">
+              Esta acción eliminará todas las lecciones asociadas a "UOC - ADE" y el progreso de los alumnos. No se puede deshacer.
+            </p>
+            <div className="flex gap-4">
+              <button 
+                onClick={() => setShowDeleteModal(false)}
+                className="flex-1 bg-[#f7f7f7] border-2 border-duo-gray border-b-4 active:border-b-0 active:translate-y-1 py-4 rounded-2xl text-duo-gray-dark font-black uppercase text-xs tracking-widest transition-all"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={confirmDelete}
+                disabled={isSubmitting}
+                className="flex-1 bg-duo-red text-white border-b-8 border-duo-red-dark py-4 rounded-2xl font-black uppercase italic tracking-widest hover:brightness-110 active:translate-y-2 transition-all disabled:opacity-50"
+              >
+                {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : "Sí, Borrar"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

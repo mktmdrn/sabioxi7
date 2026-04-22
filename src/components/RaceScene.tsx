@@ -127,22 +127,23 @@ function Track() {
 }
 
 function CameraRig({ p1Pos, p2Pos }: { p1Pos: number; p2Pos: number }) {
-  const smoothedTargetX = useRef(Math.max(p1Pos, p2Pos, 3));
+  const smoothedTargetX = useRef(Math.max(p1Pos, p2Pos));
 
   useFrame((state) => {
     const maxPos = Math.max(p1Pos, p2Pos);
-    const realTargetX = Math.max(maxPos, 3);
+    const realTargetX = maxPos;
     
     // Smooth the target coordinate itself
     smoothedTargetX.current = THREE.MathUtils.lerp(smoothedTargetX.current, realTargetX, 0.08);
     
     // Position the camera relative to the smoothed target
-    state.camera.position.x = THREE.MathUtils.lerp(state.camera.position.x, smoothedTargetX.current - 2.5, 0.05);
-    state.camera.position.y = THREE.MathUtils.lerp(state.camera.position.y, 2.5, 0.05);
+    // We stay a bit behind (x-4) and to the side (z+6)
+    state.camera.position.x = THREE.MathUtils.lerp(state.camera.position.x, smoothedTargetX.current - 3, 0.05);
+    state.camera.position.y = THREE.MathUtils.lerp(state.camera.position.y, 2.8, 0.05);
     state.camera.position.z = THREE.MathUtils.lerp(state.camera.position.z, 6.5, 0.05);
     
-    // Look at a point ahead of the smoothed target
-    state.camera.lookAt(smoothedTargetX.current + 1.5, 1.2, 0);
+    // Look at a point slightly ahead of the smoothed target
+    state.camera.lookAt(smoothedTargetX.current + 1.2, 1.2, 0);
   });
   return null;
 }
@@ -169,7 +170,7 @@ export default function RaceScene({
   return (
     <div className="absolute inset-0">
       <Canvas
-        camera={{ position: [0.5, 2.5, 6.5], fov: 50 }}
+        camera={{ position: [-3, 2.8, 6.5], fov: 50 }}
         gl={{ antialias: true }}
         style={{ background: "linear-gradient(180deg, #0ea5e9 0%, #7dd3fc 40%, #bae6fd 100%)" }}
       >

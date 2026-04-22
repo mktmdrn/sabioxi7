@@ -434,16 +434,16 @@ export default function RaceGame({
       </div>
 
       {/* Controls Overlay - Bottom */}
-      <div className="mt-auto z-30 p-6 sm:p-10 pointer-events-none">
+      <div className="mt-auto z-30 p-4 sm:p-10 pointer-events-none">
         {phase === "racing" && (
-          <div className="flex gap-6 max-w-2xl mx-auto w-full pointer-events-auto">
+          <div className="flex justify-center gap-4 sm:gap-8 max-w-2xl mx-auto w-full pointer-events-auto">
             <button
               onTouchStart={(e) => { e.preventDefault(); handleTouch("ArrowLeft"); }}
               onMouseDown={(e) => { e.preventDefault(); handleTouch("ArrowLeft"); }}
-              className={`flex-1 aspect-square sm:aspect-auto sm:py-8 rounded-full sm:rounded-2xl font-extrabold text-3xl transition-all shadow-2xl border-4 backdrop-blur-md active:scale-90 touch-none flex items-center justify-center ${
+              className={`w-16 h-16 sm:w-24 sm:h-24 sm:flex-1 rounded-full sm:rounded-2xl font-extrabold text-xl sm:text-3xl transition-all shadow-2xl border-2 sm:border-4 backdrop-blur-md active:scale-90 touch-none flex items-center justify-center ${
                 lastKey === "ArrowLeft" 
                   ? "bg-blue-600/80 border-blue-400 text-white" 
-                  : "bg-white/10 border-white/20 text-white/60 hover:bg-white/20"
+                  : "bg-white/10 border-white/20 text-white/60"
               }`}
             >
               ←
@@ -451,10 +451,10 @@ export default function RaceGame({
             <button
               onTouchStart={(e) => { e.preventDefault(); handleTouch("ArrowRight"); }}
               onMouseDown={(e) => { e.preventDefault(); handleTouch("ArrowRight"); }}
-              className={`flex-1 aspect-square sm:aspect-auto sm:py-8 rounded-full sm:rounded-2xl font-extrabold text-3xl transition-all shadow-2xl border-4 backdrop-blur-md active:scale-90 touch-none flex items-center justify-center ${
+              className={`w-16 h-16 sm:w-24 sm:h-24 sm:flex-1 rounded-full sm:rounded-2xl font-extrabold text-xl sm:text-3xl transition-all shadow-2xl border-2 sm:border-4 backdrop-blur-md active:scale-90 touch-none flex items-center justify-center ${
                 lastKey === "ArrowRight" 
                   ? "bg-blue-600/80 border-blue-400 text-white" 
-                  : "bg-white/10 border-white/20 text-white/60 hover:bg-white/20"
+                  : "bg-white/10 border-white/20 text-white/60"
               }`}
             >
               →

@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { addLesson, updateLesson, getLessons, deleteLesson, Question, Lesson } from "@/actions/db";
-import { LayoutDashboard, CheckCircle, AlertTriangle, Search, Edit3, PlusCircle, Trash2, ChevronLeft, BookOpen, Settings } from "lucide-react";
+import { addLesson, updateLesson, getLessons, deleteLesson, deleteLessons, Question, Lesson } from "@/actions/db";
+import { LayoutDashboard, CheckCircle, AlertTriangle, Search, Edit3, PlusCircle, Trash2, ChevronLeft, BookOpen, Settings, X, Loader2 } from "lucide-react";
 import Link from "next/link";
 
 export default function GeneratorPage() {
@@ -23,6 +23,7 @@ export default function GeneratorPage() {
 
   const [allLessons, setAllLessons] = useState<Lesson[]>([]);
   const [selectedLessonId, setSelectedLessonId] = useState("");
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCourse, setFilterCourse] = useState<string | null>(null);
   const [filterSubject, setFilterSubject] = useState<string | null>(null);
@@ -128,6 +129,36 @@ export default function GeneratorPage() {
   const handleDeleteClick = (id: string) => {
     setItemToDelete(id);
     setShowDeleteModal(true);
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedIds.length === 0) return;
+    if (!confirm(`¿Estás seguro de que deseas eliminar ${selectedIds.length} lecciones seleccionadas? Esta acción no se puede deshacer.`)) return;
+
+    setIsSubmitting(true);
+    try {
+      await deleteLessons(selectedIds);
+      setSelectedIds([]);
+      await fetchAll();
+    } catch (err) {
+      alert("Error al borrar lecciones");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds(prev => 
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
+  };
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedIds(filteredLessons.map(l => l.id));
+    } else {
+      setSelectedIds([]);
+    }
   };
 
   const validateAndParse = (text: string): Question[] | null => {
@@ -263,25 +294,47 @@ export default function GeneratorPage() {
                   </div>
                 )}
               </div>
-              <button 
-                onClick={() => {
-                  setMode("create");
-                  setSelectedLessonId("");
-                  setLessonTitle("");
-                  setInput("");
-                  setView("form");
-                }}
-                className="bg-duo-green text-white border-b-8 border-duo-green-dark px-10 py-4 rounded-2xl font-black text-xl uppercase italic tracking-tighter hover:brightness-110 active:translate-y-2 transition-all flex items-center gap-3 shadow-lg shadow-duo-green/20 w-full md:w-auto justify-center"
-              >
-                <PlusCircle className="w-6 h-6" />
-                Nueva Lección
-              </button>
+
+              <div className="flex gap-4 w-full md:w-auto">
+                {selectedIds.length > 0 && (
+                  <button
+                    onClick={handleBulkDelete}
+                    disabled={isSubmitting}
+                    className="flex-1 md:flex-none bg-duo-red text-white border-b-8 border-duo-red-dark px-8 py-4 rounded-2xl font-black text-sm uppercase italic tracking-tighter hover:brightness-110 active:translate-y-2 transition-all flex items-center gap-2 shadow-lg disabled:opacity-50"
+                  >
+                    {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Trash2 className="w-5 h-5" />}
+                    BORRAR ({selectedIds.length})
+                  </button>
+                )}
+                
+                <button 
+                  onClick={() => {
+                    setMode("create");
+                    setSelectedLessonId("");
+                    setLessonTitle("");
+                    setInput("");
+                    setView("form");
+                  }}
+                  className="flex-1 md:flex-none bg-duo-green text-white border-b-8 border-duo-green-dark px-10 py-4 rounded-2xl font-black text-xl uppercase italic tracking-tighter hover:brightness-110 active:translate-y-2 transition-all flex items-center gap-3 shadow-lg shadow-duo-green/20 justify-center"
+                >
+                  <PlusCircle className="w-6 h-6" />
+                  Nueva
+                </button>
+              </div>
             </div>
 
             <div className="bg-white border-2 border-duo-gray border-b-8 rounded-[2.5rem] overflow-hidden shadow-sm">
               <table className="w-full text-left">
                 <thead className="bg-[#f7f7f7] border-b-2 border-duo-gray">
                   <tr className="text-[10px] uppercase font-black text-duo-gray-dark tracking-widest">
+                    <th className="px-6 py-5 w-12">
+                      <input 
+                        type="checkbox"
+                        checked={filteredLessons.length > 0 && selectedIds.length === filteredLessons.length}
+                        onChange={(e) => handleSelectAll(e.target.checked)}
+                        className="w-5 h-5 rounded border-2 border-duo-gray text-duo-blue focus:ring-duo-blue cursor-pointer"
+                      />
+                    </th>
                     <th className="px-8 py-5">Curso</th>
                     <th className="px-8 py-5">Asignatura</th>
                     <th className="px-8 py-5">Lección</th>
@@ -296,7 +349,15 @@ export default function GeneratorPage() {
                     const title = match ? match[3] : l.title;
 
                     return (
-                      <tr key={l.id} className="hover:bg-[#f7f7f7]/50 transition-colors group">
+                      <tr key={l.id} className={`hover:bg-[#f7f7f7]/50 transition-colors group ${selectedIds.includes(l.id) ? "bg-duo-blue/5" : ""}`}>
+                        <td className="px-6 py-5">
+                          <input 
+                            type="checkbox"
+                            checked={selectedIds.includes(l.id)}
+                            onChange={() => toggleSelect(l.id)}
+                            className="w-5 h-5 rounded border-2 border-duo-gray text-duo-blue focus:ring-duo-blue cursor-pointer"
+                          />
+                        </td>
                         <td className="px-8 py-5">
                           <button 
                             onClick={() => setFilterCourse(course)}

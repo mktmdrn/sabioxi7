@@ -30,6 +30,7 @@ export default function RaceGame({
   opponentLevel,
   opponentId,
   isChallenger,
+  practiceMode = false,
 }: {
   challengeId: string;
   userId: string;
@@ -41,6 +42,7 @@ export default function RaceGame({
   opponentLevel: number;
   opponentId: string;
   isChallenger: boolean;
+  practiceMode?: boolean;
 }) {
   const [phase, setPhase] = useState<Phase>("connecting");
   const [countdown, setCountdown] = useState(3);
@@ -75,6 +77,13 @@ export default function RaceGame({
 
   // Supabase Realtime channel setup
   useEffect(() => {
+    if (practiceMode) {
+      setChannelReady(true);
+      setPhase("lobby");
+      setOpReady(true); // Dummy opponent always ready
+      return;
+    }
+
     const channel = supabase.channel(`race-${challengeId}`, {
       config: { broadcast: { self: false } },
     });
@@ -234,11 +243,11 @@ export default function RaceGame({
 
   // Handle finish - save results
   useEffect(() => {
-    if (phase !== "finished" || !winner) return;
+    if (phase !== "finished" || !winner || practiceMode) return;
     if (winner === "me") {
       finishRace(challengeId, userId, opponentId);
     }
-  }, [phase, winner, challengeId, userId, opponentId]);
+  }, [phase, winner, challengeId, userId, opponentId, practiceMode]);
 
   const activateBooster = () => {
     if (boosterUsed || !hasBooster) return;

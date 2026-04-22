@@ -243,8 +243,8 @@ export function GlobalNav() {
               <span className="text-xs sm:text-sm">{userData.rank.emoji}</span>
               <span className="text-indigo-500 font-black text-[10px] sm:text-sm">LV.{userData.level}</span>
             </div>
-            <div className="hidden xs:flex items-center gap-1 sm:gap-1.5 bg-amber-500/10 px-3 py-1.5 rounded-2xl border-2 border-amber-500/20 group relative shadow-sm">
-              <Star className="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 text-amber-500 fill-amber-500" />
+            <div className="flex items-center gap-1 sm:gap-1.5 bg-amber-500/10 px-3 py-1.5 rounded-2xl border-2 border-amber-500/20 group relative shadow-sm">
+              <Star className="w-3.5 h-3.5 sm:w-4 text-amber-500 fill-amber-500" />
               <span className="text-amber-500 font-black text-[10px] sm:text-sm">{userData.points}</span>
               
               {role === "admin" && (

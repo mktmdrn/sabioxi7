@@ -296,56 +296,9 @@ export default function RaceGame({
   const progressMe = (myPos / FINISH_LINE) * 100;
   const progressOp = (opPos / FINISH_LINE) * 100;
 
-  return (
-    <div className="h-[calc(100dvh-4rem)] bg-slate-950 grid grid-rows-[auto,1fr,auto] overflow-hidden">
-      {/* HUD */}
-      <header className="bg-slate-900/80 backdrop-blur-md border-b border-slate-800 px-4 py-2 z-30">
-        <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <div className="text-sm">
-            <span className="text-slate-400">Tú</span>
-            <span className="text-white font-bold ml-2">Lv.{userLevel}</span>
-            {hasBooster && !boosterUsed && (
-              <span className="ml-2 text-amber-400 animate-pulse">🚀</span>
-            )}
-            {myBoosting && (
-              <span className="ml-2 text-amber-400 font-bold animate-pulse font-mono text-xs">BOOST!</span>
-            )}
-          </div>
-          <div className="text-center">
-            {phase === "racing" ? (
-              <span className="text-white font-bold tabular-nums text-lg">{timeLeft}s</span>
-            ) : (
-              <span className="text-slate-500 font-mono text-xs">Sala #{challengeId.slice(-4)}</span>
-            )}
-          </div>
-          <div className="text-sm text-right">
-            <span className="text-slate-400">{opponentName}</span>
-            <span className="text-white font-bold ml-2">Lv.{opponentLevel}</span>
-            {opBoosting && (
-              <span className="ml-2 text-red-400 font-bold animate-pulse font-mono text-xs">BOOST!</span>
-            )}
-          </div>
-        </div>
-        {phase === "racing" && (
-          <div className="max-w-4xl mx-auto mt-2 space-y-1">
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-blue-400 w-8">Tú</span>
-              <div className="flex-1 h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                <div className="h-full bg-blue-500 transition-all duration-100 rounded-full" style={{ width: `${progressMe}%` }} />
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-red-400 w-8">{opponentName.slice(0, 4)}</span>
-              <div className="flex-1 h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                <div className="h-full bg-red-500 transition-all duration-100 rounded-full" style={{ width: `${progressOp}%` }} />
-              </div>
-            </div>
-          </div>
-        )}
-      </header>
-
-      {/* 3D Scene */}
-      <main className="relative min-h-0">
+  return     <div className="h-[calc(100dvh-4rem)] bg-slate-950 relative overflow-hidden flex flex-col">
+      {/* 3D Scene - Now as the background */}
+      <div className="absolute inset-0 z-0">
         <RaceScene
           player1Config={isChallenger ? myConfig : opponentConfig}
           player2Config={isChallenger ? opponentConfig : myConfig}
@@ -356,10 +309,58 @@ export default function RaceGame({
           player1Boosting={isChallenger ? myBoosting : opBoosting}
           player2Boosting={isChallenger ? opBoosting : myBoosting}
         />
+      </div>
 
-        {/* Overlays (Connecting, Lobby, Countdown, Finished) */}
+      {/* HUD Overlay - Top */}
+      <header className="bg-slate-900/40 backdrop-blur-sm border-b border-white/10 px-4 py-2 z-30 pointer-events-none">
+        <div className="max-w-4xl mx-auto flex items-center justify-between">
+          <div className="text-sm">
+            <span className="text-slate-300">Tú</span>
+            <span className="text-white font-bold ml-2">Lv.{userLevel}</span>
+            {hasBooster && !boosterUsed && (
+              <span className="ml-2 text-amber-400 animate-pulse">🚀</span>
+            )}
+            {myBoosting && (
+              <span className="ml-2 text-amber-400 font-bold animate-pulse font-mono text-xs">BOOST!</span>
+            )}
+          </div>
+          <div className="text-center">
+            {phase === "racing" ? (
+              <span className="text-white font-bold tabular-nums text-lg drop-shadow-lg">{timeLeft}s</span>
+            ) : (
+              <span className="text-white/60 font-mono text-xs">Sala #{challengeId.slice(-4)}</span>
+            )}
+          </div>
+          <div className="text-sm text-right">
+            <span className="text-slate-300">{opponentName}</span>
+            <span className="text-white font-bold ml-2">Lv.{opponentLevel}</span>
+            {opBoosting && (
+              <span className="ml-2 text-red-400 font-bold animate-pulse font-mono text-xs">BOOST!</span>
+            )}
+          </div>
+        </div>
+        {phase === "racing" && (
+          <div className="max-w-4xl mx-auto mt-2 space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] text-blue-300 w-8 font-bold">TÚ</span>
+              <div className="flex-1 h-1.5 bg-black/40 rounded-full overflow-hidden border border-white/10">
+                <div className="h-full bg-blue-500 transition-all duration-100 rounded-full" style={{ width: `${progressMe}%` }} />
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] text-red-300 w-8 font-bold">{opponentName.slice(0, 4).toUpperCase()}</span>
+              <div className="flex-1 h-1.5 bg-black/40 rounded-full overflow-hidden border border-white/10">
+                <div className="h-full bg-red-500 transition-all duration-100 rounded-full" style={{ width: `${progressOp}%` }} />
+              </div>
+            </div>
+          </div>
+        )}
+      </header>
+
+      {/* Main Container for Overlays (Connecting, Lobby, Countdown, Finished) */}
+      <div className="flex-1 relative z-20 pointer-events-none">
         {phase === "connecting" && (
-          <div className="absolute inset-0 bg-black/70 flex items-center justify-center z-20">
+          <div className="absolute inset-0 bg-black/70 flex items-center justify-center pointer-events-auto">
             <div className="text-center space-y-4">
               <div className="text-5xl animate-spin">⏳</div>
               <p className="text-white text-xl font-bold">Conectando...</p>
@@ -368,8 +369,8 @@ export default function RaceGame({
         )}
 
         {phase === "lobby" && (
-          <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-20 p-4">
-            <div className="text-center space-y-4 max-w-sm w-full bg-slate-900/80 backdrop-blur-md p-6 rounded-3xl border border-slate-700 shadow-2xl">
+          <div className="absolute inset-0 bg-black/20 flex items-center justify-center p-4 pointer-events-auto">
+            <div className="text-center space-y-4 max-w-sm w-full bg-slate-900/90 backdrop-blur-md p-6 rounded-3xl border border-white/10 shadow-2xl">
               <div className="text-5xl">⚔️</div>
               <h1 className="text-2xl font-extrabold text-white">Sala de Espera</h1>
               <p className="text-slate-300 text-sm">vs <span className="font-bold">{opponentName}</span></p>
@@ -403,23 +404,23 @@ export default function RaceGame({
                   <div className="text-green-400 font-bold">✅ Listo</div>
                 )}
                 {opReady && !meReady && <p className="text-green-400 text-xs">✅ Rival listo</p>}
-                {!opReady && meReady && <p className="text-slate-500 text-xs animate-pulse">Esperando rival...</p>}
+                {!opReady && meReady && <p className="text-white/40 text-xs animate-pulse">Esperando rival...</p>}
               </div>
             </div>
           </div>
         )}
 
         {phase === "countdown" && (
-          <div className="absolute inset-0 bg-black/40 flex items-center justify-center z-20">
-            <div className="text-8xl font-extrabold text-white animate-ping">
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="text-9xl font-extrabold text-white animate-ping drop-shadow-[0_0_20px_rgba(255,255,255,0.5)]">
               {countdown > 0 ? countdown : "GO!"}
             </div>
           </div>
         )}
 
         {phase === "finished" && winner && (
-          <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-20 p-4">
-            <div className="text-center space-y-6 max-w-sm w-full bg-slate-900 p-8 rounded-3xl border border-slate-700 shadow-2xl">
+          <div className="absolute inset-0 bg-black/60 flex items-center justify-center p-4 pointer-events-auto">
+            <div className="text-center space-y-6 max-w-sm w-full bg-slate-900/95 backdrop-blur-md p-8 rounded-3xl border border-white/10 shadow-2xl">
               <div className="text-6xl">{winner === "me" ? "🏆" : "🤝"}</div>
               <h1 className="text-3xl font-extrabold text-white">{winner === "me" ? "¡Victoria!" : "¡Buen juego!"}</h1>
               <div className="flex gap-2">
@@ -429,17 +430,19 @@ export default function RaceGame({
             </div>
           </div>
         )}
-      </main>
+      </div>
 
-      {/* Controls Footer */}
-      <footer className="bg-slate-900 border-t border-slate-800 p-3 h-[110px] sm:h-[80px] flex flex-col justify-center z-40 relative">
-        {phase === "racing" ? (
-          <div className="flex gap-3 max-w-4xl mx-auto w-full">
+      {/* Controls Overlay - Bottom */}
+      <div className="mt-auto z-30 p-6 sm:p-10 pointer-events-none">
+        {phase === "racing" && (
+          <div className="flex gap-6 max-w-2xl mx-auto w-full pointer-events-auto">
             <button
               onTouchStart={(e) => { e.preventDefault(); handleTouch("ArrowLeft"); }}
               onMouseDown={(e) => { e.preventDefault(); handleTouch("ArrowLeft"); }}
-              className={`flex-1 py-5 rounded-2xl font-extrabold text-2xl transition-all shadow-lg active:scale-95 touch-none ${
-                lastKey === "ArrowLeft" ? "bg-blue-600 text-white" : "bg-slate-800 text-slate-400 border border-slate-700"
+              className={`flex-1 aspect-square sm:aspect-auto sm:py-8 rounded-full sm:rounded-2xl font-extrabold text-3xl transition-all shadow-2xl border-4 backdrop-blur-md active:scale-90 touch-none flex items-center justify-center ${
+                lastKey === "ArrowLeft" 
+                  ? "bg-blue-600/80 border-blue-400 text-white" 
+                  : "bg-white/10 border-white/20 text-white/60 hover:bg-white/20"
               }`}
             >
               ←
@@ -447,19 +450,17 @@ export default function RaceGame({
             <button
               onTouchStart={(e) => { e.preventDefault(); handleTouch("ArrowRight"); }}
               onMouseDown={(e) => { e.preventDefault(); handleTouch("ArrowRight"); }}
-              className={`flex-1 py-5 rounded-2xl font-extrabold text-2xl transition-all shadow-lg active:scale-95 touch-none ${
-                lastKey === "ArrowRight" ? "bg-blue-600 text-white" : "bg-slate-800 text-slate-400 border border-slate-700"
+              className={`flex-1 aspect-square sm:aspect-auto sm:py-8 rounded-full sm:rounded-2xl font-extrabold text-3xl transition-all shadow-2xl border-4 backdrop-blur-md active:scale-90 touch-none flex items-center justify-center ${
+                lastKey === "ArrowRight" 
+                  ? "bg-blue-600/80 border-blue-400 text-white" 
+                  : "bg-white/10 border-white/20 text-white/60 hover:bg-white/20"
               }`}
             >
               →
             </button>
           </div>
-        ) : (
-          <p className="text-[10px] text-center text-slate-600 font-bold uppercase tracking-widest">
-            {phase === "lobby" ? "Prepárate para la carrera..." : "Esperando..."}
-          </p>
         )}
-      </footer>
+      </div>
     </div>
   );
 }

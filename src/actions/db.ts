@@ -405,3 +405,59 @@ export async function deleteLesson(id: string): Promise<void> {
 
   if (lError) throw new Error("Failed to delete lesson: " + lError.message);
 }
+
+export type CourseStat = {
+  course: string;
+  subject: string;
+  lessonTitle: string;
+  attempts: number;
+  passed: number;
+  failed: number;
+};
+
+export async function getCourseStats(): Promise<CourseStat[]> {
+  const { data: lessons, error: lError } = await supabase
+    .from("lessons")
+    .select("id, title");
+
+  if (lError || !lessons) return [];
+
+  const { data: logs, error: logError } = await supabase
+    .from("test_logs")
+    .select("lesson_id, passed");
+
+  if (logError || !logs) return [];
+
+  const statsMap: Record<string, CourseStat> = {};
+
+  lessons.forEach(lesson => {
+    // Extract [COURSE] [SUBJECT] from title
+    // Format: "[COURSE] [SUBJECT] Title"
+    const match = lesson.title.match(/^\[([^\]]+)\]\s+\[([^\]]+)\]\s+(.+)$/);
+    const course = match ? match[1] : "General";
+    const subject = match ? match[2] : "Varios";
+    const lessonTitle = match ? match[3] : lesson.title;
+
+    statsMap[lesson.id] = {
+      course,
+      subject,
+      lessonTitle,
+      attempts: 0,
+      passed: 0,
+      failed: 0
+    };
+  });
+
+  logs.forEach(log => {
+    if (statsMap[log.lesson_id]) {
+      statsMap[log.lesson_id].attempts++;
+      if (log.passed) {
+        statsMap[log.lesson_id].passed++;
+      } else {
+        statsMap[log.lesson_id].failed++;
+      }
+    }
+  });
+
+  return Object.values(statsMap);
+}

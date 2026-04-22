@@ -24,6 +24,8 @@ export default function GeneratorPage() {
   const [allLessons, setAllLessons] = useState<Lesson[]>([]);
   const [selectedLessonId, setSelectedLessonId] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [filterCourse, setFilterCourse] = useState<string | null>(null);
+  const [filterSubject, setFilterSubject] = useState<string | null>(null);
   
   const [selectedCourse, setSelectedCourse] = useState("");
   const [customCourse, setCustomCourse] = useState("");
@@ -208,15 +210,45 @@ export default function GeneratorPage() {
         {view === "list" ? (
           <div className="space-y-8">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-              <div className="relative flex-1 w-full md:max-w-md">
-                <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-6 h-6 text-duo-gray-dark" />
-                <input 
-                  type="text"
-                  placeholder="Buscar lecciones..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full bg-white border-2 border-duo-gray border-b-4 rounded-[1.5rem] py-4 pl-14 pr-6 text-duo-foreground font-bold focus:outline-none focus:border-duo-blue transition-all"
-                />
+              <div className="flex-1 w-full space-y-4">
+                <div className="relative w-full md:max-w-md">
+                  <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-6 h-6 text-duo-gray-dark" />
+                  <input 
+                    type="text"
+                    placeholder="Buscar lecciones..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full bg-white border-2 border-duo-gray border-b-4 rounded-[1.5rem] py-4 pl-14 pr-6 text-duo-foreground font-bold focus:outline-none focus:border-duo-blue transition-all"
+                  />
+                </div>
+                
+                {(filterCourse || filterSubject) && (
+                  <div className="flex flex-wrap gap-2 animate-in fade-in slide-in-from-left-2">
+                    <span className="text-[10px] font-black uppercase text-duo-gray-dark tracking-widest flex items-center mr-2">Filtros activos:</span>
+                    {filterCourse && (
+                      <button 
+                        onClick={() => setFilterCourse(null)}
+                        className="bg-duo-blue/10 text-duo-blue px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border-2 border-duo-blue/20 flex items-center gap-2 hover:bg-duo-blue/20"
+                      >
+                        Curso: {filterCourse} <X className="w-3 h-3" />
+                      </button>
+                    )}
+                    {filterSubject && (
+                      <button 
+                        onClick={() => setFilterSubject(null)}
+                        className="bg-indigo-500/10 text-indigo-500 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border-2 border-indigo-500/20 flex items-center gap-2 hover:bg-indigo-500/20"
+                      >
+                        Asignatura: {filterSubject} <X className="w-3 h-3" />
+                      </button>
+                    )}
+                    <button 
+                      onClick={() => { setFilterCourse(null); setFilterSubject(null); }}
+                      className="text-[10px] font-black uppercase text-duo-red hover:underline ml-2"
+                    >
+                      Limpiar todo
+                    </button>
+                  </div>
+                )}
               </div>
               <button 
                 onClick={() => {
@@ -252,8 +284,22 @@ export default function GeneratorPage() {
 
                     return (
                       <tr key={l.id} className="hover:bg-[#f7f7f7]/50 transition-colors group">
-                        <td className="px-8 py-5 font-black text-duo-blue uppercase italic text-sm">{course}</td>
-                        <td className="px-8 py-5 font-bold text-duo-gray-dark uppercase text-xs">{subject}</td>
+                        <td className="px-8 py-5">
+                          <button 
+                            onClick={() => setFilterCourse(course)}
+                            className="font-black text-duo-blue uppercase italic text-sm hover:underline"
+                          >
+                            {course}
+                          </button>
+                        </td>
+                        <td className="px-8 py-5">
+                          <button 
+                            onClick={() => setFilterSubject(subject)}
+                            className="font-bold text-duo-gray-dark uppercase text-xs hover:underline"
+                          >
+                            {subject}
+                          </button>
+                        </td>
                         <td className="px-8 py-5 font-black text-duo-foreground uppercase italic text-sm">{title}</td>
                         <td className="px-8 py-5 text-right space-x-2">
                           <button 

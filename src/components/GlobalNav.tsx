@@ -134,7 +134,10 @@ export function GlobalNav() {
         </Link>
         <div className="hidden md:flex items-center gap-4">
           <Link href="/dashboard" className={`text-xs font-black uppercase tracking-widest transition-all px-3 py-2 rounded-xl ${pathname === "/dashboard" ? "text-duo-blue bg-duo-blue/5" : "text-duo-gray-dark hover:text-duo-blue hover:bg-duo-blue/5"}`}>
-            <LayoutDashboard className="w-4 h-4 inline mr-1.5" /> Panel
+            <LayoutDashboard className="w-4 h-4 inline mr-1.5" /> Inicio
+          </Link>
+          <Link href="/courses" className={`text-xs font-black uppercase tracking-widest transition-all px-3 py-2 rounded-xl ${pathname === "/courses" ? "text-duo-green bg-duo-green/5" : "text-duo-gray-dark hover:text-duo-green hover:bg-duo-green/5"}`}>
+            <Star className="w-4 h-4 inline mr-1.5" /> Cursos
           </Link>
           <Link href="/arena" className={`text-xs font-black uppercase tracking-widest transition-all px-3 py-2 rounded-xl ${pathname.startsWith("/arena") ? "text-duo-red bg-duo-red/5" : "text-duo-gray-dark hover:text-duo-red hover:bg-duo-red/5"}`}>
             <Swords className="w-4 h-4 inline mr-1.5" /> Arena

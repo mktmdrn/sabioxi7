@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import { Play, Folder, ChevronRight, BookOpen, GraduationCap } from "lucide-react";
+import { Play, GraduationCap, BookOpen, ChevronDown, ListChecks } from "lucide-react";
 
 type Lesson = {
   id: string;
@@ -16,62 +16,53 @@ type ParsedLesson = Lesson & {
   cleanTitle: string;
 };
 
-const CATEGORY_COLORS: Record<string, string> = {
-  ASIR: "from-blue-600 to-indigo-600",
-  DAW: "from-emerald-500 to-teal-600",
-  DAM: "from-amber-500 to-orange-600",
-  Otros: "from-slate-600 to-slate-800"
+const CATEGORY_META: Record<string, { label: string; color: string; border: string; bg: string }> = {
+  ASIR: { label: "Administración de Sistemas Informáticos en Red", color: "text-blue-400", border: "border-blue-500/30", bg: "bg-blue-500/10" },
+  DAW: { label: "Desarrollo de Aplicaciones Web", color: "text-emerald-400", border: "border-emerald-500/30", bg: "bg-emerald-500/10" },
+  DAM: { label: "Desarrollo de Aplicaciones Multiplataforma", color: "text-amber-400", border: "border-amber-500/30", bg: "bg-amber-500/10" },
+  Otros: { label: "Lecciones sin categoría", color: "text-slate-400", border: "border-slate-500/30", bg: "bg-slate-500/10" },
 };
 
 export default function Catalog({ lessons }: { lessons: Lesson[] }) {
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [selectedSubject, setSelectedSubject] = useState<string>("");
 
   const parsedLessons = useMemo<ParsedLesson[]>(() => {
     return lessons.map(lesson => {
-      // Regex to match "[Category] [Subject] Title"
       const match = lesson.title.match(/^\[(.*?)\] \[(.*?)\] (.*)/);
       if (match) {
-        return {
-          ...lesson,
-          category: match[1],
-          subject: match[2],
-          cleanTitle: match[3]
-        };
+        return { ...lesson, category: match[1], subject: match[2], cleanTitle: match[3] };
       }
-      return {
-        ...lesson,
-        category: "Otros",
-        subject: "Sin Asignar",
-        cleanTitle: lesson.title
-      };
+      return { ...lesson, category: "Otros", subject: "Sin Asignar", cleanTitle: lesson.title };
     });
   }, [lessons]);
 
   const categories = useMemo(() => {
     const cats = new Set<string>();
-    // Always show the 3 main ones even if empty, to look like a real catalog
-    cats.add("ASIR");
-    cats.add("DAW");
-    cats.add("DAM");
-    
     parsedLessons.forEach(l => cats.add(l.category));
     return Array.from(cats);
   }, [parsedLessons]);
 
-  const subjectsForCategory = useMemo(() => {
+  const subjects = useMemo(() => {
     if (!selectedCategory) return [];
     const subs = new Set<string>();
-    parsedLessons
-      .filter(l => l.category === selectedCategory)
-      .forEach(l => subs.add(l.subject));
+    parsedLessons.filter(l => l.category === selectedCategory).forEach(l => subs.add(l.subject));
     return Array.from(subs);
   }, [parsedLessons, selectedCategory]);
 
-  const lessonsForSubject = useMemo(() => {
-    if (!selectedCategory || !selectedSubject) return [];
-    return parsedLessons.filter(l => l.category === selectedCategory && l.subject === selectedSubject);
-  }, [parsedLessons, selectedCategory, selectedSubject]);
+  // Auto-select subject if only one exists
+  const effectiveSubject = useMemo(() => {
+    if (selectedSubject) return selectedSubject;
+    if (subjects.length === 1) return subjects[0];
+    return "";
+  }, [selectedSubject, subjects]);
+
+  const filteredLessons = useMemo(() => {
+    if (!selectedCategory || !effectiveSubject) return [];
+    return parsedLessons.filter(l => l.category === selectedCategory && l.subject === effectiveSubject);
+  }, [parsedLessons, selectedCategory, effectiveSubject]);
+
+  const catMeta = CATEGORY_META[selectedCategory] || CATEGORY_META["Otros"];
 
   return (
     <div className="space-y-6">
@@ -80,133 +71,111 @@ export default function Catalog({ lessons }: { lessons: Lesson[] }) {
         Catálogo de Cursos
       </h3>
 
-      {/* Breadcrumb / Navigation */}
-      <div className="flex items-center gap-2 text-sm font-medium bg-slate-900 border border-slate-800 p-3 rounded-2xl overflow-x-auto">
-        <button 
-          onClick={() => { setSelectedCategory(null); setSelectedSubject(null); }}
-          className={`flex items-center gap-1.5 whitespace-nowrap px-3 py-1.5 rounded-lg transition-colors ${!selectedCategory ? "bg-indigo-500/20 text-indigo-400" : "text-slate-400 hover:bg-slate-800"}`}
-        >
-          <Folder className="w-4 h-4" /> Grados
-        </button>
-        
-        {selectedCategory && (
-          <>
-            <ChevronRight className="w-4 h-4 text-slate-600 shrink-0" />
-            <button 
-              onClick={() => setSelectedSubject(null)}
-              className={`flex items-center gap-1.5 whitespace-nowrap px-3 py-1.5 rounded-lg transition-colors ${!selectedSubject ? "bg-indigo-500/20 text-indigo-400" : "text-slate-400 hover:bg-slate-800"}`}
+      {/* Filters Row */}
+      <div className="flex flex-col sm:flex-row gap-3">
+        {/* Category Filter */}
+        <div className="flex-1 relative">
+          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 ml-1">Curso</label>
+          <div className="relative">
+            <select
+              value={selectedCategory}
+              onChange={(e) => { setSelectedCategory(e.target.value); setSelectedSubject(""); }}
+              className="w-full appearance-none bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-3 pr-10 font-medium text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all cursor-pointer hover:border-slate-600"
             >
-              <BookOpen className="w-4 h-4" /> {selectedCategory}
-            </button>
-          </>
-        )}
+              <option value="">— Selecciona un curso —</option>
+              {categories.map(cat => (
+                <option key={cat} value={cat}>{cat} — {(CATEGORY_META[cat] || CATEGORY_META["Otros"]).label}</option>
+              ))}
+            </select>
+            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
+          </div>
+        </div>
 
-        {selectedSubject && (
-          <>
-            <ChevronRight className="w-4 h-4 text-slate-600 shrink-0" />
-            <span className="flex items-center gap-1.5 whitespace-nowrap px-3 py-1.5 rounded-lg bg-indigo-500/20 text-indigo-400">
-              <Play className="w-4 h-4" /> {selectedSubject}
-            </span>
-          </>
-        )}
+        {/* Subject Filter */}
+        <div className="flex-1 relative">
+          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 ml-1">Asignatura</label>
+          <div className="relative">
+            <select
+              value={effectiveSubject}
+              onChange={(e) => setSelectedSubject(e.target.value)}
+              disabled={!selectedCategory || subjects.length <= 1}
+              className="w-full appearance-none bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-3 pr-10 font-medium text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all cursor-pointer hover:border-slate-600 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {!selectedCategory ? (
+                <option value="">— Primero selecciona un curso —</option>
+              ) : subjects.length === 0 ? (
+                <option value="">— Sin asignaturas —</option>
+              ) : subjects.length === 1 ? (
+                <option value={subjects[0]}>{subjects[0]}</option>
+              ) : (
+                <>
+                  <option value="">— Selecciona una asignatura —</option>
+                  {subjects.map(sub => (
+                    <option key={sub} value={sub}>{sub}</option>
+                  ))}
+                </>
+              )}
+            </select>
+            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
+          </div>
+        </div>
       </div>
 
-      {/* STEP 1: Categories */}
+      {/* Selected info badge */}
+      {selectedCategory && effectiveSubject && (
+        <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border ${catMeta.border} ${catMeta.bg}`}>
+          <BookOpen className={`w-5 h-5 ${catMeta.color}`} />
+          <div>
+            <span className={`font-bold text-sm ${catMeta.color}`}>{selectedCategory}</span>
+            <span className="text-slate-500 mx-2">›</span>
+            <span className="text-white font-medium text-sm">{effectiveSubject}</span>
+          </div>
+          <span className="ml-auto text-xs font-bold text-slate-500 bg-slate-800 px-2.5 py-1 rounded-lg">
+            {filteredLessons.length} temas
+          </span>
+        </div>
+      )}
+
+      {/* Lessons List */}
       {!selectedCategory && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {categories.map(cat => {
-            const count = parsedLessons.filter(l => l.category === cat).length;
-            const bgGradient = CATEGORY_COLORS[cat] || "from-slate-700 to-slate-900";
-            
-            return (
-              <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                className={`relative overflow-hidden text-left p-6 rounded-3xl border border-slate-700 hover:border-slate-500 transition-all group shadow-lg bg-gradient-to-br ${bgGradient}`}
-              >
-                <div className="relative z-10">
-                  <h4 className="text-2xl font-extrabold text-white mb-2 tracking-tight">{cat}</h4>
-                  <p className="text-white/80 text-sm font-medium">{count} lecciones disponibles</p>
-                </div>
-                <div className="absolute right-0 bottom-0 opacity-20 group-hover:scale-110 transition-transform origin-bottom-right">
-                  <Folder className="w-32 h-32 -mb-8 -mr-8" />
-                </div>
-              </button>
-            )
-          })}
+        <div className="bg-slate-900/50 border border-dashed border-slate-700 rounded-2xl p-10 text-center">
+          <ListChecks className="w-12 h-12 text-slate-600 mx-auto mb-4" />
+          <p className="text-slate-400 font-medium">Selecciona un curso y asignatura para ver las lecciones disponibles.</p>
         </div>
       )}
 
-      {/* STEP 2: Subjects */}
-      {selectedCategory && !selectedSubject && (
-        <div>
-          {subjectsForCategory.length === 0 ? (
-            <div className="bg-slate-900 border border-slate-800 p-8 rounded-3xl text-center">
-              <p className="text-slate-400">Aún no hay asignaturas en este grado.</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {subjectsForCategory.map(sub => {
-                const count = parsedLessons.filter(l => l.category === selectedCategory && l.subject === sub).length;
-                return (
-                  <button
-                    key={sub}
-                    onClick={() => setSelectedSubject(sub)}
-                    className="flex items-center justify-between bg-slate-900 border border-slate-800 p-5 rounded-2xl hover:bg-slate-800 hover:border-slate-700 transition-all text-left group"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-indigo-500/10 rounded-xl flex items-center justify-center border border-indigo-500/20 group-hover:scale-110 transition-transform">
-                        <BookOpen className="w-6 h-6 text-indigo-400" />
-                      </div>
-                      <div>
-                        <h4 className="text-lg font-bold text-white group-hover:text-indigo-400 transition-colors">{sub}</h4>
-                        <p className="text-slate-500 text-sm">{count} lecciones</p>
-                      </div>
-                    </div>
-                    <ChevronRight className="w-5 h-5 text-slate-600 group-hover:text-white transition-colors" />
-                  </button>
-                )
-              })}
-            </div>
-          )}
+      {selectedCategory && !effectiveSubject && subjects.length > 1 && (
+        <div className="bg-slate-900/50 border border-dashed border-slate-700 rounded-2xl p-10 text-center">
+          <BookOpen className="w-12 h-12 text-slate-600 mx-auto mb-4" />
+          <p className="text-slate-400 font-medium">Selecciona una asignatura para ver los temas.</p>
         </div>
       )}
 
-      {/* STEP 3: Lessons */}
-      {selectedCategory && selectedSubject && (
-        <div className="bg-slate-900/50 border border-slate-800 rounded-3xl p-6">
-          <div className="mb-6 flex justify-between items-center">
-            <div>
-              <h4 className="text-xl font-bold text-white">{selectedSubject}</h4>
-              <p className="text-slate-400 text-sm">{lessonsForSubject.length} temas disponibles</p>
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {lessonsForSubject.map((lesson, idx) => (
-              <div key={lesson.id} className="bg-slate-900 border border-slate-800 p-4 rounded-2xl hover:border-slate-700 transition-all flex items-center justify-between group">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center font-bold text-slate-400 group-hover:text-white group-hover:bg-slate-700 transition-colors">
-                    {idx + 1}
-                  </div>
-                  <div>
-                    <h5 className="font-bold text-white text-sm line-clamp-1" title={lesson.cleanTitle}>
-                      {lesson.cleanTitle}
-                    </h5>
-                    <p className="text-slate-500 text-xs mt-1">{lesson.questions.length} preguntas</p>
-                  </div>
-                </div>
-                
-                <Link 
-                  href={`/lesson/${lesson.id}`}
-                  className="bg-indigo-600 hover:bg-indigo-500 text-white p-3 rounded-xl transition-colors shadow-lg shadow-indigo-500/20 active:scale-95"
-                  title="Jugar lección"
-                >
-                  <Play className="w-4 h-4 fill-current" />
-                </Link>
+      {filteredLessons.length > 0 && (
+        <div className="space-y-2">
+          {filteredLessons.map((lesson, idx) => (
+            <div
+              key={lesson.id}
+              className="flex items-center gap-4 bg-slate-900 border border-slate-800 p-4 rounded-2xl hover:border-slate-700 hover:bg-slate-800/50 transition-all group"
+            >
+              <div className="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center font-bold text-slate-500 group-hover:text-indigo-400 group-hover:bg-indigo-500/10 transition-colors shrink-0 text-sm">
+                {idx + 1}
               </div>
-            ))}
-          </div>
+              <div className="flex-1 min-w-0">
+                <h5 className="font-bold text-white text-sm truncate" title={lesson.cleanTitle}>
+                  {lesson.cleanTitle}
+                </h5>
+                <p className="text-slate-500 text-xs mt-0.5">{lesson.questions.length} preguntas</p>
+              </div>
+              <Link
+                href={`/lesson/${lesson.id}`}
+                className="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2.5 rounded-xl transition-all shadow-lg shadow-indigo-500/20 active:scale-95 flex items-center gap-2 font-bold text-sm shrink-0"
+              >
+                <Play className="w-4 h-4 fill-current" />
+                <span className="hidden sm:inline">Jugar</span>
+              </Link>
+            </div>
+          ))}
         </div>
       )}
     </div>

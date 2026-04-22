@@ -221,79 +221,25 @@ function CharacterBody({ config }: { config: AvatarConfig }) {
           <meshStandardMaterial color={HAIR_COLOR} roughness={0.8} />
         </mesh>
 
-        {/* ===== ANIME EYES ===== */}
-        {/* Left eye */}
-        <group position={[-0.12, 0.02, 0.27]}>
-          {/* Eye white */}
-          <mesh scale={[1, 1.2, 0.5]}>
-            <sphereGeometry args={[0.065, 16, 16]} />
-            <meshStandardMaterial color="white" />
-          </mesh>
-          {/* Iris */}
-          <mesh position={[0, -0.005, 0.025]} scale={[1, 1.2, 0.5]}>
-            <sphereGeometry args={[blinking ? 0.005 : 0.045, 16, 16]} />
-            <meshStandardMaterial color={EYE_COLOR} />
-          </mesh>
-          {/* Pupil */}
-          <mesh position={[0, -0.005, 0.035]} scale={[1, 1.2, 0.5]}>
-            <sphereGeometry args={[blinking ? 0.003 : 0.025, 12, 12]} />
-            <meshStandardMaterial color="#0a0a0a" />
-          </mesh>
-          {/* Eye shine */}
-          <mesh position={[0.015, 0.015, 0.038]} scale={[1, 1, 0.5]}>
-            <sphereGeometry args={[0.012, 8, 8]} />
-            <meshStandardMaterial color="white" emissive="white" emissiveIntensity={0.5} />
-          </mesh>
-          {/* Upper eyelid line */}
-          <mesh position={[0, 0.045, 0.025]} rotation={[0, 0, 0]} scale={[1.1, 0.15, 0.5]}>
-            <sphereGeometry args={[0.06, 12, 4]} />
-            <meshStandardMaterial color={SKIN_SHADOW} />
-          </mesh>
-        </group>
-
-        {/* Right eye */}
-        <group position={[0.12, 0.02, 0.27]}>
-          <mesh scale={[1, 1.2, 0.5]}>
-            <sphereGeometry args={[0.065, 16, 16]} />
-            <meshStandardMaterial color="white" />
-          </mesh>
-          <mesh position={[0, -0.005, 0.025]} scale={[1, 1.2, 0.5]}>
-            <sphereGeometry args={[blinking ? 0.005 : 0.045, 16, 16]} />
-            <meshStandardMaterial color={EYE_COLOR} />
-          </mesh>
-          <mesh position={[0, -0.005, 0.035]} scale={[1, 1.2, 0.5]}>
-            <sphereGeometry args={[blinking ? 0.003 : 0.025, 12, 12]} />
-            <meshStandardMaterial color="#0a0a0a" />
-          </mesh>
-          <mesh position={[-0.015, 0.015, 0.038]} scale={[1, 1, 0.5]}>
-            <sphereGeometry args={[0.012, 8, 8]} />
-            <meshStandardMaterial color="white" emissive="white" emissiveIntensity={0.5} />
-          </mesh>
-          <mesh position={[0, 0.045, 0.025]} rotation={[0, 0, 0]} scale={[1.1, 0.15, 0.5]}>
-            <sphereGeometry args={[0.06, 12, 4]} />
-            <meshStandardMaterial color={SKIN_SHADOW} />
-          </mesh>
-        </group>
-
-        {/* Eyebrows */}
-        <mesh position={[-0.12, 0.1, 0.28]} rotation={[0, 0, 0.1]} scale={[1, 0.3, 0.3]}>
-          <capsuleGeometry args={[0.025, 0.04, 4, 8]} />
-          <meshStandardMaterial color={HAIR_COLOR} />
+        {/* ===== SIMPLE EYES ===== */}
+        <mesh position={[-0.12, 0.05, 0.28]}>
+          <sphereGeometry args={[0.04, 16, 16]} />
+          <meshStandardMaterial color="#1a1a1a" roughness={0.2} />
         </mesh>
-        <mesh position={[0.12, 0.1, 0.28]} rotation={[0, 0, -0.1]} scale={[1, 0.3, 0.3]}>
-          <capsuleGeometry args={[0.025, 0.04, 4, 8]} />
-          <meshStandardMaterial color={HAIR_COLOR} />
+        <mesh position={[0.12, 0.05, 0.28]}>
+          <sphereGeometry args={[0.04, 16, 16]} />
+          <meshStandardMaterial color="#1a1a1a" roughness={0.2} />
         </mesh>
 
-        {/* Nose */}
-        <mesh position={[0, -0.04, 0.31]} scale={[0.5, 0.7, 0.5]}>
-          <sphereGeometry args={[0.03, 8, 8]} />
+        {/* ===== BASIC NOSE (Extrusion) ===== */}
+        <mesh position={[0, -0.02, 0.3]} rotation={[Math.PI / 2, 0, 0]}>
+          <capsuleGeometry args={[0.02, 0.04, 4, 8]} />
           <meshStandardMaterial color={SKIN_SHADOW} roughness={0.6} />
         </mesh>
 
-        {/* Mouth - small anime smile */}
-        <mesh position={[0, -0.11, 0.29]} rotation={[0.15, 0, 0]}>
-          <torusGeometry args={[0.04, 0.008, 8, 16, Math.PI]} />
+        {/* ===== SIMPLE MOUTH (Minimal line) ===== */}
+        <mesh position={[0, -0.12, 0.3]} rotation={[0.1, 0, 0]}>
+          <boxGeometry args={[0.08, 0.01, 0.02]} />
           <meshStandardMaterial color="#c47a7a" />
         </mesh>
 

@@ -183,19 +183,19 @@ export default function LessonClient({ lesson, userId }: { lesson: Lesson; userI
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 max-w-2xl mx-auto w-full p-4 md:p-6 flex flex-col justify-start pt-4 md:pt-8">
-        <h2 className="text-xl md:text-2xl font-extrabold text-slate-800 mb-6 md:mb-8 text-center md:text-left">
+      <main className="flex-1 max-w-2xl mx-auto w-full p-4 md:p-6 flex flex-col pt-2 md:pt-4">
+        <h2 className="text-xl md:text-2xl font-extrabold text-slate-800 mb-4 md:mb-6 text-center md:text-left shrink-0">
           {currentQ.question}
         </h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+        <div className="flex-1 flex flex-col gap-3 md:gap-4 mb-4 md:mb-6">
           {shuffledOptions.map((option, idx) => {
             const isSelected = selectedOption === option;
             const isWrongAndSelected = status === "incorrect" && isSelected;
             const isCorrectAndSelected = status === "correct" && isSelected;
             const isCorrectOption = status !== "idle" && option === currentQ.correctAnswer;
 
-            let buttonClasses = "p-4 md:p-6 rounded-2xl border-2 border-b-4 text-left font-bold text-base md:text-lg transition-all ";
+            let buttonClasses = "flex-1 p-3 md:p-4 rounded-2xl border-2 border-b-4 text-left font-bold text-base md:text-lg transition-all flex items-center ";
             
             if (isWrongAndSelected) {
               buttonClasses += "border-red-500 bg-red-50 text-red-600 border-b-2 translate-y-[2px]";
@@ -214,7 +214,7 @@ export default function LessonClient({ lesson, userId }: { lesson: Lesson; userI
                 disabled={status !== "idle"}
                 className={buttonClasses}
               >
-                {option}
+                <span className="w-full text-center md:text-left line-clamp-2">{option}</span>
               </button>
             );
           })}

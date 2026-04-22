@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { createClient } from "@supabase/supabase-js";
 import { useRouter, usePathname } from "next/navigation";
-import { Bell, Swords, LogOut, LayoutDashboard, Check, X, Star, Plus, ChevronDown, Shield, Zap, Activity, Users, BookOpen } from "lucide-react";
+import { Bell, Swords, LogOut, LayoutDashboard, Check, X, Star, Plus, ChevronDown, Shield, Zap, Activity, Users, BookOpen, Map } from "lucide-react";
 import Link from "next/link";
 import { acceptChallenge, declineChallenge, getChallengesForUser } from "@/actions/arena";
 import { getUserXp, getUserPoints, addStarsToUserByEmail } from "@/actions/db";
@@ -185,6 +185,13 @@ export function GlobalNav() {
                   >
                     <BookOpen className="w-4 h-4" />
                     <span className="text-[11px] font-black uppercase tracking-wider">Gestión Cursos</span>
+                  </Link>
+                  <Link 
+                    href="/dashboard/adventures" 
+                    className="flex items-center gap-3 px-4 py-2.5 hover:bg-amber-50 text-duo-gray-dark hover:text-amber-600 transition-colors"
+                  >
+                    <Map className="w-4 h-4" />
+                    <span className="text-[11px] font-black uppercase tracking-wider">Gestión Aventuras</span>
                   </Link>
                   <Link 
                     href="/dashboard/admin/activity" 

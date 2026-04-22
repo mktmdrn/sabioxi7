@@ -2,7 +2,7 @@ import { auth, signOut } from "@/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { LayoutDashboard, User, Mail, Shield, LogOut, ExternalLink, Play, Star, PlusCircle, Sparkles, Swords, Timer, Map as MapIcon, GraduationCap, Zap, ChevronRight, AlertTriangle } from "lucide-react";
-import { getUserPoints, getLessons, getAvatarConfig, getUserXp, getCompletedLessons, getTopFailedLessons } from "@/actions/db";
+import { getUserPoints, getLessons, getAvatarConfig, getUserXp, getCompletedLessons, getTopFailedLessons, getAdventures } from "@/actions/db";
 import { calculateLevel, getRankInfo } from "@/lib/levels";
 import { getChallengesForUser } from "@/actions/arena";
 import MiniAvatar from "@/components/MiniAvatar";
@@ -17,12 +17,15 @@ export default async function DashboardPage({ searchParams }: { searchParams: { 
   
   const { tab = "campaign" } = await searchParams;
 
-  const [lessons, exams, completedIds, topFailed] = await Promise.all([
+  const [lessons, exams, completedIds, topFailed, allAdventures] = await Promise.all([
     getLessons("lesson"),
     getLessons("exam"),
     userId ? getCompletedLessons(userId) : Promise.resolve([]),
-    userId ? getTopFailedLessons(userId, 3) : Promise.resolve([])
+    userId ? getTopFailedLessons(userId, 3) : Promise.resolve([]),
+    getAdventures()
   ]);
+
+  const adventures = allAdventures.filter(a => a.is_published);
 
   const avatarConfig = userId ? await getAvatarConfig(userId) : { color: "blue", hat: "none", accessory: "none", mouth: "neutral", eyes: "neutral", hair: "standard" };
   const xp = userId ? await getUserXp(userId) : 0;
@@ -100,8 +103,27 @@ export default async function DashboardPage({ searchParams }: { searchParams: { 
                 <MapIcon className="w-6 h-6 text-duo-green" />
                 NUESTRAS AVENTURAS
               </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                {/* ASIR Campaign Card */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {/* Dynamic Adventures */}
+                {adventures.map(adv => (
+                  <Link key={adv.id} href={`/adventure/${adv.id}`} className="group relative z-20 cursor-pointer text-left">
+                    <div className="bg-white border-2 border-duo-gray border-b-8 rounded-[2rem] p-6 hover:bg-[#f7f7f7] transition-all relative overflow-hidden h-full flex flex-col">
+                      <div className="w-14 h-14 bg-duo-yellow text-white rounded-2xl flex items-center justify-center mb-4 border-b-4 border-[#c89b00] group-hover:scale-110 transition-transform">
+                        <MapIcon className="w-8 h-8 fill-current" />
+                      </div>
+                      <h4 className="text-xl font-black text-duo-foreground mb-2 uppercase italic leading-tight">{adv.name}</h4>
+                      <p className="text-sm text-duo-gray-dark font-bold flex-1 line-clamp-2">{adv.description}</p>
+                      <div className="mt-6 flex items-center justify-between">
+                        <div className="text-[10px] font-black text-duo-yellow uppercase bg-duo-yellow/10 px-3 py-1 rounded-full border border-duo-yellow/20">
+                          AVENTURA
+                        </div>
+                        <ChevronRight className="w-5 h-5 text-duo-gray-dark group-hover:translate-x-1 transition-transform" />
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+
+                {/* ASIR Campaign Card (Legacy) */}
                 <Link href="/campaign/asir" className="group relative z-20 cursor-pointer text-left">
                   <div className="bg-white border-2 border-duo-gray border-b-8 rounded-[2rem] p-6 hover:bg-[#f7f7f7] transition-all relative overflow-hidden h-full flex flex-col">
                     <div className="w-14 h-14 bg-duo-green text-white rounded-2xl flex items-center justify-center mb-4 border-b-4 border-duo-green-dark group-hover:scale-110 transition-transform text-left">
@@ -118,7 +140,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: { 
                   </div>
                 </Link>
 
-                {/* DAW Campaign Card */}
+                {/* DAW Campaign Card (Legacy) */}
                 <Link href="/campaign/daw" className="group relative z-20 cursor-pointer text-left">
                   <div className="bg-white border-2 border-duo-gray border-b-8 rounded-[2rem] p-6 hover:bg-[#f7f7f7] transition-all relative overflow-hidden h-full flex flex-col">
                     <div className="w-14 h-14 bg-duo-blue text-white rounded-2xl flex items-center justify-center mb-4 border-b-4 border-duo-blue-dark group-hover:scale-110 transition-transform">

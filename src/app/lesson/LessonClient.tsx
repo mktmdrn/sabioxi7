@@ -32,9 +32,10 @@ export default function LessonClient({ lesson, userId }: { lesson: Lesson; userI
     }
   }, [currentIndex, currentQ]);
 
-  const handleCheck = () => {
-    if (!selectedOption) return;
-    if (selectedOption === currentQ.correctAnswer) {
+  const handleOptionSelect = (option: string) => {
+    if (status !== "idle") return;
+    setSelectedOption(option);
+    if (option === currentQ.correctAnswer) {
       setStatus("correct");
       setScore((prev) => prev + 1);
     } else {
@@ -55,7 +56,8 @@ export default function LessonClient({ lesson, userId }: { lesson: Lesson; userI
   const handleFinish = async () => {
     setStatus("finished");
     setIsSaving(true);
-    const finalScore = score + (status === "correct" ? 1 : 0);
+    // score is already updated during selection
+    const finalScore = score;
     const percentage = finalScore / totalQuestions;
     const isApproved = percentage >= 0.9;
 
@@ -126,37 +128,37 @@ export default function LessonClient({ lesson, userId }: { lesson: Lesson; userI
   }
 
   return (
-    <div className="h-screen bg-white text-duo-foreground flex flex-col font-sans">
+    <div className="h-screen h-[100dvh] bg-white text-duo-foreground flex flex-col font-sans overflow-hidden">
       {/* Header */}
-      <header className="p-4 flex items-center justify-between bg-white border-b-2 border-duo-gray">
+      <header className="p-3 md:p-4 flex items-center justify-between bg-white border-b-2 border-duo-gray shrink-0">
         <button onClick={() => router.push("/dashboard")} className="text-duo-gray-dark hover:text-duo-foreground transition-colors">
-          <X className="w-8 h-8" />
+          <X className="w-6 h-6 md:w-8 md:h-8" />
         </button>
         
         {/* Progress Bar */}
-        <div className="flex-1 mx-6 h-4 bg-duo-gray rounded-full overflow-hidden">
+        <div className="flex-1 mx-4 md:mx-6 h-3 md:h-4 bg-duo-gray rounded-full overflow-hidden">
           <div 
             className="h-full bg-duo-green transition-all duration-300 relative" 
             style={{ width: `${progressPercent}%` }}
           >
-            <div className="absolute top-1 left-1 right-1 h-1 bg-white/30 rounded-full" />
+            <div className="absolute top-1 left-1 right-1 h-0.5 md:h-1 bg-white/30 rounded-full" />
           </div>
         </div>
 
-        <div className="flex items-center gap-2 bg-duo-yellow/10 px-4 py-2 rounded-xl border border-duo-yellow/20">
-          <Star className="w-5 h-5 text-duo-yellow fill-current" />
-          <span className="font-black text-duo-yellow">{score}</span>
+        <div className="flex items-center gap-2 bg-duo-yellow/10 px-3 py-1 md:px-4 md:py-2 rounded-xl border border-duo-yellow/20">
+          <Star className="w-4 h-4 md:w-5 md:h-5 text-duo-yellow fill-current" />
+          <span className="font-black text-duo-yellow text-sm md:text-base">{score}</span>
         </div>
       </header>
 
       {/* Question */}
-      <main className="flex-1 overflow-y-auto p-6 flex flex-col items-center justify-center">
-        <div className="max-w-2xl w-full space-y-10">
-          <h2 className="text-2xl md:text-3xl font-black text-duo-foreground text-center italic">
+      <main className="flex-1 overflow-y-auto p-4 md:p-8 flex flex-col items-center justify-center min-h-0">
+        <div className="max-w-2xl w-full space-y-6 md:space-y-10 py-4">
+          <h2 className="text-xl md:text-3xl font-black text-duo-foreground text-center italic leading-tight">
             {currentQ.question}
           </h2>
 
-          <div className="grid grid-cols-1 gap-3">
+          <div className="grid grid-cols-1 gap-2 md:gap-3">
             {shuffledOptions.map((option, idx) => {
               const isSelected = selectedOption === option;
               const isCorrect = status === "correct" && isSelected;
@@ -165,26 +167,26 @@ export default function LessonClient({ lesson, userId }: { lesson: Lesson; userI
               return (
                 <button
                   key={idx}
-                  onClick={() => status === "idle" && setSelectedOption(option)}
+                  onClick={() => handleOptionSelect(option)}
                   disabled={status !== "idle"}
                   className={`
-                    group p-5 rounded-2xl text-left font-black text-lg border-2 border-b-8 transition-all
+                    group p-4 md:p-5 rounded-2xl text-left font-black text-base md:text-lg border-2 border-b-4 md:border-b-8 transition-all
                     ${status === "idle" 
                       ? isSelected 
-                        ? "bg-duo-blue/10 border-duo-blue text-duo-blue translate-y-2 border-b-0" 
+                        ? "bg-duo-blue/10 border-duo-blue text-duo-blue translate-y-1 md:translate-y-2 border-b-0" 
                         : "bg-white border-duo-gray text-duo-foreground hover:bg-[#f7f7f7]"
                       : isCorrect
-                        ? "bg-duo-green/10 border-duo-green text-duo-green translate-y-2 border-b-0"
+                        ? "bg-duo-green/10 border-duo-green text-duo-green translate-y-1 md:translate-y-2 border-b-0"
                         : isWrong
-                          ? "bg-duo-red/10 border-duo-red text-duo-red translate-y-2 border-b-0"
+                          ? "bg-duo-red/10 border-duo-red text-duo-red translate-y-1 md:translate-y-2 border-b-0"
                           : "bg-white border-duo-gray text-duo-foreground opacity-50"}
                   `}
                 >
-                  <div className="flex items-center gap-4">
-                    <span className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border-2 font-black text-xs ${isSelected ? "bg-duo-blue border-duo-blue text-white" : "bg-white border-duo-gray text-duo-gray-dark"}`}>
+                  <div className="flex items-center gap-3 md:gap-4">
+                    <span className={`w-7 h-7 md:w-8 md:h-8 rounded-lg flex items-center justify-center shrink-0 border-2 font-black text-[10px] md:text-xs ${isSelected ? "bg-duo-blue border-duo-blue text-white" : "bg-white border-duo-gray text-duo-gray-dark"}`}>
                       {idx + 1}
                     </span>
-                    {option}
+                    <span className="leading-snug">{option}</span>
                   </div>
                 </button>
               );
@@ -194,50 +196,47 @@ export default function LessonClient({ lesson, userId }: { lesson: Lesson; userI
       </main>
 
       {/* Footer */}
-      <footer className={`p-6 border-t-2 transition-colors ${
+      <footer className={`p-4 md:p-6 border-t-2 shrink-0 transition-all duration-500 ${
         status === "correct" ? "bg-duo-green/10 border-duo-green/20" : 
         status === "incorrect" ? "bg-duo-red/10 border-duo-red/20" : 
-        "bg-white border-duo-gray"
+        "bg-white border-duo-gray translate-y-full opacity-0 pointer-events-none"
       }`}>
         <div className="max-w-2xl mx-auto w-full flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             {status === "correct" && (
-              <div className="flex items-center gap-3 text-duo-green">
-                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center border-2 border-duo-green">
-                  <Check className="w-8 h-8" />
+              <div className="flex items-center gap-3 text-duo-green animate-in slide-in-from-bottom-2">
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-white rounded-full flex items-center justify-center border-2 border-duo-green shadow-sm">
+                  <Check className="w-6 h-6 md:w-8 md:h-8" />
                 </div>
-                <span className="text-xl font-black uppercase italic">¡Buen trabajo!</span>
+                <span className="text-lg md:text-xl font-black uppercase italic tracking-tight">¡Excelente!</span>
               </div>
             )}
             {status === "incorrect" && (
-              <div className="flex items-center gap-3 text-duo-red text-center sm:text-left">
-                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center border-2 border-duo-red hidden sm:flex">
-                  <X className="w-8 h-8" />
+              <div className="flex items-center gap-3 text-duo-red text-center sm:text-left animate-in slide-in-from-bottom-2">
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-white rounded-full flex items-center justify-center border-2 border-duo-red hidden sm:flex shadow-sm">
+                  <X className="w-6 h-6 md:w-8 md:h-8" />
                 </div>
                 <div>
-                  <p className="text-lg font-black uppercase italic">Solución correcta:</p>
-                  <p className="font-bold">{currentQ.correctAnswer}</p>
+                  <p className="text-[8px] md:text-[10px] font-black uppercase tracking-widest opacity-70">Respuesta correcta:</p>
+                  <p className="font-bold text-base md:text-lg leading-tight">{currentQ.correctAnswer}</p>
                 </div>
               </div>
             )}
           </div>
 
-          <button
-            onClick={status === "idle" ? handleCheck : handleNext}
-            disabled={!selectedOption && status === "idle"}
-            className={`
-              w-full sm:w-auto px-16 py-4 rounded-2xl font-black text-lg transition-all border-b-8 active:border-b-0 active:translate-y-2
-              ${!selectedOption && status === "idle" 
-                ? "bg-duo-gray border-duo-gray-dark text-duo-gray-dark" 
-                : status === "correct"
+          {status !== "idle" && (
+            <button
+              onClick={handleNext}
+              className={`
+                w-full sm:w-auto px-12 md:px-16 py-3 md:py-4 rounded-2xl font-black text-base md:text-lg transition-all border-b-8 active:border-b-0 active:translate-y-2 animate-in zoom-in-95
+                ${status === "correct"
                   ? "bg-duo-green border-duo-green-dark text-white"
-                  : status === "incorrect"
-                    ? "bg-duo-red border-duo-red-dark text-white"
-                    : "bg-duo-green border-duo-green-dark text-white"}
-            `}
-          >
-            {status === "idle" ? "COMPROBAR" : "SIGUIENTE"}
-          </button>
+                  : "bg-duo-red border-duo-red-dark text-white"}
+              `}
+            >
+              SIGUIENTE
+            </button>
+          )}
         </div>
       </footer>
     </div>

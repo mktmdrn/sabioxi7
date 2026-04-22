@@ -523,3 +523,117 @@ export async function deleteLessons(ids: string[]): Promise<void> {
 
   if (lError) throw new Error("Failed to delete lessons: " + lError.message);
 }
+
+export interface Adventure {
+  id: string;
+  name: string;
+  description: string;
+  is_published: boolean;
+  created_at: string;
+}
+
+export interface Milestone {
+  id: string;
+  adventure_id: string;
+  name: string;
+  order: number;
+  nodes?: MilestoneNode[];
+}
+
+export interface MilestoneNode {
+  id: string;
+  milestone_id: string;
+  node_id: string;
+  type: "lesson" | "exam";
+  order: number;
+  title?: string;
+}
+
+export async function getAdventures(): Promise<Adventure[]> {
+  const { data, error } = await supabase
+    .from("adventures")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+  return data || [];
+}
+
+export async function getAdventureDetail(id: string): Promise<Adventure & { milestones: Milestone[] }> {
+  const { data: adventure, error: advError } = await supabase
+    .from("adventures")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (advError) throw advError;
+
+  const { data: milestones, error: milError } = await supabase
+    .from("milestones")
+    .select("*, milestone_nodes(*)")
+    .eq("adventure_id", id)
+    .order("order", { ascending: true });
+
+  if (milError) throw milError;
+
+  const nodeIds = milestones?.flatMap(m => m.milestone_nodes?.map((n: any) => n.node_id) || []) || [];
+  const { data: lessons } = await supabase.from("lessons").select("id, title").in("id", nodeIds);
+  const titleMap = Object.fromEntries(lessons?.map(l => [l.id, l.title]) || []);
+
+  const enhancedMilestones = milestones?.map(m => ({
+    ...m,
+    nodes: m.milestone_nodes?.map((n: any) => ({
+      ...n,
+      title: titleMap[n.node_id] || "Elemento no encontrado"
+    })).sort((a: any, b: any) => a.order - b.order) || []
+  })) || [];
+
+  return { ...adventure, milestones: enhancedMilestones };
+}
+
+export async function upsertAdventure(adventure: Partial<Adventure>): Promise<Adventure> {
+  const { data, error } = await supabase
+    .from("adventures")
+    .upsert(adventure)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+export async function deleteAdventure(id: string): Promise<void> {
+  const { error } = await supabase.from("adventures").delete().eq("id", id);
+  if (error) throw error;
+}
+
+export async function saveMilestones(adventureId: string, milestones: any[]): Promise<void> {
+  const { error: delError } = await supabase.from("milestones").delete().eq("adventure_id", adventureId);
+  if (delError) throw delError;
+
+  for (const m of milestones) {
+    const { data: newMilestone, error: mError } = await supabase
+      .from("milestones")
+      .insert({
+        adventure_id: adventureId,
+        name: m.name,
+        order: m.order
+      })
+      .select()
+      .single();
+
+    if (mError) throw mError;
+
+    if (m.nodes && m.nodes.length > 0) {
+      const nodeInserts = m.nodes.map((n: any, idx: number) => ({
+        milestone_id: newMilestone.id,
+        node_id: n.node_id,
+        type: n.type,
+        order: idx
+      }));
+
+      const { error: nError } = await supabase.from("milestone_nodes").insert(nodeInserts);
+      if (nError) throw nError;
+    }
+  }
+}

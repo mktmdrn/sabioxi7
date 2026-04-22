@@ -76,8 +76,8 @@ function CharacterBody({ config }: { config: AvatarConfig }) {
           <meshStandardMaterial color="#374151" roughness={0.7} />
         </mesh>
         {/* Shoe (more rounded) */}
-        <mesh position={[0, -0.9, 0.08]} scale={[1, 1, 1.2]}>
-          <capsuleGeometry args={[0.1, 0.15, 8, 16]} rotation={[Math.PI / 2, 0, 0]} />
+        <mesh position={[0, -0.9, 0.08]} scale={[1, 1, 1.2]} rotation={[Math.PI / 2, 0, 0]}>
+          <capsuleGeometry args={[0.1, 0.15, 8, 16]} />
           <meshStandardMaterial color="#111827" roughness={0.5} />
         </mesh>
       </group>
@@ -100,8 +100,8 @@ function CharacterBody({ config }: { config: AvatarConfig }) {
           <meshStandardMaterial color="#374151" roughness={0.7} />
         </mesh>
         {/* Shoe */}
-        <mesh position={[0, -0.9, 0.08]} scale={[1, 1, 1.2]}>
-          <capsuleGeometry args={[0.1, 0.15, 8, 16]} rotation={[Math.PI / 2, 0, 0]} />
+        <mesh position={[0, -0.9, 0.08]} scale={[1, 1, 1.2]} rotation={[Math.PI / 2, 0, 0]}>
+          <capsuleGeometry args={[0.1, 0.15, 8, 16]} />
           <meshStandardMaterial color="#111827" roughness={0.5} />
         </mesh>
       </group>

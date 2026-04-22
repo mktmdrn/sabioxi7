@@ -7,22 +7,21 @@ import Link from "next/link";
 
 const CAMPAIGNS: Record<string, { title: string, subjects: string[] }> = {
   "asir": {
-    title: "TÍTULO DE ASIR",
+    title: "ADMINISTRACIÓN DE SISTEMAS (ASIR)",
     subjects: [
-      "Planificación y Administración de Redes",
-      "Fundamentos de Hardware",
-      "Gestión de Bases de Datos",
-      "Lenguajes de Marcas",
-      "Servicios de Red e Internet",
+      "Planificación y administración de redes",
+      "Implantación de sistemas operativos",
+      "Gestión de bases de datos",
+      "Sistemas informáticos",
       "Seguridad y Alta Disponibilidad",
-      "Administración de Sistemas Operativos",
+      "Servicios de Red e Internet",
       "Implantación de Aplicaciones Web"
     ]
   },
   "daw": {
     title: "DESARROLLO DE APPS WEB (DAW)",
     subjects: [
-      "Sistemas Informáticos",
+      "Sistemas informáticos",
       "Bases de Datos",
       "Programación",
       "Entornos de Desarrollo",

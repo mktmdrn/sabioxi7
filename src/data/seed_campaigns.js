@@ -130,6 +130,102 @@ const DATA = {
     "Servicios de Red Básicos",
     "Seguridad Informática",
     "Ética y Legislación"
+  ],
+  "Seguridad y Alta Disponibilidad": [
+    "Principios de Seguridad",
+    "Criptografía y Certificados",
+    "Seguridad Perimetral",
+    "Firewalls y Proxies",
+    "Sistemas de Detección de Intrusos",
+    "Alta Disponibilidad y Cluster",
+    "Balanceo de Carga",
+    "Seguridad en Aplicaciones",
+    "Auditoría y Normativa",
+    "Planes de Contingencia"
+  ],
+  "Servicios de Red e Internet": [
+    "Protocolos de Aplicación",
+    "Configuración de Servidores Web",
+    "Servidores de Correo Electrónico",
+    "Transferencia de Ficheros (FTP)",
+    "Servicios de Audio y Video",
+    "Configuración de Proxies",
+    "Servidores de Nombres (DNS)",
+    "Configuración de DHCP",
+    "Seguridad en Servicios de Red",
+    "Monitorización de Servicios"
+  ],
+  "Implantación de Aplicaciones Web": [
+    "Arquitectura de Aplicaciones Web",
+    "Servidores de Aplicaciones",
+    "Instalación de CMS",
+    "Configuración de PHP/Python/Node",
+    "Seguridad en Aplicaciones Web",
+    "Despliegue de Aplicaciones",
+    "Optimización y Caché",
+    "Integración con BD",
+    "Pruebas y QA",
+    "Documentación Técnica"
+  ],
+  "Entornos de Desarrollo": [
+    "IDEs y Herramientas",
+    "Control de Versiones (Git)",
+    "Pruebas de Software",
+    "Optimización de Código",
+    "Refactorización",
+    "Diagramas de Clase y UML",
+    "Metodologías Ágiles",
+    "Gestión de Dependencias",
+    "Documentación de Código",
+    "Entornos de Despliegue"
+  ],
+  "Desarrollo Web en Entorno Cliente": [
+    "Fundamentos de JavaScript",
+    "DOM y Eventos",
+    "AJAX y Fetch API",
+    "Frameworks Modernos",
+    "Gestión de Estado",
+    "Componentes y Reutilización",
+    "Diseño Responsivo",
+    "Accesibilidad Web",
+    "Animaciones y Gráficos",
+    "Pruebas en Cliente"
+  ],
+  "Desarrollo Web en Entorno Servidor": [
+    "Lógica de Servidor",
+    "Gestión de Peticiones HTTP",
+    "Autenticación y Sesiones",
+    "APIs RESTful",
+    "Middleware y Seguridad",
+    "Acceso a Datos desde Servidor",
+    "Validación de Formularios",
+    "Generación de Vistas",
+    "Servicios Web y SOAP",
+    "Escalabilidad"
+  ],
+  "Despliegue de Aplicaciones Web": [
+    "Contenedores (Docker)",
+    "Orquestación (Kubernetes)",
+    "CI/CD Pipelines",
+    "Servicios Cloud (AWS/Azure)",
+    "Configuración de Nginx/Apache",
+    "Seguridad en Despliegue",
+    "Monitorización y Logs",
+    "Estrategias de Rollout",
+    "Gestión de Secretos",
+    "Infraestructura como Código"
+  ],
+  "Diseño de Interfaces Web": [
+    "Principios de UX/UI",
+    "Teoría del Color y Tipografía",
+    "Maquetación con CSS Grid/Flexbox",
+    "Prototipado (Figma)",
+    "Usabilidad y Ergonometría",
+    "Diseño Adaptativo",
+    "Componentes de Interfaz",
+    "Iconografía y Multimedia",
+    "Estándares W3C",
+    "Pruebas de Usuario"
   ]
 };
 

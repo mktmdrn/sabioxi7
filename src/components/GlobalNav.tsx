@@ -106,9 +106,9 @@ export function GlobalNav() {
       <div className="flex items-center gap-6">
         <Link href="/dashboard" className="text-white font-bold text-lg flex items-center gap-2">
           <span className="text-amber-500 text-xl">⚡</span>
-          SABIOXI
+          <span className="hidden xs:inline">SABIOXI</span>
         </Link>
-        <div className="hidden sm:flex items-center gap-4">
+        <div className="hidden md:flex items-center gap-4">
           <Link href="/dashboard" className={`text-sm font-medium transition-colors ${pathname === "/dashboard" ? "text-white" : "text-slate-400 hover:text-white"}`}>
             <LayoutDashboard className="w-4 h-4 inline mr-1" /> Panel
           </Link>
@@ -129,16 +129,16 @@ export function GlobalNav() {
       </div>
 
       {/* Notifications & Profile */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2 sm:gap-4">
         {userData.level > 0 && (
-          <div className="hidden sm:flex items-center gap-3 mr-2">
-            <div className="flex items-center gap-1.5 bg-indigo-500/10 px-3 py-1 rounded-full border border-indigo-500/20">
-              <span className="text-sm">{userData.rank.emoji}</span>
-              <span className="text-indigo-400 font-bold text-sm">Lv.{userData.level}</span>
+          <div className="flex items-center gap-2 sm:gap-3 mr-1 sm:mr-2">
+            <div className="flex items-center gap-1 sm:gap-1.5 bg-indigo-500/10 px-2 sm:px-3 py-1 rounded-full border border-indigo-500/20">
+              <span className="text-xs sm:text-sm">{userData.rank.emoji}</span>
+              <span className="text-indigo-400 font-bold text-[10px] sm:text-sm">Lv.{userData.level}</span>
             </div>
-            <div className="flex items-center gap-1.5 bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20">
-              <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
-              <span className="text-amber-500 font-bold text-sm">{userData.points}</span>
+            <div className="hidden xs:flex items-center gap-1 sm:gap-1.5 bg-amber-500/10 px-2 sm:px-3 py-1 rounded-full border border-amber-500/20">
+              <Star className="w-3 h-3 sm:w-4 sm:h-4 text-amber-500 fill-amber-500" />
+              <span className="text-amber-500 font-bold text-[10px] sm:text-sm">{userData.points}</span>
             </div>
           </div>
         )}
@@ -152,16 +152,16 @@ export function GlobalNav() {
             }}
             className="p-2 rounded-full bg-slate-800 hover:bg-slate-700 transition-colors relative"
           >
-            <Bell className={`w-5 h-5 ${hasNew ? "text-white animate-bounce" : "text-slate-300"}`} />
+            <Bell className={`w-4 h-4 sm:w-5 sm:h-5 ${hasNew ? "text-white animate-bounce" : "text-slate-300"}`} />
             {pendingChallenges.length > 0 && (
-              <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-slate-900">
+              <span className="absolute -top-1 -right-1 w-4 h-4 sm:w-5 sm:h-5 bg-red-500 text-white text-[9px] sm:text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-slate-900">
                 {pendingChallenges.length}
               </span>
             )}
           </button>
 
           {isOpen && (
-            <div className="absolute right-0 mt-2 w-80 bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden animate-in slide-in-from-top-2">
+            <div className="absolute right-[-60px] sm:right-0 mt-2 w-[280px] sm:w-80 bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden animate-in slide-in-from-top-2">
               <div className="p-3 border-b border-slate-700 bg-slate-900">
                 <h3 className="text-white font-bold text-sm">Retos Pendientes</h3>
               </div>
@@ -196,9 +196,19 @@ export function GlobalNav() {
           )}
         </div>
 
+        {/* Mobile Menu Button */}
+        <div className="md:hidden">
+          <button 
+            onClick={() => signOut({ callbackUrl: "/login" })}
+            className="p-2 rounded-full bg-slate-800 text-slate-400 hover:text-red-400 transition-colors"
+          >
+            <LogOut className="w-4 h-4 sm:w-5 sm:h-5" />
+          </button>
+        </div>
+
         <button 
           onClick={() => signOut({ callbackUrl: "/login" })}
-          className="hidden sm:flex items-center gap-2 text-sm font-medium text-slate-400 hover:text-red-400 transition-colors"
+          className="hidden md:flex items-center gap-2 text-sm font-medium text-slate-400 hover:text-red-400 transition-colors"
         >
           <LogOut className="w-4 h-4" /> Salir
         </button>

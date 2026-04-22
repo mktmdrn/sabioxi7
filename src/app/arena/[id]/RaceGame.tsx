@@ -297,9 +297,9 @@ export default function RaceGame({
   const progressOp = (opPos / FINISH_LINE) * 100;
 
   return (
-    <div className="h-[calc(100dvh-4rem)] bg-slate-950 flex flex-col overflow-hidden">
+    <div className="h-[calc(100dvh-4rem)] bg-slate-950 grid grid-rows-[auto,1fr,auto] overflow-hidden">
       {/* HUD */}
-      <div className="bg-slate-900/80 backdrop-blur-md border-b border-slate-800 px-4 py-2 z-30 relative">
+      <header className="bg-slate-900/80 backdrop-blur-md border-b border-slate-800 px-4 py-2 z-30">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <div className="text-sm">
             <span className="text-slate-400">Tú</span>
@@ -308,7 +308,7 @@ export default function RaceGame({
               <span className="ml-2 text-amber-400 animate-pulse">🚀</span>
             )}
             {myBoosting && (
-              <span className="ml-2 text-amber-400 font-bold animate-pulse">BOOST!</span>
+              <span className="ml-2 text-amber-400 font-bold animate-pulse font-mono text-xs">BOOST!</span>
             )}
           </div>
           <div className="text-center">
@@ -322,7 +322,7 @@ export default function RaceGame({
             <span className="text-slate-400">{opponentName}</span>
             <span className="text-white font-bold ml-2">Lv.{opponentLevel}</span>
             {opBoosting && (
-              <span className="ml-2 text-red-400 font-bold animate-pulse">BOOST!</span>
+              <span className="ml-2 text-red-400 font-bold animate-pulse font-mono text-xs">BOOST!</span>
             )}
           </div>
         </div>
@@ -330,22 +330,22 @@ export default function RaceGame({
           <div className="max-w-4xl mx-auto mt-2 space-y-1">
             <div className="flex items-center gap-2">
               <span className="text-xs text-blue-400 w-8">Tú</span>
-              <div className="flex-1 h-2 bg-slate-800 rounded-full overflow-hidden">
+              <div className="flex-1 h-1.5 bg-slate-800 rounded-full overflow-hidden">
                 <div className="h-full bg-blue-500 transition-all duration-100 rounded-full" style={{ width: `${progressMe}%` }} />
               </div>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-xs text-red-400 w-8">{opponentName.slice(0, 4)}</span>
-              <div className="flex-1 h-2 bg-slate-800 rounded-full overflow-hidden">
+              <div className="flex-1 h-1.5 bg-slate-800 rounded-full overflow-hidden">
                 <div className="h-full bg-red-500 transition-all duration-100 rounded-full" style={{ width: `${progressOp}%` }} />
               </div>
             </div>
           </div>
         )}
-      </div>
+      </header>
 
       {/* 3D Scene */}
-      <div className="flex-1 relative">
+      <main className="relative min-h-0">
         <RaceScene
           player1Config={isChallenger ? myConfig : opponentConfig}
           player2Config={isChallenger ? opponentConfig : myConfig}
@@ -357,146 +357,107 @@ export default function RaceGame({
           player2Boosting={isChallenger ? opBoosting : myBoosting}
         />
 
-        {/* Connecting overlay */}
+        {/* Overlays (Connecting, Lobby, Countdown, Finished) */}
         {phase === "connecting" && (
           <div className="absolute inset-0 bg-black/70 flex items-center justify-center z-20">
             <div className="text-center space-y-4">
               <div className="text-5xl animate-spin">⏳</div>
-              <p className="text-white text-xl font-bold">Conectando a la sala...</p>
+              <p className="text-white text-xl font-bold">Conectando...</p>
             </div>
           </div>
         )}
 
-        {/* Lobby overlay */}
         {phase === "lobby" && (
-          <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-20">
-            <div className="text-center space-y-6 max-w-sm px-4">
-              <div className="text-6xl">⚔️</div>
-              <h1 className="text-3xl font-extrabold text-white">Sala de Espera</h1>
-              <p className="text-slate-300">
-                vs <span className="font-bold">{opponentName}</span> (Lv.{opponentLevel})
-              </p>
+          <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-20 p-4">
+            <div className="text-center space-y-4 max-w-sm w-full bg-slate-900/80 backdrop-blur-md p-6 rounded-3xl border border-slate-700 shadow-2xl">
+              <div className="text-5xl">⚔️</div>
+              <h1 className="text-2xl font-extrabold text-white">Sala de Espera</h1>
+              <p className="text-slate-300 text-sm">vs <span className="font-bold">{opponentName}</span></p>
 
-              {!hasBooster && (
+              {!hasBooster ? (
                 <button
                   onClick={handleBuyBooster}
                   disabled={stars < 3 || buyingBooster}
-                  className={`w-full py-3 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 transition-all ${
-                    stars >= 3
-                      ? "bg-amber-500 text-white border-b-4 border-amber-600 hover:bg-amber-400 active:border-b-0 active:translate-y-[4px]"
-                      : "bg-slate-800 text-slate-500 cursor-not-allowed"
+                  className={`w-full py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all ${
+                    stars >= 3 ? "bg-amber-500 text-white border-b-4 border-amber-600 active:border-b-0 active:translate-y-1" : "bg-slate-800 text-slate-500"
                   }`}
                 >
-                  <Rocket className="w-5 h-5" />
-                  Comprar Booster (3 <Star className="w-4 h-4 inline fill-current" />)
+                  <Rocket className="w-4 h-4" /> Comprar Booster (3⭐)
                 </button>
-              )}
-              {hasBooster && (
-                <div className="bg-amber-500/20 border border-amber-500/30 p-3 rounded-xl text-amber-400 font-bold">
-                  🚀 Booster preparado (pulsa ESPACIO durante la carrera)
+              ) : (
+                <div className="bg-amber-500/20 border border-amber-500/30 p-2 rounded-xl text-amber-400 font-bold text-xs">
+                  🚀 Booster preparado
                 </div>
               )}
 
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {!meReady ? (
                   <button
                     onClick={handleReady}
                     disabled={!channelReady}
-                    className="w-full bg-green-500 text-white border-b-4 border-green-600 active:border-b-0 active:translate-y-[4px] py-4 rounded-2xl font-extrabold text-xl hover:bg-green-400 transition-all disabled:opacity-50"
+                    className="w-full bg-green-500 text-white border-b-4 border-green-600 active:border-b-0 active:translate-y-1 py-3 rounded-xl font-extrabold text-lg transition-all"
                   >
-                    ✅ LISTO
+                    LISTO
                   </button>
                 ) : (
-                  <div className="text-green-400 font-bold text-lg">✅ Estás listo</div>
+                  <div className="text-green-400 font-bold">✅ Listo</div>
                 )}
-                {opReady && !meReady && (
-                  <p className="text-green-400 text-sm font-bold">✅ {opponentName} está listo</p>
-                )}
-                {!opReady && meReady && (
-                  <p className="text-slate-500 text-sm animate-pulse">⏳ Esperando a {opponentName}...</p>
-                )}
+                {opReady && !meReady && <p className="text-green-400 text-xs">✅ Rival listo</p>}
+                {!opReady && meReady && <p className="text-slate-500 text-xs animate-pulse">Esperando rival...</p>}
               </div>
-
-              <p className="text-slate-600 text-xs">
-                Alterna ← → para correr. Cuanto más rápido alternes, más rápido corres.
-              </p>
             </div>
           </div>
         )}
 
-        {/* Countdown overlay */}
         {phase === "countdown" && (
           <div className="absolute inset-0 bg-black/40 flex items-center justify-center z-20">
-            <div className="text-9xl font-extrabold text-white animate-bounce drop-shadow-2xl">
+            <div className="text-8xl font-extrabold text-white animate-ping">
               {countdown > 0 ? countdown : "GO!"}
             </div>
           </div>
         )}
 
-        {/* Finished overlay */}
         {phase === "finished" && winner && (
-          <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-20">
-            <div className="text-center space-y-6 max-w-sm">
-              <div className="text-7xl">
-                {winner === "me" ? "🏆" : winner === "draw" ? "🤝" : "😢"}
-              </div>
-              <h1 className="text-4xl font-extrabold text-white">
-                {winner === "me" ? "¡Victoria!" : winner === "draw" ? "¡Empate!" : "Derrota..."}
-              </h1>
-              <p className={`font-bold text-lg ${winner === "me" ? "text-green-400" : winner === "draw" ? "text-slate-300" : "text-red-400"}`}>
-                {winner === "me" ? "+20 XP" : winner === "draw" ? "+10 XP" : "+5 XP"}
-              </p>
-              <div className="flex gap-3">
-                <Link href="/arena" className="flex-1 bg-slate-800 text-white py-4 rounded-2xl font-bold hover:bg-slate-700 transition-colors text-center">
-                  Arena
-                </Link>
-                <Link href="/dashboard" className="flex-1 bg-blue-600 text-white py-4 rounded-2xl font-bold hover:bg-blue-500 transition-colors text-center">
-                  Dashboard
-                </Link>
+          <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-20 p-4">
+            <div className="text-center space-y-6 max-w-sm w-full bg-slate-900 p-8 rounded-3xl border border-slate-700 shadow-2xl">
+              <div className="text-6xl">{winner === "me" ? "🏆" : "🤝"}</div>
+              <h1 className="text-3xl font-extrabold text-white">{winner === "me" ? "¡Victoria!" : "¡Buen juego!"}</h1>
+              <div className="flex gap-2">
+                <Link href="/arena" className="flex-1 bg-slate-800 text-white py-3 rounded-xl font-bold text-sm">Arena</Link>
+                <Link href="/dashboard" className="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold text-sm">Panel</Link>
               </div>
             </div>
           </div>
         )}
-      </div>
+      </main>
 
-      {/* Mobile touch controls */}
+      {/* Controls Footer */}
       {phase === "racing" && (
-        <div className="sm:hidden flex gap-3 p-3 bg-slate-900 border-t border-slate-800 shrink-0">
-          <button
-            onTouchStart={() => handleTouch("ArrowLeft")}
-            className={`flex-1 py-4 rounded-xl font-extrabold text-xl transition-all ${
-              lastKey === "ArrowLeft" ? "bg-blue-600 text-white scale-95" : "bg-slate-800 text-slate-400 border border-slate-700"
-            }`}
-          >
-            ← IZQ
-          </button>
-          <button
-            onTouchStart={() => handleTouch("ArrowRight")}
-            className={`flex-1 py-4 rounded-xl font-extrabold text-xl transition-all ${
-              lastKey === "ArrowRight" ? "bg-blue-600 text-white scale-95" : "bg-slate-800 text-slate-400 border border-slate-700"
-            }`}
-          >
-            DER →
-          </button>
-        </div>
-      )}
-
-      {/* Desktop key hints */}
-      {phase === "racing" && (
-        <div className="hidden sm:flex justify-center gap-6 p-3 bg-slate-900/80 border-t border-slate-800">
-          <div className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${lastKey === "ArrowLeft" ? "bg-blue-600 text-white" : "bg-slate-800 text-slate-400"}`}>
-            <ArrowLeft className="w-5 h-5" /> ←
+        <footer className="bg-slate-900 border-t border-slate-800 p-3 flex flex-col gap-2">
+          <div className="flex gap-3">
+            <button
+              onTouchStart={() => handleTouch("ArrowLeft")}
+              onMouseDown={() => handleTouch("ArrowLeft")}
+              className={`flex-1 py-5 rounded-2xl font-extrabold text-xl transition-all shadow-lg ${
+                lastKey === "ArrowLeft" ? "bg-blue-600 text-white scale-95" : "bg-slate-800 text-slate-400 border border-slate-700"
+              }`}
+            >
+              ←
+            </button>
+            <button
+              onTouchStart={() => handleTouch("ArrowRight")}
+              onMouseDown={() => handleTouch("ArrowRight")}
+              className={`flex-1 py-5 rounded-2xl font-extrabold text-xl transition-all shadow-lg ${
+                lastKey === "ArrowRight" ? "bg-blue-600 text-white scale-95" : "bg-slate-800 text-slate-400 border border-slate-700"
+              }`}
+            >
+              →
+            </button>
           </div>
-          <div className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${lastKey === "ArrowRight" ? "bg-blue-600 text-white" : "bg-slate-800 text-slate-400"}`}>
-            → <ArrowRight className="w-5 h-5" />
-          </div>
-          {hasBooster && !boosterUsed && (
-            <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500/20 text-amber-400 animate-pulse">
-              <Rocket className="w-5 h-5" /> ESPACIO = Boost
-            </div>
-          )}
-        </div>
+          <p className="text-[10px] text-center text-slate-500 font-bold uppercase tracking-widest">
+            Alterna Izquierda y Derecha para correr
+          </p>
+        </footer>
       )}
-    </div>
   );
 }

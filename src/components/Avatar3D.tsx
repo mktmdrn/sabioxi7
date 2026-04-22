@@ -475,8 +475,8 @@ function CharacterBody({ config }: { config: AvatarConfig }) {
 
         <group position={[0, -0.15, 0.32]} rotation={[0.1, 0, 0]}>
           {(expression === "neutral" || expression === "cool") && (
-            <mesh>
-              <capsuleGeometry args={[0.008, expression === "cool" ? 0.12 : 0.08, 4, 8]} rotation={[0, 0, Math.PI / 2]} />
+            <mesh rotation={[0, 0, Math.PI / 2]}>
+              <capsuleGeometry args={[0.008, expression === "cool" ? 0.12 : 0.08, 4, 8]} />
               <meshStandardMaterial color="#c47a7a" />
             </mesh>
           )}

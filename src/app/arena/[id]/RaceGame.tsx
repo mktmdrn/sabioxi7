@@ -296,7 +296,8 @@ export default function RaceGame({
   const progressMe = (myPos / FINISH_LINE) * 100;
   const progressOp = (opPos / FINISH_LINE) * 100;
 
-  return     <div className="h-[calc(100dvh-4rem)] bg-slate-950 relative overflow-hidden flex flex-col">
+  return (
+    <div className="h-[calc(100dvh-4rem)] bg-slate-950 relative overflow-hidden flex flex-col">
       {/* 3D Scene - Now as the background */}
       <div className="absolute inset-0 z-0">
         <RaceScene

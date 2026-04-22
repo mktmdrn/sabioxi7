@@ -127,10 +127,19 @@ export default function CampaignPath({
                     className="relative group"
                     style={{ transform: `translateX(${xOffset}px)` }}
                   >
-                    {/* Decorative icons */}
-                    {nodeIdx === 3 && (
-                      <div className="absolute -left-20 top-0 text-duo-orange opacity-20"><Flame className="w-10 h-10" /></div>
-                    )}
+                    {/* Lesson Info Text (Side) */}
+                    <div 
+                      className={`absolute top-1/2 -translate-y-1/2 w-48 hidden sm:block ${xOffset > 0 ? "-left-56 text-right" : "-right-56 text-left"}`}
+                    >
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-[10px] font-black text-duo-gray-dark tracking-widest uppercase">
+                          Lección {units.length - unitIdx}.{unit.nodes.length - nodeIdx}
+                        </span>
+                        <span className="text-sm font-bold text-duo-foreground leading-tight">
+                          {node.type === "exam" ? "¡EXAMEN FINAL!" : (node.title.split('] ')[1] || node.title.split(': ')[1] || "Preparación")}
+                        </span>
+                      </div>
+                    </div>
 
                     <Link 
                       href={unlocked ? (node.type === "exam" ? `/exam/${node.id}` : `/lesson/${node.id}`) : "#"}
@@ -169,22 +178,19 @@ export default function CampaignPath({
               })}
             </div>
 
-            {/* Separator */}
+            {/* Separator / Level Up */}
             {unitIdx < units.length - 1 && (
-              <div className="w-full flex flex-col items-center py-4">
-                <div className="w-3 h-20 bg-duo-gray" />
+              <div className="w-full flex flex-col items-center py-10 relative">
+                <div className="w-3 h-24 bg-duo-gray" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+                  <div className="bg-duo-yellow px-6 py-2 rounded-2xl border-b-4 border-[#c89b00] shadow-[0_0_20px_rgba(255,191,0,0.5)] animate-pulse">
+                    <span className="text-white font-black text-xl italic tracking-tighter drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">LEVEL UP!</span>
+                  </div>
+                </div>
               </div>
             )}
           </div>
         ))}
-
-        {/* Start Point (Bottom) */}
-        <div className="mt-20 mb-40 flex flex-col items-center">
-          <div className="w-20 h-20 bg-duo-green border-b-8 border-duo-green-dark rounded-3xl flex items-center justify-center animate-bounce shadow-lg">
-             <Zap className="w-10 h-10 text-white fill-current" />
-          </div>
-          <p className="mt-4 font-black text-duo-green uppercase text-xs tracking-[0.3em]">Comienza Aquí</p>
-        </div>
       </div>
     </div>
   );

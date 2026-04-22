@@ -13,6 +13,8 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+import { GlobalNav } from "@/components/GlobalNav";
+
 export const metadata: Metadata = {
   title: "SABIOXI | Sistema de Login",
   description: "Sistema de login básico premium para Vercel",
@@ -28,7 +30,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased h-full bg-slate-950`}
       >
-        <Providers>{children}</Providers>
+        <Providers>
+          <GlobalNav />
+          <main className="pt-16 min-h-screen">
+            {children}
+          </main>
+        </Providers>
       </body>
     </html>
   );

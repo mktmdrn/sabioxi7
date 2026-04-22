@@ -291,7 +291,7 @@ export default function RaceGame({
   const progressOp = (opPos / FINISH_LINE) * 100;
 
   return (
-    <div className="h-[100dvh] bg-slate-950 flex flex-col overflow-hidden">
+    <div className="h-[calc(100dvh-4rem)] bg-slate-950 flex flex-col overflow-hidden">
       {/* HUD */}
       <div className="bg-slate-900/80 backdrop-blur-md border-b border-slate-800 px-4 py-2 z-30 relative">
         <div className="max-w-4xl mx-auto flex items-center justify-between">

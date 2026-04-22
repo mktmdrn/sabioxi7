@@ -34,24 +34,7 @@ export default async function ArenaPage() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200">
-      <nav className="border-b border-slate-800 bg-slate-900/50 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16 items-center">
-            <Link href="/dashboard" className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
-              <ArrowLeft className="w-5 h-5" />
-              <span className="font-medium">Volver</span>
-            </Link>
-            <h1 className="text-lg font-bold text-white flex items-center gap-2">
-              <Swords className="w-5 h-5 text-red-400" />
-              Arena PvP
-            </h1>
-            <div className="flex items-center gap-2 text-sm">
-              <span className="text-slate-400">Lv.{myLevel}</span>
-              <span>{myRank.emoji}</span>
-            </div>
-          </div>
-        </div>
-      </nav>
+
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
 

@@ -29,7 +29,7 @@ export default async function PracticeArenaPage() {
   };
 
   return (
-    <div className="h-[100dvh] bg-slate-950 flex flex-col overflow-hidden">
+    <div className="h-[calc(100dvh-4rem)] bg-slate-950 flex flex-col overflow-hidden">
       <nav className="border-b border-slate-800 bg-slate-900/50 backdrop-blur-md p-4 flex items-center justify-between z-40">
         <Link href="/dashboard/admin" className="text-slate-400 hover:text-white flex items-center gap-2">
           <ArrowLeft className="w-5 h-5" />

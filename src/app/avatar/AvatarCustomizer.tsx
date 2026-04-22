@@ -42,6 +42,31 @@ const ACCESSORIES: ItemDef[] = [
   { id: "cape", label: "Capa", cost: 6, emoji: "🦸" },
 ];
 
+const MOUTHS: ItemDef[] = [
+  { id: "neutral", label: "Neutral", cost: 0, emoji: "😐" },
+  { id: "smile", label: "Sonrisa", cost: 0, emoji: "🙂" },
+  { id: "smileWide", label: "Gran Sonrisa", cost: 1, emoji: "😄" },
+  { id: "grin", label: "Mueca", cost: 1, emoji: "😏" },
+  { id: "surprise", label: "Sorpresa", cost: 2, emoji: "😮" },
+  { id: "anger", label: "Enfado", cost: 2, emoji: "😠" },
+  { id: "cool", label: "Cool", cost: 3, emoji: "😎" },
+];
+
+const EYES: ItemDef[] = [
+  { id: "neutral", label: "Estándar", cost: 0, emoji: "👀" },
+  { id: "wide", label: "Abiertos", cost: 1, emoji: "😳" },
+  { id: "squint", label: "Entrecerrados", cost: 1, emoji: "😑" },
+  { id: "happy", label: "Felices", cost: 2, emoji: "😊" },
+  { id: "closed", label: "Cerrados", cost: 2, emoji: "😴" },
+];
+
+const HAIR_STYLES: ItemDef[] = [
+  { id: "standard", label: "Estándar", cost: 0, emoji: "👦" },
+  { id: "short", label: "Corto", cost: 2, emoji: "💇" },
+  { id: "long", label: "Largo", cost: 3, emoji: "👱" },
+  { id: "spike", label: "Cresta", cost: 4, emoji: "🤘" },
+];
+
 export default function AvatarCustomizer({
   userId,
   points,
@@ -55,7 +80,7 @@ export default function AvatarCustomizer({
   const [config, setConfig] = useState<AvatarConfig>(initialConfig);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
-  const [activeTab, setActiveTab] = useState<"color" | "hat" | "accessory">("color");
+  const [activeTab, setActiveTab] = useState<keyof AvatarConfig>("color");
 
   const handleSave = async () => {
     setSaving(true);
@@ -67,12 +92,27 @@ export default function AvatarCustomizer({
 
   const tabs = [
     { key: "color" as const, label: "Colores", emoji: "🎨" },
+    { key: "mouth" as const, label: "Bocas", emoji: "👄" },
+    { key: "eyes" as const, label: "Ojos", emoji: "👁️" },
+    { key: "hair" as const, label: "Pelo", emoji: "💇" },
     { key: "hat" as const, label: "Sombreros", emoji: "🎩" },
     { key: "accessory" as const, label: "Accesorios", emoji: "✨" },
   ];
 
-  const currentItems = activeTab === "color" ? COLORS : activeTab === "hat" ? HATS : ACCESSORIES;
-  const currentKey = activeTab === "color" ? "color" : activeTab === "hat" ? "hat" : "accessory";
+  const getItemsForTab = (tab: keyof AvatarConfig) => {
+    switch (tab) {
+      case "color": return COLORS;
+      case "hat": return HATS;
+      case "accessory": return ACCESSORIES;
+      case "mouth": return MOUTHS;
+      case "eyes": return EYES;
+      case "hair": return HAIR_STYLES;
+      default: return [];
+    }
+  };
+
+  const currentItems = getItemsForTab(activeTab);
+  const currentKey = activeTab;
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200">

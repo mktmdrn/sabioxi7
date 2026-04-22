@@ -154,9 +154,19 @@ export type AvatarConfig = {
   color: string;
   hat: string;
   accessory: string;
+  mouth: string;
+  eyes: string;
+  hair: string;
 };
 
-const DEFAULT_AVATAR: AvatarConfig = { color: "blue", hat: "none", accessory: "none" };
+const DEFAULT_AVATAR: AvatarConfig = { 
+  color: "blue", 
+  hat: "none", 
+  accessory: "none",
+  mouth: "neutral",
+  eyes: "neutral",
+  hair: "standard"
+};
 
 export async function getAvatarConfig(userId: string): Promise<AvatarConfig> {
   const { data, error } = await supabase

@@ -9,6 +9,9 @@ type AvatarConfig = {
   color: string;
   hat: string;
   accessory: string;
+  mouth: string;
+  eyes: string;
+  hair: string;
 };
 
 const OUTFIT_COLOR: Record<string, string> = {
@@ -28,11 +31,9 @@ const EYE_COLOR = "#1e3a5f";
 function CharacterBody({ config }: { config: AvatarConfig }) {
   const groupRef = useRef<THREE.Group>(null);
   const [blinking, setBlinking] = useState(false);
-  const [expression, setExpression] = useState<"neutral" | "smile" | "anger" | "surprise">("neutral");
   const blinkTimer = useRef(0);
-  const expressionTimer = useRef(0);
 
-  // Animation & Expression cycling
+  // Animation
   useFrame((state) => {
     if (!groupRef.current) return;
     const t = state.clock.elapsedTime;
@@ -46,16 +47,10 @@ function CharacterBody({ config }: { config: AvatarConfig }) {
       blinkTimer.current = 0;
       setTimeout(() => setBlinking(false), 120);
     }
-
-    // Expression cycling
-    expressionTimer.current += state.clock.getDelta();
-    if (expressionTimer.current > 4) {
-      const expressions: Array<"neutral" | "smile" | "anger" | "surprise"> = ["neutral", "smile", "surprise", "neutral", "anger"];
-      const next = expressions[Math.floor(Math.random() * expressions.length)];
-      setExpression(next);
-      expressionTimer.current = 0;
-    }
   });
+
+  const expression = (config.mouth as any) || "neutral";
+  const eyeStyle = (config.eyes as any) || "neutral";
 
   const accentColor = OUTFIT_COLOR[config.color] || OUTFIT_COLOR.blue;
   const outfitDark = useMemo(() => {
@@ -298,32 +293,44 @@ function CharacterBody({ config }: { config: AvatarConfig }) {
           <meshStandardMaterial {...skinMat} />
         </mesh>
 
-        {/* ===== HAIR ===== */}
-        {/* Top hair volume */}
-        <mesh position={[0, 0.15, -0.02]} scale={[1.08, 0.9, 1.05]}>
-          <sphereGeometry args={[0.32, 32, 16, 0, Math.PI * 2, 0, Math.PI * 0.55]} />
-          <meshStandardMaterial color={HAIR_COLOR} roughness={0.8} />
-        </mesh>
-        {/* Side hair left */}
-        <mesh position={[-0.28, -0.02, -0.05]} scale={[0.6, 1, 0.8]}>
-          <sphereGeometry args={[0.14, 12, 12]} />
-          <meshStandardMaterial color={HAIR_COLOR} roughness={0.8} />
-        </mesh>
-        {/* Side hair right */}
-        <mesh position={[0.28, -0.02, -0.05]} scale={[0.6, 1, 0.8]}>
-          <sphereGeometry args={[0.14, 12, 12]} />
-          <meshStandardMaterial color={HAIR_COLOR} roughness={0.8} />
-        </mesh>
-        {/* Back hair */}
-        <mesh position={[0, -0.05, -0.18]} scale={[1, 1.1, 0.7]}>
-          <sphereGeometry args={[0.3, 16, 16, 0, Math.PI * 2, Math.PI * 0.3, Math.PI * 0.7]} />
-          <meshStandardMaterial color={HAIR_COLOR} roughness={0.8} />
-        </mesh>
-        {/* Fringe / bangs */}
-        <mesh position={[0, 0.18, 0.22]} rotation={[0.4, 0, 0]} scale={[1.1, 0.4, 0.5]}>
-          <sphereGeometry args={[0.2, 16, 8, 0, Math.PI * 2, 0, Math.PI * 0.5]} />
-          <meshStandardMaterial color={HAIR_COLOR} roughness={0.8} />
-        </mesh>
+        {/* ===== HAIR (Dynamic Styles) ===== */}
+        <group>
+          {/* Main Volume */}
+          <mesh position={[0, 0.15, -0.02]} scale={[1.08, config.hair === "short" ? 0.7 : 0.9, 1.05]}>
+            <sphereGeometry args={[0.32, 32, 16, 0, Math.PI * 2, 0, Math.PI * 0.55]} />
+            <meshStandardMaterial color={HAIR_COLOR} roughness={0.8} />
+          </mesh>
+          {/* Side hair */}
+          <mesh position={[-0.28, -0.02, -0.05]} scale={[0.6, config.hair === "long" ? 1.5 : 1, 0.8]}>
+            <sphereGeometry args={[0.14, 12, 12]} />
+            <meshStandardMaterial color={HAIR_COLOR} roughness={0.8} />
+          </mesh>
+          <mesh position={[0.28, -0.02, -0.05]} scale={[0.6, config.hair === "long" ? 1.5 : 1, 0.8]}>
+            <sphereGeometry args={[0.14, 12, 12]} />
+            <meshStandardMaterial color={HAIR_COLOR} roughness={0.8} />
+          </mesh>
+          {/* Back hair */}
+          <mesh position={[0, -0.05, -0.18]} scale={[1, config.hair === "long" ? 1.6 : 1.1, 0.7]}>
+            <sphereGeometry args={[0.3, 16, 16, 0, Math.PI * 2, Math.PI * 0.3, Math.PI * 0.7]} />
+            <meshStandardMaterial color={HAIR_COLOR} roughness={0.8} />
+          </mesh>
+          {/* Fringe / bangs */}
+          <mesh position={[0, 0.18, 0.22]} rotation={[0.4, 0, 0]} scale={[1.1, config.hair === "short" ? 0.2 : 0.4, 0.5]}>
+            <sphereGeometry args={[0.2, 16, 8, 0, Math.PI * 2, 0, Math.PI * 0.5]} />
+            <meshStandardMaterial color={HAIR_COLOR} roughness={0.8} />
+          </mesh>
+          {/* Spikes */}
+          {config.hair === "spike" && (
+            <group position={[0, 0.35, 0]}>
+              {[[-0.1, 0], [0, 0.1], [0.1, 0]].map((p, i) => (
+                <mesh key={i} position={[p[0], 0, p[1]]}>
+                  <coneGeometry args={[0.08, 0.2, 8]} />
+                  <meshStandardMaterial color={HAIR_COLOR} roughness={0.8} />
+                </mesh>
+              ))}
+            </group>
+          )}
+        </group>
 
         {/* ===== EYEBROWS (Animated) ===== */}
         <mesh 
@@ -341,27 +348,47 @@ function CharacterBody({ config }: { config: AvatarConfig }) {
           <meshStandardMaterial color={HAIR_COLOR} />
         </mesh>
 
-        {/* ===== SIMPLE EYES (Animated) ===== */}
+        {/* ===== SIMPLE EYES (Dynamic Styles) ===== */}
         <mesh 
           position={[-0.12, 0.05, 0.28]} 
           scale={[
             1, 
-            blinking ? 0.1 : (expression === "surprise" ? 1.4 : expression === "anger" ? 0.6 : 1), 
+            blinking ? 0.1 : (
+              eyeStyle === "wide" ? 1.4 : 
+              eyeStyle === "squint" ? 0.6 : 
+              eyeStyle === "happy" ? 0.8 : 
+              eyeStyle === "closed" ? 0.1 : 1
+            ), 
             1
           ]}
+          rotation={[0, 0, eyeStyle === "happy" ? Math.PI : 0]}
         >
-          <sphereGeometry args={[0.04, 16, 16]} />
+          {eyeStyle === "happy" ? (
+            <torusGeometry args={[0.04, 0.01, 8, 16, Math.PI]} />
+          ) : (
+            <sphereGeometry args={[0.04, 16, 16]} />
+          )}
           <meshStandardMaterial color="#1a1a1a" roughness={0.2} />
         </mesh>
         <mesh 
           position={[0.12, 0.05, 0.28]} 
           scale={[
             1, 
-            blinking ? 0.1 : (expression === "surprise" ? 1.4 : expression === "anger" ? 0.6 : 1), 
+            blinking ? 0.1 : (
+              eyeStyle === "wide" ? 1.4 : 
+              eyeStyle === "squint" ? 0.6 : 
+              eyeStyle === "happy" ? 0.8 : 
+              eyeStyle === "closed" ? 0.1 : 1
+            ), 
             1
           ]}
+          rotation={[0, 0, eyeStyle === "happy" ? Math.PI : 0]}
         >
-          <sphereGeometry args={[0.04, 16, 16]} />
+          {eyeStyle === "happy" ? (
+            <torusGeometry args={[0.04, 0.01, 8, 16, Math.PI]} />
+          ) : (
+            <sphereGeometry args={[0.04, 16, 16]} />
+          )}
           <meshStandardMaterial color="#1a1a1a" roughness={0.2} />
         </mesh>
 
@@ -371,17 +398,23 @@ function CharacterBody({ config }: { config: AvatarConfig }) {
           <meshStandardMaterial color={SKIN_SHADOW} roughness={0.6} />
         </mesh>
 
-        {/* ===== SIMPLE MOUTH (Animated Morph) ===== */}
+        {/* ===== SIMPLE MOUTH (Dynamic Morph) ===== */}
         <group position={[0, -0.12, 0.3]} rotation={[0.1, 0, 0]}>
-          {expression === "neutral" && (
+          {(expression === "neutral" || expression === "cool") && (
             <mesh>
-              <boxGeometry args={[0.08, 0.01, 0.02]} />
+              <boxGeometry args={[expression === "cool" ? 0.12 : 0.08, 0.01, 0.02]} />
               <meshStandardMaterial color="#c47a7a" />
             </mesh>
           )}
-          {expression === "smile" && (
+          {(expression === "smile" || expression === "smileWide") && (
             <mesh rotation={[0, 0, Math.PI]}>
-              <torusGeometry args={[0.05, 0.01, 8, 16, Math.PI]} />
+              <torusGeometry args={[expression === "smileWide" ? 0.06 : 0.05, 0.01, 8, 16, Math.PI]} />
+              <meshStandardMaterial color="#c47a7a" />
+            </mesh>
+          )}
+          {expression === "grin" && (
+            <mesh rotation={[0, 0, Math.PI + 0.3]} position={[0.01, 0, 0]}>
+              <torusGeometry args={[0.04, 0.01, 8, 16, Math.PI * 0.7]} />
               <meshStandardMaterial color="#c47a7a" />
             </mesh>
           )}

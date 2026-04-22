@@ -25,8 +25,10 @@ export default function GeneratorPage() {
   const [searchTerm, setSearchTerm] = useState("");
   
   // New structured title states
-  const [course, setCourse] = useState("");
-  const [subject, setSubject] = useState("");
+  const [selectedCourse, setSelectedCourse] = useState("");
+  const [customCourse, setCustomCourse] = useState("");
+  const [selectedSubject, setSelectedSubject] = useState("");
+  const [customSubject, setCustomSubject] = useState("");
   const [lessonTitle, setLessonTitle] = useState("");
   
   const [input, setInput] = useState("");
@@ -69,12 +71,31 @@ export default function GeneratorPage() {
       // Parse structured title: [Course] [Subject] Title
       const match = lesson.title.match(/^\[(.*?)\] \[(.*?)\] (.*)/);
       if (match) {
-        setCourse(match[1]);
-        setSubject(match[2]);
+        const c = match[1];
+        const s = match[2];
+        
+        if (existingCourses.includes(c)) {
+          setSelectedCourse(c);
+          setCustomCourse("");
+        } else {
+          setSelectedCourse("__NEW__");
+          setCustomCourse(c);
+        }
+
+        if (existingSubjects.includes(s)) {
+          setSelectedSubject(s);
+          setCustomSubject("");
+        } else {
+          setSelectedSubject("__NEW__");
+          setCustomSubject(s);
+        }
+
         setLessonTitle(match[3]);
       } else {
-        setCourse("");
-        setSubject("");
+        setSelectedCourse("__NEW__");
+        setCustomCourse("");
+        setSelectedSubject("__NEW__");
+        setCustomSubject("");
         setLessonTitle(lesson.title);
       }
 
@@ -117,7 +138,10 @@ export default function GeneratorPage() {
     setError(null);
     setSuccess(false);
     
-    if (!course || !subject || !lessonTitle) {
+    const finalCourse = selectedCourse === "__NEW__" ? customCourse : selectedCourse;
+    const finalSubject = selectedSubject === "__NEW__" ? customSubject : selectedSubject;
+
+    if (!finalCourse || !finalSubject || !lessonTitle) {
       setError("Faltan campos: Curso, Asignatura y Título son obligatorios.");
       return;
     }
@@ -125,7 +149,7 @@ export default function GeneratorPage() {
     const questions = validateAndParse(input);
     if (!questions) return;
 
-    const fullTitle = `[${course}] [${subject}] ${lessonTitle}`;
+    const fullTitle = `[${finalCourse}] [${finalSubject}] ${lessonTitle}`;
 
     setIsSubmitting(true);
     try {
@@ -240,33 +264,55 @@ export default function GeneratorPage() {
           <div className="mb-10 space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="group">
-                <label className="block text-xs font-black uppercase tracking-[0.3em] text-duo-gray-dark mb-3 ml-2 group-focus-within:text-duo-blue transition-colors">Nombre del Curso</label>
-                <input
-                  type="text"
-                  list="course-list"
-                  value={course}
-                  onChange={(e) => setCourse(e.target.value)}
-                  placeholder="Ej: ASIR, DAW, 1º ESO..."
-                  className="w-full bg-[#f7f7f7] border-2 border-duo-gray border-b-4 rounded-[1.5rem] p-6 text-duo-foreground focus:outline-none focus:border-duo-blue transition-all font-black text-xl uppercase italic tracking-tighter placeholder:opacity-30"
-                />
-                <datalist id="course-list">
-                  {existingCourses.map(c => <option key={c} value={c} />)}
-                </datalist>
+                <label className="block text-xs font-black uppercase tracking-[0.3em] text-duo-gray-dark mb-3 ml-2 group-focus-within:text-duo-blue transition-colors">Curso</label>
+                <select
+                  value={selectedCourse}
+                  onChange={(e) => setSelectedCourse(e.target.value)}
+                  className="w-full bg-[#f7f7f7] border-2 border-duo-gray border-b-4 rounded-[1.5rem] p-6 text-duo-foreground focus:outline-none focus:border-duo-blue transition-all font-black text-xl uppercase italic tracking-tighter cursor-pointer appearance-none"
+                >
+                  <option value="">— Seleccionar Curso —</option>
+                  {existingCourses.map(c => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                  <option value="__NEW__" className="text-duo-blue font-black">+ NUEVO CURSO</option>
+                </select>
+                
+                {selectedCourse === "__NEW__" && (
+                  <input
+                    type="text"
+                    value={customCourse}
+                    onChange={(e) => setCustomCourse(e.target.value)}
+                    placeholder="Escribe el nombre del nuevo curso..."
+                    className="w-full bg-white border-2 border-duo-blue border-b-4 rounded-[1.2rem] p-4 mt-3 text-duo-foreground focus:outline-none transition-all font-bold uppercase animate-in slide-in-from-top-2"
+                    autoFocus
+                  />
+                )}
               </div>
 
               <div className="group">
                 <label className="block text-xs font-black uppercase tracking-[0.3em] text-duo-gray-dark mb-3 ml-2 group-focus-within:text-duo-blue transition-colors">Asignatura</label>
-                <input
-                  type="text"
-                  list="subject-list"
-                  value={subject}
-                  onChange={(e) => setSubject(e.target.value)}
-                  placeholder="Ej: Redes, Programación..."
-                  className="w-full bg-[#f7f7f7] border-2 border-duo-gray border-b-4 rounded-[1.5rem] p-6 text-duo-foreground focus:outline-none focus:border-duo-blue transition-all font-black text-xl uppercase italic tracking-tighter placeholder:opacity-30"
-                />
-                <datalist id="subject-list">
-                  {existingSubjects.map(s => <option key={s} value={s} />)}
-                </datalist>
+                <select
+                  value={selectedSubject}
+                  onChange={(e) => setSelectedSubject(e.target.value)}
+                  className="w-full bg-[#f7f7f7] border-2 border-duo-gray border-b-4 rounded-[1.5rem] p-6 text-duo-foreground focus:outline-none focus:border-duo-blue transition-all font-black text-xl uppercase italic tracking-tighter cursor-pointer appearance-none"
+                >
+                  <option value="">— Seleccionar Asignatura —</option>
+                  {existingSubjects.map(s => (
+                    <option key={s} value={s}>{s}</option>
+                  ))}
+                  <option value="__NEW__" className="text-duo-blue font-black">+ NUEVA ASIGNATURA</option>
+                </select>
+
+                {selectedSubject === "__NEW__" && (
+                  <input
+                    type="text"
+                    value={customSubject}
+                    onChange={(e) => setCustomSubject(e.target.value)}
+                    placeholder="Escribe el nombre de la asignatura..."
+                    className="w-full bg-white border-2 border-duo-blue border-b-4 rounded-[1.2rem] p-4 mt-3 text-duo-foreground focus:outline-none transition-all font-bold uppercase animate-in slide-in-from-top-2"
+                    autoFocus
+                  />
+                )}
               </div>
             </div>
 
@@ -323,12 +369,12 @@ export default function GeneratorPage() {
             </div>
             <button
               onClick={handleSubmit}
-              disabled={isSubmitting || (mode === "create" && (!course || !subject || !lessonTitle)) || (mode === "edit" && !selectedLessonId)}
+              disabled={isSubmitting || (mode === "create" && (!lessonTitle || !(selectedCourse === "__NEW__" ? customCourse : selectedCourse) || !(selectedSubject === "__NEW__" ? customSubject : selectedSubject))) || (mode === "edit" && !selectedLessonId)}
               className={`
                 px-16 py-6 rounded-[2.5rem] font-black text-2xl uppercase italic tracking-tighter
                 transition-all active:translate-y-2 disabled:opacity-50 disabled:cursor-not-allowed
                 shadow-2xl border-b-8
-                ${isSubmitting || (mode === "create" && (!course || !subject || !lessonTitle)) || (mode === "edit" && !selectedLessonId)
+                ${isSubmitting || (mode === "create" && (!lessonTitle || !(selectedCourse === "__NEW__" ? customCourse : selectedCourse) || !(selectedSubject === "__NEW__" ? customSubject : selectedSubject))) || (mode === "edit" && !selectedLessonId)
                   ? "bg-duo-gray border-duo-gray-dark text-duo-gray-dark"
                   : "bg-duo-green border-duo-green-dark text-white hover:brightness-110 shadow-duo-green/30"}
               `}

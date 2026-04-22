@@ -28,12 +28,10 @@ const SKIN_SHADOW = "#dbb08a";
 const HAIR_COLOR = "#1a1a1a";
 
 /* ── Reusable clay material props ── */
-const useClay = (color: string, opts?: { roughness?: number; metalness?: number; clearcoat?: number }) => ({
+const useClay = (color: string, opts?: { roughness?: number; metalness?: number }) => ({
   color,
-  roughness: opts?.roughness ?? 0.35,
+  roughness: opts?.roughness ?? 0.5,
   metalness: opts?.metalness ?? 0.0,
-  clearcoat: opts?.clearcoat ?? 0.4,
-  clearcoatRoughness: 0.25,
 });
 
 function CharacterBody({ config }: { config: AvatarConfig }) {
@@ -58,62 +56,58 @@ function CharacterBody({ config }: { config: AvatarConfig }) {
   const eyeStyle = (config.eyes as string) || "neutral";
   const accentColor = OUTFIT_COLOR[config.color] || OUTFIT_COLOR.blue;
 
-  const skinClay = useClay(SKIN, { roughness: 0.45, clearcoat: 0.35 });
-  const hairClay = useClay(HAIR_COLOR, { roughness: 0.55, clearcoat: 0.6 });
-  const outfitClay = useClay(accentColor, { roughness: 0.65, clearcoat: 0.15 });
+  const skinClay = useClay(SKIN, { roughness: 0.6 });
+  const hairClay = useClay(HAIR_COLOR, { roughness: 0.7 });
+  const outfitClay = useClay(accentColor, { roughness: 0.75 });
 
   return (
     <group ref={groupRef}>
-      {/* ══════ BODY / TORSO (simple rounded shape) ══════ */}
+      {/* ══════ BODY / TORSO ══════ */}
       <group position={[0, -0.7, 0]}>
-        {/* Main torso */}
         <mesh position={[0, 0.15, 0]} scale={[1.05, 1, 1]}>
-          <capsuleGeometry args={[0.32, 0.4, 32, 48]} />
-          <meshPhysicalMaterial {...outfitClay} />
+          <capsuleGeometry args={[0.32, 0.4, 12, 16]} />
+          <meshStandardMaterial {...outfitClay} />
         </mesh>
-        {/* Shoulder rounding */}
         <mesh position={[0, 0.42, 0]} scale={[1.2, 0.5, 0.95]}>
-          <sphereGeometry args={[0.32, 32, 32]} />
-          <meshPhysicalMaterial {...outfitClay} />
+          <sphereGeometry args={[0.32, 16, 16]} />
+          <meshStandardMaterial {...outfitClay} />
         </mesh>
       </group>
 
       {/* ══════ NECK ══════ */}
       <mesh position={[0, -0.12, 0]}>
-        <cylinderGeometry args={[0.1, 0.12, 0.18, 24]} />
-        <meshPhysicalMaterial {...skinClay} />
+        <cylinderGeometry args={[0.1, 0.12, 0.18, 12]} />
+        <meshStandardMaterial {...skinClay} />
       </mesh>
 
       {/* ══════ HEAD ══════ */}
       <group position={[0, 0.32, 0]}>
-        {/* Main skull – clean sphere */}
+        {/* Main skull */}
         <mesh scale={[1, 1, 1]}>
-          <sphereGeometry args={[0.38, 64, 64]} />
-          <meshPhysicalMaterial {...skinClay} />
+          <sphereGeometry args={[0.38, 24, 24]} />
+          <meshStandardMaterial {...skinClay} />
         </mesh>
 
         {/* ── EARS ── */}
         {[-1, 1].map((s) => (
           <group key={`ear${s}`} position={[s * 0.38, 0.0, -0.02]}>
             <mesh scale={[0.35, 0.5, 0.55]} rotation={[0, s * 0.25, 0]}>
-              <sphereGeometry args={[0.18, 24, 24]} />
-              <meshPhysicalMaterial {...skinClay} />
+              <sphereGeometry args={[0.18, 12, 12]} />
+              <meshStandardMaterial {...skinClay} />
             </mesh>
           </group>
         ))}
 
-        {/* ── HAIR (upward swept style) ── */}
+        {/* ── HAIR ── */}
         <group>
-          {/* Hair base dome (rotated back to clear forehead) */}
           <mesh position={[0, 0.1, -0.06]} rotation={[-0.25, 0, 0]} scale={[1.08, 0.8, 1.1]}>
-            <sphereGeometry args={[0.39, 48, 32, 0, Math.PI * 2, 0, Math.PI * 0.52]} />
-            <meshPhysicalMaterial {...hairClay} />
+            <sphereGeometry args={[0.39, 24, 16, 0, Math.PI * 2, 0, Math.PI * 0.52]} />
+            <meshStandardMaterial {...hairClay} />
           </mesh>
 
-          {/* Upward swept volume (Pompadour style) */}
           <mesh position={[0, 0.28, 0.12]} rotation={[0.4, 0, 0]} scale={[0.9, 0.45, 0.7]}>
-            <sphereGeometry args={[0.32, 32, 24]} />
-            <meshPhysicalMaterial {...hairClay} />
+            <sphereGeometry args={[0.32, 16, 12]} />
+            <meshStandardMaterial {...hairClay} />
           </mesh>
           
           {/* Spike variant (integrated with swept base) */}
@@ -136,15 +130,13 @@ function CharacterBody({ config }: { config: AvatarConfig }) {
           )}
         </group>
 
-        {/* ── EYES (simple black dots like reference) ── */}
+        {/* ── EYES (simple black dots) ── */}
         {[-1, 1].map((s) => (
           <group key={`eye${s}`} position={[s * 0.13, 0.04, 0.32]}>
-            {/* Sclera (subtle white) */}
             <mesh scale={[1, blinking ? 0.08 : 1, 0.15]}>
-              <sphereGeometry args={[0.05, 24, 24]} />
-              <meshPhysicalMaterial color="#ffffff" roughness={0.1} clearcoat={0.8} clearcoatRoughness={0.1} />
+              <sphereGeometry args={[0.05, 12, 12]} />
+              <meshStandardMaterial color="#ffffff" roughness={0.2} />
             </mesh>
-            {/* Pupil dot */}
             <mesh
               scale={[1, blinking ? 0.08 : (
                 eyeStyle === "wide" ? 1.3 :
@@ -155,16 +147,16 @@ function CharacterBody({ config }: { config: AvatarConfig }) {
               position={[0, 0, 0.015]}
             >
               {eyeStyle === "happy" ? (
-                <torusGeometry args={[0.038, 0.012, 12, 24, Math.PI]} />
+                <torusGeometry args={[0.038, 0.012, 8, 16, Math.PI]} />
               ) : (
-                <sphereGeometry args={[0.038, 24, 24]} />
+                <sphereGeometry args={[0.038, 12, 12]} />
               )}
-              <meshPhysicalMaterial color="#1a1a1a" roughness={0.15} clearcoat={1} clearcoatRoughness={0.05} />
+              <meshStandardMaterial color="#1a1a1a" roughness={0.3} />
             </mesh>
           </group>
         ))}
 
-        {/* ── EYEBROWS (thick arched) ── */}
+        {/* ── EYEBROWS ── */}
         {[-1, 1].map((s) => (
           <mesh
             key={`brow${s}`}
@@ -175,74 +167,70 @@ function CharacterBody({ config }: { config: AvatarConfig }) {
                s * -0.1) + Math.PI / 2
             ]}
           >
-            <capsuleGeometry args={[0.016, 0.065, 8, 12]} />
-            <meshPhysicalMaterial {...hairClay} />
+            <capsuleGeometry args={[0.016, 0.065, 4, 8]} />
+            <meshStandardMaterial {...hairClay} />
           </mesh>
         ))}
 
-        {/* ── NOSE (small subtle bump) ── */}
+        {/* ── NOSE ── */}
         <mesh position={[0, -0.04, 0.35]} rotation={[0.3, 0, 0]} scale={[0.7, 0.8, 0.6]}>
-          <sphereGeometry args={[0.035, 24, 24]} />
-          <meshPhysicalMaterial {...useClay(SKIN_SHADOW, { roughness: 0.5 })} />
+          <sphereGeometry args={[0.035, 12, 12]} />
+          <meshStandardMaterial {...useClay(SKIN_SHADOW, { roughness: 0.6 })} />
         </mesh>
 
         {/* ── MOUTH ── */}
         <group position={[0, -0.15, 0.34]} rotation={[0.1, 0, 0]}>
           {(expression === "neutral" || expression === "cool") && (
             <mesh rotation={[0, 0, Math.PI / 2]}>
-              <capsuleGeometry args={[0.008, expression === "cool" ? 0.1 : 0.06, 8, 12]} />
-              <meshPhysicalMaterial color="#b5696e" roughness={0.5} />
+              <capsuleGeometry args={[0.008, expression === "cool" ? 0.1 : 0.06, 4, 8]} />
+              <meshStandardMaterial color="#b5696e" roughness={0.5} />
             </mesh>
           )}
           {(expression === "smile" || expression === "smileWide") && (
             <mesh rotation={[0, 0, Math.PI]}>
-              <torusGeometry args={[expression === "smileWide" ? 0.06 : 0.045, 0.01, 12, 24, Math.PI]} />
-              <meshPhysicalMaterial color="#b5696e" roughness={0.5} />
+              <torusGeometry args={[expression === "smileWide" ? 0.06 : 0.045, 0.01, 8, 16, Math.PI]} />
+              <meshStandardMaterial color="#b5696e" roughness={0.5} />
             </mesh>
           )}
           {expression === "surprise" && (
             <mesh>
-              <sphereGeometry args={[0.03, 16, 16]} />
-              <meshPhysicalMaterial color="#8b4547" roughness={0.4} />
+              <sphereGeometry args={[0.03, 8, 8]} />
+              <meshStandardMaterial color="#8b4547" roughness={0.5} />
             </mesh>
           )}
           {expression === "anger" && (
             <mesh rotation={[0, 0, Math.PI / 2]}>
-              <capsuleGeometry args={[0.008, 0.08, 8, 12]} />
-              <meshPhysicalMaterial color="#8b4547" roughness={0.5} />
+              <capsuleGeometry args={[0.008, 0.08, 4, 8]} />
+              <meshStandardMaterial color="#8b4547" roughness={0.5} />
             </mesh>
           )}
           {expression === "grin" && (
             <mesh rotation={[0, 0, Math.PI]} position={[0.02, 0, 0]}>
-              <torusGeometry args={[0.04, 0.008, 12, 24, Math.PI]} />
-              <meshPhysicalMaterial color="#b5696e" roughness={0.5} />
+              <torusGeometry args={[0.04, 0.008, 8, 16, Math.PI]} />
+              <meshStandardMaterial color="#b5696e" roughness={0.5} />
             </mesh>
           )}
         </group>
       </group>
 
-      {/* ══════ ARMS (simplified rounded) ══════ */}
+      {/* ══════ ARMS ══════ */}
       {[-1, 1].map((s) => (
         <group key={`arm${s}`} position={[s * 0.5, -0.38, 0]} rotation={[0, 0, s * 0.18]}>
-          {/* Shoulder */}
           <mesh position={[0, -0.02, 0]} scale={[1.15, 1, 1.05]}>
-            <sphereGeometry args={[0.1, 24, 24]} />
-            <meshPhysicalMaterial {...outfitClay} />
+            <sphereGeometry args={[0.1, 12, 12]} />
+            <meshStandardMaterial {...outfitClay} />
           </mesh>
-          {/* Upper arm */}
           <mesh position={[0, -0.2, 0]}>
-            <capsuleGeometry args={[0.09, 0.2, 16, 24]} />
-            <meshPhysicalMaterial {...outfitClay} />
+            <capsuleGeometry args={[0.09, 0.2, 8, 12]} />
+            <meshStandardMaterial {...outfitClay} />
           </mesh>
-          {/* Forearm */}
           <mesh position={[0, -0.48, 0]}>
-            <capsuleGeometry args={[0.07, 0.22, 16, 24]} />
-            <meshPhysicalMaterial {...skinClay} />
+            <capsuleGeometry args={[0.07, 0.22, 8, 12]} />
+            <meshStandardMaterial {...skinClay} />
           </mesh>
-          {/* Hand blob */}
           <mesh position={[0, -0.68, 0]} scale={[1.1, 1.2, 0.7]}>
-            <sphereGeometry args={[0.075, 24, 24]} />
-            <meshPhysicalMaterial {...skinClay} />
+            <sphereGeometry args={[0.075, 12, 12]} />
+            <meshStandardMaterial {...skinClay} />
           </mesh>
         </group>
       ))}
@@ -257,19 +245,19 @@ function CharacterBody({ config }: { config: AvatarConfig }) {
 
 function Hat({ type }: { type: string }) {
   const headY = 0.3;
-  const hatClay = (color: string) => ({
-    color, roughness: 0.4, metalness: 0, clearcoat: 0.5, clearcoatRoughness: 0.2,
+  const hatMat = (color: string) => ({
+    color, roughness: 0.6, metalness: 0,
   });
 
   if (type === "cap") return (
     <group position={[0, headY + 0.35, 0]}>
       <mesh>
-        <sphereGeometry args={[0.4, 48, 24, 0, Math.PI * 2, 0, Math.PI / 2]} />
-        <meshPhysicalMaterial {...hatClay("#e63946")} />
+        <sphereGeometry args={[0.4, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2]} />
+        <meshStandardMaterial {...hatMat("#e63946")} />
       </mesh>
       <mesh position={[0, -0.02, 0.32]} rotation={[-0.3, 0, 0]}>
         <boxGeometry args={[0.48, 0.04, 0.32]} />
-        <meshPhysicalMaterial {...hatClay("#c1121f")} />
+        <meshStandardMaterial {...hatMat("#c1121f")} />
       </mesh>
     </group>
   );
@@ -278,37 +266,29 @@ function Hat({ type }: { type: string }) {
     <group position={[0, headY + 0.42, 0]}>
       <mesh>
         <cylinderGeometry args={[0.3, 0.35, 0.22, 12]} />
-        <meshPhysicalMaterial color="#fbbf24" metalness={0.8} roughness={0.15} clearcoat={0.8} clearcoatRoughness={0.1} />
+        <meshStandardMaterial color="#fbbf24" metalness={0.8} roughness={0.3} />
       </mesh>
       {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => {
         const a = (i / 8) * Math.PI * 2;
         return (
           <mesh key={i} position={[Math.cos(a) * 0.29, 0.18, Math.sin(a) * 0.29]}>
             <coneGeometry args={[0.04, 0.14, 6]} />
-            <meshPhysicalMaterial color="#f59e0b" metalness={0.8} roughness={0.15} clearcoat={0.8} clearcoatRoughness={0.1} />
+            <meshStandardMaterial color="#f59e0b" metalness={0.8} roughness={0.3} />
           </mesh>
         );
       })}
-      <mesh position={[0, 0.05, 0.32]}>
-        <sphereGeometry args={[0.04, 12, 12]} />
-        <meshPhysicalMaterial color="#ef4444" metalness={0.5} roughness={0.1} clearcoat={1} clearcoatRoughness={0.05} />
-      </mesh>
     </group>
   );
 
   if (type === "wizard") return (
     <group position={[0, headY + 0.35, 0]}>
       <mesh position={[0, 0.38, 0]}>
-        <coneGeometry args={[0.35, 0.85, 24]} />
-        <meshPhysicalMaterial {...hatClay("#4338ca")} />
+        <coneGeometry args={[0.35, 0.85, 16]} />
+        <meshStandardMaterial {...hatMat("#4338ca")} />
       </mesh>
       <mesh rotation={[-Math.PI / 2, 0, 0]}>
-        <ringGeometry args={[0.28, 0.52, 48]} />
-        <meshPhysicalMaterial {...hatClay("#3730a3")} side={THREE.DoubleSide} />
-      </mesh>
-      <mesh position={[0, 0.5, 0.3]}>
-        <octahedronGeometry args={[0.06]} />
-        <meshPhysicalMaterial color="#fbbf24" metalness={0.8} roughness={0.1} emissive="#fbbf24" emissiveIntensity={0.3} clearcoat={1} clearcoatRoughness={0.05} />
+        <ringGeometry args={[0.28, 0.52, 24]} />
+        <meshStandardMaterial {...hatMat("#3730a3")} side={THREE.DoubleSide} />
       </mesh>
     </group>
   );
@@ -316,16 +296,12 @@ function Hat({ type }: { type: string }) {
   if (type === "tophat") return (
     <group position={[0, headY + 0.38, 0]}>
       <mesh position={[0, 0.24, 0]}>
-        <cylinderGeometry args={[0.24, 0.24, 0.45, 32]} />
-        <meshPhysicalMaterial {...hatClay("#1e293b")} />
+        <cylinderGeometry args={[0.24, 0.24, 0.45, 16]} />
+        <meshStandardMaterial {...hatMat("#1e293b")} />
       </mesh>
       <mesh rotation={[-Math.PI / 2, 0, 0]}>
-        <ringGeometry args={[0.23, 0.42, 48]} />
-        <meshPhysicalMaterial {...hatClay("#1e293b")} side={THREE.DoubleSide} />
-      </mesh>
-      <mesh position={[0, 0.07, 0]}>
-        <cylinderGeometry args={[0.25, 0.25, 0.05, 32]} />
-        <meshPhysicalMaterial color="#dc2626" roughness={0.35} clearcoat={0.6} clearcoatRoughness={0.15} />
+        <ringGeometry args={[0.23, 0.42, 24]} />
+        <meshStandardMaterial {...hatMat("#1e293b")} side={THREE.DoubleSide} />
       </mesh>
     </group>
   );
@@ -341,18 +317,14 @@ function Accessory({ type }: { type: string }) {
       {[-1, 1].map((s) => (
         <group key={s}>
           <mesh position={[s * 0.13, 0, 0]}>
-            <torusGeometry args={[0.065, 0.014, 12, 24]} />
-            <meshPhysicalMaterial color="#1a1a2e" metalness={0.85} roughness={0.1} clearcoat={1} clearcoatRoughness={0.05} />
-          </mesh>
-          <mesh position={[s * 0.13, 0, 0.01]}>
-            <circleGeometry args={[0.055, 24]} />
-            <meshPhysicalMaterial color="#1a1a2e" transparent opacity={0.7} roughness={0.05} clearcoat={1} clearcoatRoughness={0.05} />
+            <torusGeometry args={[0.065, 0.014, 8, 16]} />
+            <meshStandardMaterial color="#1a1a2e" metalness={0.85} roughness={0.2} />
           </mesh>
         </group>
       ))}
       <mesh rotation={[0, 0, Math.PI / 2]}>
-        <cylinderGeometry args={[0.009, 0.009, 0.1, 12]} />
-        <meshPhysicalMaterial color="#1a1a2e" metalness={0.85} roughness={0.1} />
+        <cylinderGeometry args={[0.009, 0.009, 0.1, 8]} />
+        <meshStandardMaterial color="#1a1a2e" metalness={0.85} roughness={0.2} />
       </mesh>
     </group>
   );
@@ -360,19 +332,9 @@ function Accessory({ type }: { type: string }) {
   if (type === "monocle") return (
     <group position={[0.13, headY + 0.02, 0.35]}>
       <mesh>
-        <torusGeometry args={[0.065, 0.01, 12, 24]} />
-        <meshPhysicalMaterial color="#fbbf24" metalness={0.9} roughness={0.08} clearcoat={1} clearcoatRoughness={0.05} />
+        <torusGeometry args={[0.065, 0.01, 8, 16]} />
+        <meshStandardMaterial color="#fbbf24" metalness={0.9} roughness={0.2} />
       </mesh>
-      <mesh position={[0, 0, 0.008]}>
-        <circleGeometry args={[0.058, 24]} />
-        <meshPhysicalMaterial color="#93c5fd" transparent opacity={0.2} clearcoat={1} clearcoatRoughness={0.05} />
-      </mesh>
-      {[0, 1, 2, 3, 4].map((i) => (
-        <mesh key={i} position={[0.03 + i * 0.02, -0.06 - i * 0.06, 0]}>
-          <sphereGeometry args={[0.007, 8, 8]} />
-          <meshPhysicalMaterial color="#fbbf24" metalness={0.9} roughness={0.08} />
-        </mesh>
-      ))}
     </group>
   );
 
@@ -380,15 +342,7 @@ function Accessory({ type }: { type: string }) {
     <group position={[0, -0.25, -0.35]}>
       <mesh rotation={[0.1, 0, 0]}>
         <boxGeometry args={[0.75, 1.2, 0.04]} />
-        <meshPhysicalMaterial color="#7c3aed" roughness={0.55} clearcoat={0.2} clearcoatRoughness={0.4} side={THREE.DoubleSide} />
-      </mesh>
-      <mesh rotation={[0.1, 0, 0]} position={[0, 0, 0.025]}>
-        <boxGeometry args={[0.7, 1.15, 0.01]} />
-        <meshPhysicalMaterial color="#4c1d95" roughness={0.55} side={THREE.DoubleSide} />
-      </mesh>
-      <mesh position={[0, 0.56, 0.08]}>
-        <sphereGeometry args={[0.04, 12, 12]} />
-        <meshPhysicalMaterial color="#fbbf24" metalness={0.8} roughness={0.1} clearcoat={1} clearcoatRoughness={0.05} />
+        <meshStandardMaterial color="#7c3aed" roughness={0.7} side={THREE.DoubleSide} />
       </mesh>
     </group>
   );
@@ -396,16 +350,8 @@ function Accessory({ type }: { type: string }) {
   if (type === "scarf") return (
     <group position={[0, -0.08, 0]}>
       <mesh>
-        <torusGeometry args={[0.22, 0.06, 12, 32]} />
-        <meshPhysicalMaterial color="#ef4444" roughness={0.6} clearcoat={0.2} clearcoatRoughness={0.3} />
-      </mesh>
-      <mesh position={[0.2, -0.16, 0.13]} rotation={[0.3, 0, 0.3]}>
-        <boxGeometry args={[0.1, 0.38, 0.045]} />
-        <meshPhysicalMaterial color="#ef4444" roughness={0.6} clearcoat={0.2} clearcoatRoughness={0.3} />
-      </mesh>
-      <mesh position={[0.2, -0.09, 0.15]} rotation={[0.3, 0, 0.3]}>
-        <boxGeometry args={[0.102, 0.04, 0.047]} />
-        <meshPhysicalMaterial color="#fbbf24" roughness={0.6} />
+        <torusGeometry args={[0.22, 0.06, 8, 16]} />
+        <meshStandardMaterial color="#ef4444" roughness={0.7} />
       </mesh>
     </group>
   );

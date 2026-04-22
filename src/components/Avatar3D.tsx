@@ -88,11 +88,20 @@ function CharacterBody({ config }: { config: AvatarConfig }) {
           <capsuleGeometry args={[0.11, 0.15, 8, 16]} />
           <meshStandardMaterial {...rubberMat} />
         </mesh>
-        {/* Shoe Sole */}
-        <mesh position={[0, -1.02, 0.08]} scale={[1.1, 0.2, 1.3]}>
-          <boxGeometry args={[0.2, 0.1, 0.3]} />
-          <meshStandardMaterial {...soleMat} />
-        </mesh>
+        {/* Shoe Sole with Ridges */}
+        <group position={[0, -1.02, 0.08]}>
+          <mesh scale={[1.1, 0.2, 1.3]}>
+            <boxGeometry args={[0.2, 0.1, 0.3]} />
+            <meshStandardMaterial {...soleMat} />
+          </mesh>
+          {/* Sole Ridges */}
+          {[0, 0.08, -0.08].map((z, i) => (
+            <mesh key={i} position={[0, -0.02, z]}>
+              <boxGeometry args={[0.22, 0.02, 0.02]} />
+              <meshStandardMaterial color="#000000" opacity={0.3} transparent />
+            </mesh>
+          ))}
+        </group>
       </group>
 
       {/* Right leg */}
@@ -113,10 +122,18 @@ function CharacterBody({ config }: { config: AvatarConfig }) {
           <capsuleGeometry args={[0.11, 0.15, 8, 16]} />
           <meshStandardMaterial {...rubberMat} />
         </mesh>
-        <mesh position={[0, -1.02, 0.08]} scale={[1.1, 0.2, 1.3]}>
-          <boxGeometry args={[0.2, 0.1, 0.3]} />
-          <meshStandardMaterial {...soleMat} />
-        </mesh>
+        <group position={[0, -1.02, 0.08]}>
+          <mesh scale={[1.1, 0.2, 1.3]}>
+            <boxGeometry args={[0.2, 0.1, 0.3]} />
+            <meshStandardMaterial {...soleMat} />
+          </mesh>
+          {[0, 0.08, -0.08].map((z, i) => (
+            <mesh key={i} position={[0, -0.02, z]}>
+              <boxGeometry args={[0.22, 0.02, 0.02]} />
+              <meshStandardMaterial color="#000000" opacity={0.3} transparent />
+            </mesh>
+          ))}
+        </group>
       </group>
 
       {/* ===== TORSO (Sporty White + Accents) ===== */}
@@ -130,6 +147,15 @@ function CharacterBody({ config }: { config: AvatarConfig }) {
         <mesh position={[0, 0.25, 0.02]} scale={[1.02, 0.4, 1.02]}>
           <capsuleGeometry args={[0.26, 0.1, 12, 24]} />
           <meshStandardMaterial {...clothAccentMat} />
+        </mesh>
+        {/* Cloth Folds (Subtle) */}
+        <mesh position={[0.18, 0.15, 0.15]} rotation={[0.2, 0, 0.5]}>
+          <capsuleGeometry args={[0.01, 0.1, 4, 8]} />
+          <meshStandardMaterial color="#000000" opacity={0.05} transparent />
+        </mesh>
+        <mesh position={[-0.18, 0.15, 0.15]} rotation={[0.2, 0, -0.5]}>
+          <capsuleGeometry args={[0.01, 0.1, 4, 8]} />
+          <meshStandardMaterial color="#000000" opacity={0.05} transparent />
         </mesh>
         {/* Waist (White shirt continuation) */}
         <mesh position={[0, -0.05, 0]}>
@@ -157,6 +183,11 @@ function CharacterBody({ config }: { config: AvatarConfig }) {
           <capsuleGeometry args={[0.08, 0.25, 8, 16]} />
           <meshStandardMaterial {...clothWhiteMat} />
         </mesh>
+        {/* Sleeve Folds */}
+        <mesh position={[-0.05, -0.1, 0.05]} rotation={[0, 0, 0.4]}>
+          <capsuleGeometry args={[0.005, 0.08, 4, 8]} />
+          <meshStandardMaterial color="#000000" opacity={0.05} transparent />
+        </mesh>
         {/* Elbow */}
         <mesh position={[0, -0.3, 0]}>
           <sphereGeometry args={[0.07, 8, 8]} />
@@ -167,11 +198,26 @@ function CharacterBody({ config }: { config: AvatarConfig }) {
           <cylinderGeometry args={[0.065, 0.055, 0.3, 8]} />
           <meshStandardMaterial {...skinMat} />
         </mesh>
-        {/* Hand */}
-        <mesh position={[0, -0.68, 0]} scale={[1, 1.2, 0.6]}>
-          <sphereGeometry args={[0.08, 12, 12]} />
-          <meshStandardMaterial {...skinMat} />
-        </mesh>
+        {/* Detailed Hand (Low Poly Fingers) */}
+        <group position={[0, -0.68, 0]}>
+          {/* Palm */}
+          <mesh scale={[1, 1.1, 0.5]}>
+            <sphereGeometry args={[0.08, 8, 8]} />
+            <meshStandardMaterial {...skinMat} />
+          </mesh>
+          {/* Fingers */}
+          {[-0.04, -0.015, 0.015, 0.04].map((x, i) => (
+            <mesh key={i} position={[x, -0.08, 0]} rotation={[0.1, 0, 0]}>
+              <capsuleGeometry args={[0.012, 0.04, 2, 4]} />
+              <meshStandardMaterial {...skinMat} />
+            </mesh>
+          ))}
+          {/* Thumb */}
+          <mesh position={[0.06, -0.03, 0.02]} rotation={[0, 0, -0.8]}>
+            <capsuleGeometry args={[0.015, 0.03, 2, 4]} />
+            <meshStandardMaterial {...skinMat} />
+          </mesh>
+        </group>
       </group>
 
       {/* Right arm */}
@@ -181,6 +227,11 @@ function CharacterBody({ config }: { config: AvatarConfig }) {
           <capsuleGeometry args={[0.08, 0.25, 8, 16]} />
           <meshStandardMaterial {...clothWhiteMat} />
         </mesh>
+        {/* Sleeve Folds */}
+        <mesh position={[0.05, -0.1, 0.05]} rotation={[0, 0, -0.4]}>
+          <capsuleGeometry args={[0.005, 0.08, 4, 8]} />
+          <meshStandardMaterial color="#000000" opacity={0.05} transparent />
+        </mesh>
         {/* Elbow */}
         <mesh position={[0, -0.3, 0]}>
           <sphereGeometry args={[0.07, 8, 8]} />
@@ -191,17 +242,29 @@ function CharacterBody({ config }: { config: AvatarConfig }) {
           <cylinderGeometry args={[0.065, 0.055, 0.3, 8]} />
           <meshStandardMaterial {...skinMat} />
         </mesh>
-        {/* Hand */}
-        <mesh position={[0, -0.68, 0]} scale={[1, 1.2, 0.6]}>
-          <sphereGeometry args={[0.08, 12, 12]} />
-          <meshStandardMaterial {...skinMat} />
-        </mesh>
+        {/* Detailed Hand */}
+        <group position={[0, -0.68, 0]}>
+          <mesh scale={[1, 1.1, 0.5]}>
+            <sphereGeometry args={[0.08, 8, 8]} />
+            <meshStandardMaterial {...skinMat} />
+          </mesh>
+          {[-0.04, -0.015, 0.015, 0.04].map((x, i) => (
+            <mesh key={i} position={[x, -0.08, 0]} rotation={[0.1, 0, 0]}>
+              <capsuleGeometry args={[0.012, 0.04, 2, 4]} />
+              <meshStandardMaterial {...skinMat} />
+            </mesh>
+          ))}
+          <mesh position={[-0.06, -0.03, 0.02]} rotation={[0, 0, 0.8]}>
+            <capsuleGeometry args={[0.015, 0.03, 2, 4]} />
+            <meshStandardMaterial {...skinMat} />
+          </mesh>
+        </group>
       </group>
 
       {/* ===== NECK ===== */}
       <mesh position={[0, -0.05, 0]}>
         <cylinderGeometry args={[0.08, 0.1, 0.15, 12]} />
-        <meshStandardMaterial color={SKIN} roughness={0.6} />
+        <meshStandardMaterial {...skinMat} />
       </mesh>
 
       {/* ===== HEAD ===== */}
@@ -209,7 +272,21 @@ function CharacterBody({ config }: { config: AvatarConfig }) {
         {/* Head shape - slightly oval */}
         <mesh scale={[1, 1.12, 0.95]}>
           <sphereGeometry args={[0.32, 32, 32]} />
-          <meshStandardMaterial color={SKIN} roughness={0.5} />
+          <meshStandardMaterial {...skinMat} />
+        </mesh>
+        {/* Cheekbones (Subtle spheres) */}
+        <mesh position={[-0.22, -0.05, 0.15]} scale={[0.8, 0.8, 0.5]}>
+          <sphereGeometry args={[0.1, 12, 12]} />
+          <meshStandardMaterial {...skinMat} />
+        </mesh>
+        <mesh position={[0.22, -0.05, 0.15]} scale={[0.8, 0.8, 0.5]}>
+          <sphereGeometry args={[0.1, 12, 12]} />
+          <meshStandardMaterial {...skinMat} />
+        </mesh>
+        {/* Jawline (Subtle box) */}
+        <mesh position={[0, -0.2, 0]} scale={[1, 0.5, 0.8]}>
+          <sphereGeometry args={[0.25, 16, 16, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2]} />
+          <meshStandardMaterial {...skinMat} />
         </mesh>
 
         {/* ===== HAIR ===== */}

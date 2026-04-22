@@ -75,53 +75,94 @@ export default function LessonClient({ lesson, userId }: { lesson: Lesson; userI
     setIsSaving(false);
   };
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.code === "Space") {
+        e.preventDefault();
+        if (status === "correct" || status === "incorrect") {
+          handleNext();
+        }
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [status, currentIndex]);
+
+  const handleRestart = () => {
+    setCurrentIndex(0);
+    setSelectedOption(null);
+    setStatus("idle");
+    setScore(0);
+  };
+
   if (status === "finished") {
     const finalScore = score;
     const percentage = finalScore / totalQuestions;
     const isApproved = percentage >= 0.9;
 
     return (
-      <div className="min-h-screen bg-[#f7f7f7] text-duo-foreground flex flex-col items-center justify-center p-6 text-center font-sans">
-        <div className="max-w-2xl w-full bg-white border-2 border-duo-gray border-b-8 p-10 rounded-[3rem] space-y-8">
+      <div className="fixed inset-0 z-50 bg-[#f7f7f7] text-duo-foreground flex flex-col items-center justify-center p-4 text-center font-sans">
+        <div className="max-w-2xl w-full bg-white border-2 border-duo-gray border-b-8 p-6 md:p-10 rounded-[2.5rem] md:rounded-[3rem] space-y-4 md:space-y-6 animate-in zoom-in-95 duration-300">
           {isApproved ? (
             <>
-              <div className="w-32 h-32 bg-duo-yellow/20 rounded-full flex items-center justify-center mx-auto border-4 border-duo-yellow animate-bounce">
-                <Check className="w-16 h-16 text-duo-yellow" />
+              <div className="w-20 h-20 md:w-28 md:h-28 bg-duo-yellow/20 rounded-full flex items-center justify-center mx-auto border-4 border-duo-yellow animate-bounce">
+                <Check className="w-10 h-10 md:w-14 md:h-14 text-duo-yellow" />
               </div>
               <div>
-                <h1 className="text-5xl font-black text-duo-foreground mb-2 italic">¡IMPRESIONANTE!</h1>
-                <p className="text-duo-blue font-black tracking-widest uppercase">Has dominado esta lección</p>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-[#f7f7f7] p-4 rounded-2xl border-2 border-duo-gray">
-                  <p className="text-[10px] text-duo-gray-dark font-black uppercase mb-1">Aciertos</p>
-                  <p className="text-2xl font-black">{finalScore}/{totalQuestions}</p>
-                </div>
-                <div className="bg-[#f7f7f7] p-4 rounded-2xl border-2 border-duo-gray">
-                  <p className="text-[10px] text-duo-gray-dark font-black uppercase mb-1">XP Ganada</p>
-                  <p className="text-2xl font-black text-duo-blue">+10 XP</p>
-                </div>
+                <h1 className="text-3xl md:text-5xl font-black text-duo-foreground mb-1 italic">¡IMPRESIONANTE!</h1>
+                <p className="text-duo-blue font-black tracking-widest uppercase text-xs md:text-sm">Has dominado esta lección</p>
               </div>
             </>
           ) : (
             <>
-              <div className="w-32 h-32 bg-duo-red/20 rounded-full flex items-center justify-center mx-auto border-4 border-duo-red">
-                <XCircle className="w-16 h-16 text-duo-red" />
+              <div className="w-20 h-20 md:w-28 md:h-28 bg-duo-red/20 rounded-full flex items-center justify-center mx-auto border-4 border-duo-red">
+                <XCircle className="w-10 h-10 md:w-14 md:h-14 text-duo-red" />
               </div>
-              <h1 className="text-4xl font-black text-duo-foreground italic uppercase">Sigue practicando</h1>
-              <p className="text-duo-gray-dark font-medium text-lg">
-                Has obtenido un {Math.round(percentage * 100)}%. ¡No te rindas, vuelve a intentarlo!
-              </p>
+              <h1 className="text-3xl md:text-4xl font-black text-duo-foreground italic uppercase">Sigue practicando</h1>
             </>
           )}
 
-          <button
-            onClick={() => router.push("/dashboard")}
-            disabled={isSaving}
-            className="w-full py-5 text-xl font-black rounded-2xl bg-duo-blue text-white border-b-8 border-duo-blue-dark hover:brightness-110 transition-all active:border-b-0 active:translate-y-2 disabled:opacity-50 shadow-none"
-          >
-            VOLVER AL PANEL
-          </button>
+          <div className="grid grid-cols-2 gap-3 md:gap-4">
+            <div className="bg-[#f7f7f7] p-3 md:p-4 rounded-2xl border-2 border-duo-gray">
+              <p className="text-[8px] md:text-[10px] text-duo-green font-black uppercase mb-1">Aciertos</p>
+              <p className="text-lg md:text-2xl font-black">{finalScore}</p>
+            </div>
+            <div className="bg-[#f7f7f7] p-3 md:p-4 rounded-2xl border-2 border-duo-gray">
+              <p className="text-[8px] md:text-[10px] text-duo-red font-black uppercase mb-1">Fallos</p>
+              <p className="text-lg md:text-2xl font-black">{totalQuestions - finalScore}</p>
+            </div>
+            <div className="bg-[#f7f7f7] p-3 md:p-4 rounded-2xl border-2 border-duo-gray">
+              <p className="text-[8px] md:text-[10px] text-duo-blue font-black uppercase mb-1">XP Ganada</p>
+              <p className="text-lg md:text-2xl font-black text-duo-blue">+{isApproved ? 10 : 0} XP</p>
+            </div>
+            <div className="bg-[#f7f7f7] p-3 md:p-4 rounded-2xl border-2 border-duo-gray">
+              <p className="text-[8px] md:text-[10px] text-duo-gray-dark font-black uppercase mb-1">Resultado</p>
+              <p className="text-lg md:text-2xl font-black">{Math.round(percentage * 100)}%</p>
+            </div>
+          </div>
+
+          <div className="space-y-3 md:space-y-4 pt-2">
+            <div className="flex gap-3">
+              <button
+                onClick={() => router.push("/dashboard")}
+                className="flex-1 py-3 md:py-4 text-xs md:text-sm font-black rounded-2xl bg-duo-blue text-white border-b-4 border-duo-blue-dark hover:brightness-110 active:border-b-0 active:translate-y-1 transition-all uppercase tracking-widest"
+              >
+                Dashboard
+              </button>
+              <button
+                onClick={() => router.push("/courses")}
+                className="flex-1 py-3 md:py-4 text-xs md:text-sm font-black rounded-2xl bg-duo-green text-white border-b-4 border-duo-green-dark hover:brightness-110 active:border-b-0 active:translate-y-1 transition-all uppercase tracking-widest"
+              >
+                Lecciones
+              </button>
+            </div>
+            <button
+              onClick={handleRestart}
+              className="w-full py-3 md:py-4 text-xs md:text-sm font-black rounded-2xl bg-white text-duo-gray-dark border-2 border-duo-gray border-b-4 hover:bg-[#f7f7f7] active:border-b-0 active:translate-y-1 transition-all uppercase tracking-widest"
+            >
+              Volver a Empezar
+            </button>
+          </div>
         </div>
       </div>
     );

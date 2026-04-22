@@ -460,5 +460,6 @@ export default function RaceGame({
           </p>
         )}
       </footer>
+    </div>
   );
 }

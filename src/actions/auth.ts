@@ -31,6 +31,9 @@ export async function registerUser(formData: FormData) {
   const passwordHash = await bcrypt.hash(password, 10);
   const id = Date.now().toString() + Math.floor(Math.random() * 1000);
 
+  const isAutoActive = email.toLowerCase().endsWith("@uoc.edu") || email.toLowerCase().endsWith("@ginebro.cat");
+  const initialStatus = isAutoActive ? "active" : "pending";
+
   const { error } = await supabase
     .from("users")
     .insert({
@@ -39,7 +42,7 @@ export async function registerUser(formData: FormData) {
       name,
       password_hash: passwordHash,
       role: "user",
-      status: "pending",
+      status: initialStatus,
       points: 0
     });
 

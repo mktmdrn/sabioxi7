@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
-import { ArrowLeft, Star, Lock, Check, Save, Sparkles } from "lucide-react";
+import { ArrowLeft, Star, Lock, Check, Save, Sparkles, ZoomIn, ZoomOut } from "lucide-react";
 import Link from "next/link";
 import { AvatarConfig, saveAvatarConfig } from "@/actions/db";
 
@@ -81,6 +81,7 @@ export default function AvatarCustomizer({
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [activeTab, setActiveTab] = useState<keyof AvatarConfig>("color");
+  const [zoom, setZoom] = useState(1);
 
   const handleSave = async () => {
     setSaving(true);
@@ -141,8 +142,27 @@ export default function AvatarCustomizer({
           {/* 3D Preview */}
           <div className="bg-white border-2 border-duo-gray border-b-8 rounded-[3rem] p-8 flex flex-col items-center justify-center min-h-[500px] relative overflow-hidden shadow-sm">
             <div className="absolute inset-0 bg-gradient-to-b from-duo-blue/5 to-transparent" />
+            
+            {/* Zoom Controls */}
+            <div className="absolute top-6 right-6 z-20 flex flex-col gap-2">
+              <button
+                onClick={() => setZoom(prev => Math.min(prev + 0.2, 1.8))}
+                className="w-12 h-12 bg-white border-2 border-duo-gray border-b-4 active:border-b-0 active:translate-y-1 rounded-xl flex items-center justify-center text-duo-gray-dark hover:text-duo-blue hover:border-duo-blue transition-all"
+                title="Aumentar Zoom"
+              >
+                <ZoomIn className="w-6 h-6" />
+              </button>
+              <button
+                onClick={() => setZoom(prev => Math.max(prev - 0.2, 0.8))}
+                className="w-12 h-12 bg-white border-2 border-duo-gray border-b-4 active:border-b-0 active:translate-y-1 rounded-xl flex items-center justify-center text-duo-gray-dark hover:text-duo-blue hover:border-duo-blue transition-all"
+                title="Reducir Zoom"
+              >
+                <ZoomOut className="w-6 h-6" />
+              </button>
+            </div>
+
             <div className="relative z-10 w-full">
-              <Avatar3D config={config} size="large" />
+              <Avatar3D config={config} size="large" zoom={zoom} />
             </div>
             <div className="relative z-10 mt-8">
               <button
